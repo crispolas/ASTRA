@@ -7,6 +7,7 @@ Projeto desenvolvido para a disciplina de Desenvolvimento Frontend.
 - Brenno Milhomem Farias
 - Eurípedes Rocha Neto
 - Gabriel Crispim Galvão
+- Felipe Borges Barros
 
 ## Framework
 
