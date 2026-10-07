@@ -1,56 +1,43 @@
-# sv
+# ASTRA
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+Projeto desenvolvido para a disciplina de Desenvolvimento Frontend.
 
-## Creating a project
+## Equipe
 
-If you're seeing this, you've probably already done this step. Congrats!
+- Brenno Milhomem Farias
+- Eurípedes Rocha Neto
+- Gabriel Crispim Galvão
 
-```sh
-# create a new project
-npx sv create my-app
-```
+## Framework
 
-To recreate this project with the same configuration:
+SvelteKit com TypeScript.
 
-```sh
-# recreate this project
-npx sv@1.1.1 create --template minimal --types ts --install npm .
-```
+## Configuração do projeto
 
-## Adding features
-
-Add features to your project with `sv add`:
+Para instalar as dependências:
 
 ```sh
-npx sv add
+npm install
 ```
 
-For example, to add Tailwind CSS:
-
-```sh
-npx sv add tailwindcss
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+Para iniciar o projeto:
 
 ```sh
 npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
 ```
 
-## Building
+Para iniciar a API local:
 
-To create a production version of your app:
+```sh
+npx json-server db.json
+```
+
+A aplicação estará disponível em `http://localhost:5173` e a API em `http://localhost:3000`.
+
+## Build
+
+Para gerar a versão de produção:
 
 ```sh
 npm run build
 ```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
