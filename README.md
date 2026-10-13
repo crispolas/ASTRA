@@ -13,6 +13,10 @@ Projeto desenvolvido para a disciplina de Desenvolvimento Frontend.
 
 SvelteKit com TypeScript.
 
+## Documentação técnica
+
+- [Diário técnico do Marco 2](docs/marco-2.md): dependências, registros de implementação, testes e orientações para continuidade entre integrantes.
+
 ## Configuração do projeto
 
 Para instalar as dependências:
