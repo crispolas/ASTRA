@@ -9,4 +9,20 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
+<header>
+    <nav>
+        <ul>
+            <li>
+                <a href="/">Página inicial</a>
+            </li>
+            <li>
+                <a href="/projetos">Projetos</a> 
+            </li>
+            <li>
+                <a href="/tarefas/[id]">Tarefas</a>
+            </li>
+        </ul>
+    </nav>
+</header>
+
 {@render children()}
