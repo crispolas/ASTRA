@@ -1,72 +1,48 @@
-# ASTRA — Diário técnico do Marco 2
+# ASTRA — Marco 2
 
-**Disciplina:** Desenvolvimento Frontend\
-**Tecnologias:** SvelteKit + TypeScript; API local com json-server\
-**Repositório:** https://github.com/crispolas/ASTRA\
-**Equipe:** Brenno Milhomem Farias, Eurípedes Rocha Neto, Gabriel Crispim Galvão e Felipe Borges Barros\
-**Prazo:** 14/10/2026 às 23h59, conforme informado para o marco.
+Diário técnico das tarefas do Marco 2, atualizado pela equipe conforme o desenvolvimento avança.
 
-## Objetivo e uso do diário
+**Equipe:** Brenno Milhomem Farias, Eurípedes Rocha Neto, Gabriel Crispim Galvão e Felipe Borges Barros.
 
-O Marco 2 trata da navegação, dos componentes reutilizáveis e das primeiras interfaces de consulta de tarefas e projetos da ASTRA. Este diário registra a implementação real e permite que outro integrante continue o trabalho sem reconstruir todo o contexto.
+**Tecnologias:** SvelteKit + TypeScript e json-server.
 
-Os resultados esperados abaixo são planejamento baseado nas tarefas fornecidas; a implementação registrada na seção #9 foi conferida na `main` após a integração do PR #47. Os demais campos continuam pendentes. A consulta às descrições das issues pela API do GitHub retornou `Forbidden`; por isso, não foram transcritos critérios de aceite externos. Consulte a issue vinculada antes de iniciar a tarefa.
+**Prazo:** 14/10/2026 às 23h59.
 
-Este diário incorpora o registro de Felipe Borges Barros em `docs/README.md`, disponível na [versão integrada pelo PR #47](https://github.com/crispolas/ASTRA/blob/2ece3feb20175a275e9a3b890eb6604fc1f0a13c/docs/README.md). Ao atualizar as informações da issue nos dois documentos, mantenha comandos, rotas e resultados consistentes.
+## Objetivo do marco
 
-Ao assumir uma tarefa, preencha responsável e status. Durante o trabalho, registre os arquivos, passos, decisões e dúvidas; antes de concluir, substitua os campos **A preencher** por fatos verificáveis. Para testar, informe comando ou URL, pré-condições, dados usados, resultado esperado e resultado observado. Diferencie testes aprovados, falhas e verificações não executadas. Não invente commits ou resultados: adicione o identificador ou link somente quando existir.
+Criar a navegação, os componentes reutilizáveis e as primeiras telas de consulta de tarefas e projetos. Este documento explica o que cada integrante fez e como outra pessoa pode testar e continuar o trabalho.
 
-Se uma alteração afetar outra tarefa, registre o acordo na seção de integração e atualize as orientações para quem dará continuidade. Combine com a equipe a branch e a forma de integração antes de trabalhar; este documento não define uma política de branches.
+## Como executar o projeto
 
-## Base técnica existente
+Requisitos: Git, npm e Node.js compatível com as dependências (mínimo 22.17; Node.js 24 é compatível). Execute os comandos na raiz do projeto.
 
-Na `main`, após o PR #47 de Felipe, a página inicial em `src/routes/+page.svelte` apresenta os títulos “Tarefas” e “Página inicial”. Foram adicionadas as rotas de projetos e detalhes, além da página personalizada de erro. Essas páginas são provisórias: ainda não consultam a API nem exibem os dados de tarefas e projetos. O layout em `src/routes/+layout.svelte` contém o favicon e renderiza o conteúdo das páginas.
-
-A issue #9 está implementada e integrada; a documentação de Felipe descreve os testes criados, mas não registra uma execução com resultados. Os testes não foram executados nesta atualização documental. A cópia local usada para editar este diário ainda está anterior ao PR #47; as informações acima foram conferidas em `origin/main`, sem alterar o código local.
-
-Referências para o trabalho:
-
-- `src/tipos.ts` define `Projeto`, `Tarefa`, `Status`, `Prioridade` e `NovaTarefa`.
-- Os identificadores de projetos e tarefas são strings. `Tarefa.projetoId` relaciona uma tarefa ao projeto.
-- `db.json` contém as coleções `projetos` e `tarefas`; os dados iniciais têm dois projetos e cinco tarefas.
-- O acesso existente à biblioteca usa o alias `#lib`, definido em `package.json`.
-- As rotas do SvelteKit são definidas pelos arquivos em `src/routes`; não é necessário instalar um roteador adicional para documentar ou usar essa convenção.
-
-## Preparação e execução local
-
-Requisitos: Git, Node.js compatível com as dependências do lockfile (mínimo 22.17; Node.js 24 é uma opção compatível), npm e dois terminais. Execute os comandos a partir da raiz do ASTRA. As portas 5173 e 3000 devem estar livres.
-
-Antes de atualizar a cópia local, confira `git status` e preserve alterações próprias. Atualize a branch combinada com a equipe sem sobrescrever trabalho em andamento.
-
-Instale as dependências somente se necessário, preservando o lockfile:
+Instale as dependências, se necessário:
 
 ```sh
 npm ci
 ```
 
-No primeiro terminal, inicie o frontend:
+Inicie a aplicação:
 
 ```sh
 npm run dev
 ```
 
-Felipe também documentou `npm run dev -- --open`, que abre o navegador automaticamente em uma máquina local. No ambiente de nuvem, use o comando sem `--open`.
+Em uma máquina local, use `npm run dev -- --open` para abrir o navegador automaticamente.
 
-No segundo terminal, inicie a API com a dependência do projeto já instalada:
+Em outro terminal, inicie a API com a dependência já instalada:
 
 ```sh
 npx --no-install json-server db.json
 ```
 
-No Windows PowerShell, se a execução dos scripts npm for bloqueada, use `npm.cmd` e `npx.cmd` no lugar de `npm` e `npx`.
+- Aplicação: `http://localhost:5173`
+- API: `http://localhost:3000`
+- Dados: `/tarefas` e `/projetos` na API.
 
-- Aplicação: http://localhost:5173
-- API: http://localhost:3000
-- Consultas de leitura: http://localhost:3000/projetos e http://localhost:3000/tarefas
+No PowerShell, se necessário, use `npm.cmd` e `npx.cmd`. Na nuvem, siga as instruções de inicialização do ambiente, que usam uma cópia do banco para preservar `db.json`.
 
-Confira nos terminais as portas efetivamente usadas. O json-server persiste operações de escrita no arquivo servido; para este marco de leitura, não altere os dados de referência. No ambiente de nuvem já preparado, siga as instruções de inicialização salvas, que usam uma cópia em `/workspace/astra-runtime/db.json` para preservar `db.json`.
-
-Verificações disponíveis na `main` após o PR #47:
+Para verificar o projeto:
 
 ```sh
 npm test
@@ -74,9 +50,9 @@ npm run check
 npm run build
 ```
 
-`npm test` executa os cinco testes de integração das rotas em `tests/routes.test.mjs`, usando o runner nativo do Node.js. `npm run check` verifica TypeScript/Svelte, e `npm run build` gera o build. Os testes atuais validam páginas provisórias e uma URL inexistente; não cobrem consultas à API nem a existência de tarefas e projetos. Registre os resultados reais na seção da tarefa correspondente. Para usar `npm test`, a cópia de trabalho precisa conter as alterações do PR #47; esse script não existia na versão anterior.
+`npm test` verifica as rotas, `npm run check` procura erros de Svelte e TypeScript e `npm run build` gera o build. Registre os resultados reais na issue correspondente.
 
-## Dependências e integração
+## Ordem recomendada de integração
 
 | Etapa | Issue | Tarefa | Dependências |
 | --- | --- | --- | --- |
@@ -90,491 +66,339 @@ npm run build
 | 3 — Detalhamento | #14 | Criar a página do projeto | #7, #9 e #10 |
 | 4 — Entrega | #15 | Criar o slide de apresentação do Marco 2 | Integração das funcionalidades |
 
-As dependências indicam a ordem recomendada de integração, não uma sequência rígida de execução. Na etapa 1, as três tarefas podem avançar em paralelo. Nas demais, combine antecipadamente contratos de funções, propriedades de componentes e rotas para permitir trabalho simultâneo; registre os acordos e valide a integração com as implementações reais.
+As dependências indicam a ordem de integração, não uma sequência rígida. As tarefas podem avançar em paralelo quando a equipe combinar as funções da API, propriedades dos componentes e rotas. Os tipos existentes estão em `src/tipos.ts`; `Tarefa.projetoId` relaciona a tarefa ao projeto.
 
-## Registro das tarefas
+## Como documentar uma issue
 
-### #7 — Criar o componente de cartão de tarefa
+Cada membro deve preencher sua issue neste documento usando esta estrutura:
 
-**Issue:** [#7 — Criar o componente de cartão de tarefa](https://github.com/crispolas/ASTRA/issues/7)\
-**Responsável:** A preencher\
-**Status:** A preencher\
-**Dependências:** Tipos existentes em `src/tipos.ts`.
+```md
+## Issue número - Nome da issue
 
-#### Resultado esperado
+**Responsável:** Nome da pessoa
+
+### Objetivo
+
+Explique o resultado esperado.
+
+### O que foi feito
+
+Explique as alterações realizadas e os arquivos envolvidos.
+
+### Como testar
+
+Informe comandos ou URLs, o resultado esperado e o resultado observado.
+
+### GitHub
+
+- Issue: link da issue.
+- Commit ou Pull Request: referência real da alteração.
+```
+
+Acrescente explicações como “Como funciona”, “Problemas e soluções” ou “Para continuar” quando ajudarem outro integrante. Não é necessário preencher uma lista extensa de campos: registre o que for útil para entender o trabalho.
+
+Os campos das tarefas ainda não documentadas permanecem **A preencher**. Não descreva planos como funcionalidades prontas e não registre testes como aprovados sem executá-los. O registro da issue #9 abaixo incorpora a documentação do Felipe em `docs/README.md`.
+
+---
+
+## Issue 7 - Criar o componente de cartão de tarefa
+
+**Responsável:** A preencher
+
+### Objetivo
 
 Disponibilizar um componente reutilizável para representar uma tarefa.
 
-#### O que foi implementado
+### O que foi feito
 
-A preencher
+A preencher.
 
-#### Arquivos criados ou modificados
+### Como testar
 
-A preencher
+A preencher.
 
-#### Passo a passo técnico da implementação
+### GitHub
 
-A preencher
+- Issue: [#7 - Criar o componente de cartão de tarefa](https://github.com/crispolas/ASTRA/issues/7)
+- Commit ou Pull Request: A preencher.
 
-#### Como executar e testar
+---
 
-A preencher
+## Issue 8 - Criar a tela de detalhe da tarefa
 
-#### Decisões técnicas e justificativas
+**Responsável:** A preencher
 
-A preencher
-
-#### Problemas encontrados e soluções
-
-A preencher
-
-#### Orientações para o próximo integrante
-
-A preencher
-
-Ao atualizar este campo: registrar as propriedades aceitas, seus tipos, obrigatoriedade e um exemplo real de uso para #11 e #14.
-
-#### Referência ao commit ou Pull Request
-
-A preencher
-
-### #8 — Criar a tela de detalhe da tarefa
-
-**Issue:** [#8 — Criar a tela de detalhe da tarefa](https://github.com/crispolas/ASTRA/issues/8)\
-**Responsável:** A preencher\
-**Status:** A preencher\
-**Dependências:** #9 e #10.
-
-#### Resultado esperado
+### Objetivo
 
 Consultar e exibir os dados da tarefa identificada na rota de detalhe.
 
-#### O que foi implementado
+### O que foi feito
 
-A preencher
+A preencher.
 
-#### Arquivos criados ou modificados
+### Como testar
 
-A preencher
+A preencher.
 
-#### Passo a passo técnico da implementação
+### GitHub
 
-A preencher
+- Issue: [#8 - Criar a tela de detalhe da tarefa](https://github.com/crispolas/ASTRA/issues/8)
+- Commit ou Pull Request: A preencher.
 
-#### Como executar e testar
+---
 
-A preencher
+## Issue 9 - Configurar o roteador
 
-#### Decisões técnicas e justificativas
+**Responsável:** Felipe Borges Barros
 
-A preencher
+### Objetivo
 
-#### Problemas encontrados e soluções
+Criar as rotas iniciais do ASTRA e uma página personalizada para endereços que não existem.
 
-A preencher
+As páginas criadas nesta issue são simples e usam apenas um título (`h1`) e um subtítulo (`h2`).
 
-#### Orientações para o próximo integrante
+### Como o roteamento funciona
 
-A preencher
+O SvelteKit cria as rotas usando as pastas e os arquivos dentro de `src/routes`. Por isso, não foi necessário instalar outra biblioteca de roteamento.
 
-Ao atualizar este campo: explicar como obter o identificador da rota, consultar a API e tratar tarefa ausente; registrar verificações com identificadores existentes e inexistentes.
+Um arquivo chamado `+page.svelte` representa uma página que pode ser aberta no navegador.
 
-#### Referência ao commit ou Pull Request
+Por exemplo, este arquivo:
 
-A preencher
+```text
+src/routes/projetos/+page.svelte
+```
 
-### #9 — Configurar o roteador
+Cria este endereço:
 
-**Issue:** [#9 — Configurar o roteador](https://github.com/crispolas/ASTRA/issues/9)\
-**Responsável:** Felipe Borges Barros\
-**Status:** Implementada e integrada na `main` pelo PR #47; resultados de execução dos testes a registrar.\
-**Dependências:** Nenhuma.
+```text
+/projetos
+```
 
-#### Resultado esperado
+### Rotas criadas
 
-Criar as rotas iniciais do ASTRA e uma página personalizada para endereços inexistentes, com páginas provisórias contendo um título (`h1`) e um subtítulo (`h2`).
-
-#### O que foi implementado
-
-Felipe configurou as quatro rotas pelo sistema de arquivos do SvelteKit e adicionou a página personalizada de erro. As páginas contêm somente títulos provisórios; listagens, detalhamento de dados e navegação compartilhada serão desenvolvidos nas respectivas issues.
-
-| Endereço | Arquivo | Título e subtítulo atuais |
+| Endereço | Arquivo | Conteúdo atual |
 | --- | --- | --- |
-| `/` | `src/routes/+page.svelte` | Tarefas / Página inicial |
-| `/tarefas/:id` | `src/routes/tarefas/[id]/+page.svelte` | Detalhes da tarefa / Página provisória |
-| `/projetos` | `src/routes/projetos/+page.svelte` | Projetos / Lista de projetos |
-| `/projetos/:id` | `src/routes/projetos/[id]/+page.svelte` | Detalhes do projeto / Página provisória |
+| `/` | `src/routes/+page.svelte` | Página inicial de tarefas |
+| `/tarefas/:id` | `src/routes/tarefas/[id]/+page.svelte` | Detalhes provisórios de uma tarefa |
+| `/projetos` | `src/routes/projetos/+page.svelte` | Lista provisória de projetos |
+| `/projetos/:id` | `src/routes/projetos/[id]/+page.svelte` | Detalhes provisórios de um projeto |
 
-O arquivo `src/routes/+error.svelte` exibe “Página não encontrada” e “Erro 404”. Uma URL sem rota correspondente é tratada pelo SvelteKit com HTTP 404.
+### O que significa `[id]`?
 
-#### Arquivos criados ou modificados
+Os colchetes indicam uma parte variável do endereço.
 
-- Modificado: `src/routes/+page.svelte`, com os títulos da página inicial de tarefas.
-- Criados: `src/routes/tarefas/[id]/+page.svelte`, `src/routes/projetos/+page.svelte` e `src/routes/projetos/[id]/+page.svelte`.
-- Criado: `src/routes/+error.svelte`, com o conteúdo da página de erro.
-- Criado: `tests/routes.test.mjs`, com os testes de integração das rotas.
-- Modificado: `package.json`, acrescentando `test: node --test tests/routes.test.mjs`.
-- Criado: `docs/README.md`, com instruções compartilhadas e o registro da issue #9.
+Estes endereços usam a mesma página:
 
-#### Passo a passo técnico da implementação
+```text
+/tarefas/1
+/tarefas/25
+/tarefas/abc
+```
 
-1. Substituiu o conteúdo de boas-vindas da página inicial pelos títulos provisórios de tarefas.
-2. Criou as pastas e arquivos `+page.svelte` correspondentes às rotas de projetos e detalhes.
-3. Usou pastas `[id]` para os segmentos variáveis de tarefas e projetos.
-4. Criou `+error.svelte` para personalizar o conteúdo apresentado em uma URL inexistente.
-5. Adicionou testes que iniciam um servidor Vite local, fazem requisições HTTP e verificam status e títulos; o servidor é encerrado após a suíte.
-6. Adicionou o comando `npm test` e documentou as rotas e procedimentos em `docs/README.md`.
+Em cada endereço, o valor depois de `/tarefas/` é o `id`.
 
-Esta sequência descreve as alterações conferidas no PR integrado, sem afirmar uma ordem cronológica de trabalho não registrada pelo autor.
+### Página não encontrada
 
-#### Como executar e testar
+O arquivo `src/routes/+error.svelte` personaliza a página de erro.
 
-Na raiz do projeto, em uma cópia que contenha o PR #47, execute:
+Quando alguém abre um endereço que não existe, como `/pagina-inexistente`, o servidor responde com o status HTTP `404` e mostra a mensagem "Página não encontrada".
+
+### Testes criados
+
+O arquivo `tests/routes.test.mjs` contém os testes de integração das rotas. Eles iniciam um servidor local e acessam as páginas como um navegador faria.
+
+Os testes verificam:
+
+- se as quatro rotas respondem com o status `200`;
+- se cada página mostra o `h1` e o `h2` esperados;
+- se um endereço inexistente responde com o status `404`;
+- se a página personalizada de erro é exibida.
+
+Para executar os testes:
 
 ```sh
 npm test
-npm run check
-npm run build
 ```
 
-A suíte tem cinco casos: quatro verificam HTTP 200 e os títulos/subtítulos das páginas provisórias; o quinto verifica HTTP 404 e o conteúdo personalizado de uma URL inexistente. Ela inicia seu próprio servidor em uma porta disponível e não depende do json-server, porque as páginas ainda não consultam a API.
+### Como testar manualmente
 
-Para conferir manualmente, execute `npm run dev` (ou `npm run dev -- --open` em uma máquina local) e acesse:
+Inicie a aplicação com `npm run dev -- --open` e abra estes endereços:
 
-| URL | Resultado esperado |
-| --- | --- |
-| `http://localhost:5173/` | HTTP 200; Tarefas / Página inicial |
-| `http://localhost:5173/tarefas/1` | HTTP 200; Detalhes da tarefa / Página provisória |
-| `http://localhost:5173/projetos` | HTTP 200; Projetos / Lista de projetos |
-| `http://localhost:5173/projetos/1` | HTTP 200; Detalhes do projeto / Página provisória |
-| `http://localhost:5173/pagina-inexistente` | HTTP 404; Página não encontrada / Erro 404 |
+```text
+http://localhost:5173/
+http://localhost:5173/tarefas/1
+http://localhost:5173/projetos
+http://localhost:5173/projetos/1
+http://localhost:5173/pagina-inexistente
+```
 
-**Resultado observado de execução:** A preencher. Os procedimentos e as asserções foram conferidos no código e na documentação do Felipe; nenhuma execução desses testes foi realizada nesta atualização do diário.
+As quatro primeiras páginas devem mostrar seus títulos provisórios. O último endereço deve mostrar a página personalizada de erro 404.
 
-#### Decisões técnicas e justificativas
+### GitHub
 
-- Usar o roteamento nativo do SvelteKit: as pastas em `src/routes` e os arquivos `+page.svelte` definem as páginas, sem instalar outra biblioteca.
-- Usar `[id]` como segmento variável: `/tarefas/1`, `/tarefas/25` e `/tarefas/abc` correspondem à mesma página de rota. Isso não comprova que essas tarefas existem na API.
-- Manter páginas provisórias com `h1` e `h2`, conforme o objetivo registrado por Felipe, para permitir a implementação posterior das telas.
+- Issue: [#9 - Configurar o roteador](https://github.com/crispolas/ASTRA/issues/9)
+- Pull request: [#47 - Configura as rotas iniciais da aplicação](https://github.com/crispolas/ASTRA/pull/47)
 
-#### Problemas encontrados e soluções
+---
 
-A preencher pelo responsável. O registro de Felipe não relata problemas encontrados nem soluções aplicadas; não foram presumidos incidentes.
+## Issue 10 - Criar o módulo de acesso à API (leitura)
 
-#### Orientações para o próximo integrante
+**Responsável:** A preencher
 
-- #12: implementar o layout e os links compartilhados; a criação das rotas não adicionou um menu de navegação.
-- #11: desenvolver a listagem de tarefas em `src/routes/+page.svelte` usando #7 e #10.
-- #13: desenvolver a listagem em `src/routes/projetos/+page.svelte` usando #10.
-- #8 e #14: desenvolver os detalhes nos arquivos existentes em `[id]`; a leitura do parâmetro e a consulta de dados ainda precisam ser implementadas. Registrar como obter `params.id` no carregamento da página e como tratar um recurso ausente.
-- Para adicionar uma página, criar o diretório correspondente dentro de `src/routes` e seu `+page.svelte`. Uma pasta `[id]` representa um segmento variável, não uma validação de existência do recurso.
-- Ao substituir os títulos provisórios, atualizar as expectativas de `tests/routes.test.mjs` para verificar o comportamento real das telas, preservando as verificações relevantes de rotas e erros.
-- O conteúdo de `+error.svelte` está fixo em “Erro 404”; ele não diferencia outros erros. O tratamento de falhas de API nas novas telas precisa ser definido e documentado nas tarefas correspondentes.
-
-Registrar na integração qualquer mudança de URL ou contrato que afete as tarefas dependentes.
-
-#### Referência ao commit ou Pull Request
-
-- [PR #47 — Configura as rotas iniciais da aplicação](https://github.com/crispolas/ASTRA/pull/47), integrado na `main`.
-- Implementação: `6cd36ea` — Configura rotas iniciais da aplicação.
-- Documentação: `b0338ba` — Documenta configuração das rotas; `7fd1820` — Organiza documentação por issue.
-- Commit de merge: `2ece3feb20175a275e9a3b890eb6604fc1f0a13c`.
-
-### #10 — Criar o módulo de acesso à API (leitura)
-
-**Issue:** [#10 — Criar o módulo de acesso à API (leitura)](https://github.com/crispolas/ASTRA/issues/10)\
-**Responsável:** A preencher\
-**Status:** A preencher\
-**Dependências:** Contrato de dados em `db.json` e `src/tipos.ts`.
-
-#### Resultado esperado
+### Objetivo
 
 Disponibilizar acesso tipado de leitura a tarefas e projetos para as telas do marco.
 
-#### O que foi implementado
+### O que foi feito
 
-A preencher
+A preencher.
 
-#### Arquivos criados ou modificados
+### Como testar
 
-A preencher
+A preencher.
 
-#### Passo a passo técnico da implementação
+### GitHub
 
-A preencher
+- Issue: [#10 - Criar o módulo de acesso à API (leitura)](https://github.com/crispolas/ASTRA/issues/10)
+- Commit ou Pull Request: A preencher.
 
-#### Como executar e testar
+---
 
-A preencher
+## Issue 11 - Criar a tela de lista de tarefas
 
-#### Decisões técnicas e justificativas
+**Responsável:** A preencher
 
-A preencher
-
-#### Problemas encontrados e soluções
-
-A preencher
-
-#### Orientações para o próximo integrante
-
-A preencher
-
-Ao atualizar este campo: registrar nomes das funções, parâmetros, retornos, importações, endereço da API e tratamento de erros; explicar a consulta das tarefas relacionadas a um projeto.
-
-#### Referência ao commit ou Pull Request
-
-A preencher
-
-### #11 — Criar a tela de lista de tarefas
-
-**Issue:** [#11 — Criar a tela de lista de tarefas](https://github.com/crispolas/ASTRA/issues/11)\
-**Responsável:** A preencher\
-**Status:** A preencher\
-**Dependências:** #7 e #10.
-
-#### Resultado esperado
+### Objetivo
 
 Consultar as tarefas na API e apresentá-las usando o cartão reutilizável.
 
-#### O que foi implementado
+### O que foi feito
 
-A preencher
+A preencher.
 
-#### Arquivos criados ou modificados
+### Como testar
 
-A preencher
+A preencher.
 
-#### Passo a passo técnico da implementação
+### GitHub
 
-A preencher
+- Issue: [#11 - Criar a tela de lista de tarefas](https://github.com/crispolas/ASTRA/issues/11)
+- Commit ou Pull Request: A preencher.
 
-#### Como executar e testar
+---
 
-A preencher
+## Issue 12 - Criar o layout base e a navegação
 
-#### Decisões técnicas e justificativas
+**Responsável:** A preencher
 
-A preencher
-
-#### Problemas encontrados e soluções
-
-A preencher
-
-#### Orientações para o próximo integrante
-
-A preencher
-
-Ao atualizar este campo: explicar como a lista recebe os dados, identifica cada tarefa e encaminha à página de detalhe; registrar como verificar a correspondência com a API.
-
-#### Referência ao commit ou Pull Request
-
-A preencher
-
-### #12 — Criar o layout base e a navegação
-
-**Issue:** [#12 — Criar o layout base e a navegação](https://github.com/crispolas/ASTRA/issues/12)\
-**Responsável:** A preencher\
-**Status:** A preencher\
-**Dependências:** #9.
-
-#### Resultado esperado
+### Objetivo
 
 Disponibilizar layout compartilhado e navegação entre tarefas e projetos.
 
-#### O que foi implementado
+### O que foi feito
 
-A preencher
+A preencher.
 
-#### Arquivos criados ou modificados
+### Como testar
 
-A preencher
+A preencher.
 
-#### Passo a passo técnico da implementação
+### GitHub
 
-A preencher
+- Issue: [#12 - Criar o layout base e a navegação](https://github.com/crispolas/ASTRA/issues/12)
+- Commit ou Pull Request: A preencher.
 
-#### Como executar e testar
+---
 
-A preencher
+## Issue 13 - Criar a tela de lista de projetos
 
-#### Decisões técnicas e justificativas
+**Responsável:** A preencher
 
-A preencher
-
-#### Problemas encontrados e soluções
-
-A preencher
-
-#### Orientações para o próximo integrante
-
-A preencher
-
-Ao atualizar este campo: explicar quais elementos são compartilhados, onde cada página é renderizada e como acrescentar links sem duplicar o layout.
-
-#### Referência ao commit ou Pull Request
-
-A preencher
-
-### #13 — Criar a tela de lista de projetos
-
-**Issue:** [#13 — Criar a tela de lista de projetos](https://github.com/crispolas/ASTRA/issues/13)\
-**Responsável:** A preencher\
-**Status:** A preencher\
-**Dependências:** #9 e #10.
-
-#### Resultado esperado
+### Objetivo
 
 Consultar e apresentar os projetos da API com acesso às respectivas páginas.
 
-#### O que foi implementado
+### O que foi feito
 
-A preencher
+A preencher.
 
-#### Arquivos criados ou modificados
+### Como testar
 
-A preencher
+A preencher.
 
-#### Passo a passo técnico da implementação
+### GitHub
 
-A preencher
+- Issue: [#13 - Criar a tela de lista de projetos](https://github.com/crispolas/ASTRA/issues/13)
+- Commit ou Pull Request: A preencher.
 
-#### Como executar e testar
+---
 
-A preencher
+## Issue 14 - Criar a página do projeto
 
-#### Decisões técnicas e justificativas
+**Responsável:** A preencher
 
-A preencher
-
-#### Problemas encontrados e soluções
-
-A preencher
-
-#### Orientações para o próximo integrante
-
-A preencher
-
-Ao atualizar este campo: registrar a rota acordada e como o identificador de cada projeto é passado ao detalhamento.
-
-#### Referência ao commit ou Pull Request
-
-A preencher
-
-### #14 — Criar a página do projeto
-
-**Issue:** [#14 — Criar a página do projeto](https://github.com/crispolas/ASTRA/issues/14)\
-**Responsável:** A preencher\
-**Status:** A preencher\
-**Dependências:** #7, #9 e #10.
-
-#### Resultado esperado
+### Objetivo
 
 Apresentar os dados de um projeto e suas tarefas relacionadas, reutilizando o cartão de tarefa.
 
-#### O que foi implementado
+### O que foi feito
 
-A preencher
+A preencher.
 
-#### Arquivos criados ou modificados
+### Como testar
 
-A preencher
+A preencher.
 
-#### Passo a passo técnico da implementação
+### GitHub
 
-A preencher
+- Issue: [#14 - Criar a página do projeto](https://github.com/crispolas/ASTRA/issues/14)
+- Commit ou Pull Request: A preencher.
 
-#### Como executar e testar
+---
 
-A preencher
+## Issue 15 - Criar o slide de apresentação do Marco 2
 
-#### Decisões técnicas e justificativas
+**Responsável:** A preencher
 
-A preencher
-
-#### Problemas encontrados e soluções
-
-A preencher
-
-#### Orientações para o próximo integrante
-
-A preencher
-
-Ao atualizar este campo: explicar a relação entre projeto e tarefas, as funções utilizadas e a reutilização do cartão; registrar como verificar que apenas tarefas do projeto são exibidas.
-
-#### Referência ao commit ou Pull Request
-
-A preencher
-
-### #15 — Criar o slide de apresentação do Marco 2
-
-**Issue:** [#15 — Criar o slide de apresentação do Marco 2](https://github.com/crispolas/ASTRA/issues/15)\
-**Responsável:** A preencher\
-**Status:** A preencher\
-**Dependências:** Funcionalidades integradas.
-
-#### Resultado esperado
+### Objetivo
 
 Preparar material de apresentação do Marco 2 e demonstração das funcionalidades efetivamente disponíveis.
 
-#### O que foi implementado
+### O que foi feito
 
-A preencher
+A preencher.
 
-#### Arquivos criados ou modificados
+### Como testar
 
-A preencher
+A preencher.
 
-#### Passo a passo técnico da implementação
+### GitHub
 
-A preencher
+- Issue: [#15 - Criar o slide de apresentação do Marco 2](https://github.com/crispolas/ASTRA/issues/15)
+- Commit ou Pull Request: A preencher.
 
-#### Como executar e testar
-
-A preencher
-
-#### Decisões técnicas e justificativas
-
-A preencher
-
-#### Problemas encontrados e soluções
-
-A preencher
-
-#### Orientações para o próximo integrante
-
-A preencher
-
-Ao atualizar este campo: registrar o caminho ou link do material, o roteiro, os comandos necessários à demonstração e as limitações reais; não apresentar funcionalidades planejadas como concluídas.
-
-#### Referência ao commit ou Pull Request
-
-A preencher
+---
 
 ## Registro de integração
 
-Registre decisões, problemas e soluções que afetem mais de uma issue: contratos entre componentes e API, mudanças de rotas, conflitos de merge e verificações após integração. Preencha também quem deve receber as informações para continuar; não deixe um acordo apenas em uma conversa.
+Use esta seção para registrar decisões e problemas que afetem mais de uma issue.
 
-| Data | Issues envolvidas | Problema ou decisão | Solução ou acordo | Arquivos ou contratos afetados | Responsável | Próximo integrante ou tarefa | Commit ou PR |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Data de integração a registrar | #9, #8, #11, #12, #13 e #14 | Rotas iniciais integradas; telas ainda provisórias | Usar os arquivos de rota existentes para implementar as telas e atualizar os testes quando o conteúdo mudar | `src/routes`, `tests/routes.test.mjs`, `package.json` e `docs/README.md` | Felipe Borges Barros (#9); responsáveis pelas telas a preencher | Responsáveis por #8, #11, #12, #13 e #14 | [PR #47](https://github.com/crispolas/ASTRA/pull/47) |
-| A preencher | A preencher | A preencher | A preencher | A preencher | A preencher | A preencher | A preencher |
+| Issues | Decisão ou problema | Orientação para a equipe | Referência |
+| --- | --- | --- | --- |
+| #9, #8, #11, #12, #13 e #14 | Rotas iniciais integradas; páginas ainda provisórias | Usar as rotas existentes e atualizar os testes quando o conteúdo das telas mudar | [PR #47](https://github.com/crispolas/ASTRA/pull/47) |
+| A preencher | A preencher | A preencher | A preencher |
 
-## Critérios internos de conclusão
+## Quando uma issue está concluída?
 
-Uma issue só deve ser considerada concluída quando:
+Antes de considerar uma issue concluída, confira:
 
-- [ ] A funcionalidade ou o material previsto estiver implementado.
-- [ ] O resultado tiver sido testado, com procedimentos e resultados registrados.
-- [ ] O código ou material estiver integrado à versão compartilhada do projeto.
-- [ ] A seção correspondente deste diário estiver atualizada.
-- [ ] O commit ou Pull Request real estiver registrado.
-- [ ] As informações necessárias às tarefas dependentes estiverem disponíveis.
+- [ ] O resultado está implementado e testado.
+- [ ] O código ou material está integrado.
+- [ ] O registro neste documento está atualizado.
+- [ ] O commit ou PR está identificado.
+- [ ] Quem vai continuar o trabalho tem as informações necessárias.
 
-A existência deste modelo não comprova a conclusão das issues. Quem executa a tarefa deve preencher seu registro antes de considerá-la concluída.
+## Próximos marcos
 
-## Continuidade nos próximos marcos
-
-Para um novo marco, crie futuramente `docs/marco-3.md`, `docs/marco-4.md` e assim por diante, reutilizando a identificação, o contexto técnico, a tabela de dependências, o modelo das tarefas, o registro de integração e os critérios de conclusão. Ajuste tarefas e prazo ao escopo daquele marco e acrescente seu link à seção **Documentação técnica** do README.
-
-Mantenha o histórico de cada marco no respectivo documento. Não copie resultados, responsáveis ou referências de commits como se pertencessem a outro marco. Esses documentos futuros não são criados nesta entrega.
+Para os próximos marcos, reutilize este formato em `docs/marco-3.md`, `docs/marco-4.md` e assim por diante, com as tarefas e o prazo correspondentes. Acrescente o link ao README quando cada documento for criado; preserve o histórico dos marcos anteriores.
