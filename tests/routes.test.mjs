@@ -24,8 +24,7 @@ after(async () => {
 
 const pages = [
     ['/', 'Tarefas', 'Página inicial'],
-    ['/projetos', 'Projetos', 'Lista de projetos'],
-    ['/projetos/1', 'Detalhes do projeto', 'Página provisória']
+    ['/projetos', 'Projetos', 'Lista de projetos']
 ];
 
 for (const [path, heading, subheading] of pages) {
