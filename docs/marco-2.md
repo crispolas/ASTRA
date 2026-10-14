@@ -542,7 +542,7 @@ Verifique se a lista de projetos cadastrados no db.json é exibida na tela.Cliqu
 
 ## Issue 14 - Criar a página do projeto
 
-**Responsável:** A preencher
+**Responsável:** Felipe Borges Barros.
 
 ### Objetivo
 
@@ -550,11 +550,24 @@ Apresentar os dados de um projeto e suas tarefas relacionadas, reutilizando o ca
 
 ### O que foi feito
 
-A preencher.
+A rota `/projetos/:id` deixou de ser provisória. O arquivo `src/routes/projetos/[id]/+page.ts` usa `buscarProjeto(params.id)` da issue #10, que consulta `/projetos/:id?_embed=tarefas` e devolve o projeto já com a lista `tarefas`. A página mostra nome, descrição, disciplina e data de criação do projeto e, abaixo, um `TarefaCard` (issue #7) para cada tarefa, usando `tarefa.id` como chave do `{#each}`.
+
+A tela trata três situações: projeto com tarefas, projeto sem tarefas e falha da consulta (API desligada ou projeto inexistente). Na falha, a página continua respondendo e mostra um aviso com `role="alert"`. Há também um link para voltar à lista de projetos.
+
+Arquivos alterados:
+
+- `src/routes/projetos/[id]/+page.ts`: carrega o projeto e suas tarefas a partir do `id` da rota.
+- `src/routes/projetos/[id]/+page.svelte`: apresentação do projeto e dos cartões de tarefa.
+- `tests/projeto-page.test.mjs`: testes da página com a API simulada (com tarefas, sem tarefas e com falha).
+- `tests/routes.test.mjs`: remove a verificação da página provisória de `/projetos/1`, agora coberta pelo novo teste.
 
 ### Como testar
 
-A preencher.
+1. Em um terminal, inicie a API com `npx --no-install json-server db.json`.
+2. Em outro terminal, rode `npm run dev` e acesse `/projetos/1`.
+3. Confira os dados do projeto “Gerenciador de Tarefas” e os cartões das suas tarefas, como “Criar o repositório”.
+4. Acesse `/projetos/999` e confira o aviso de que o projeto não pôde ser carregado.
+5. Rode `npm test` para executar os testes automatizados.
 
 ### GitHub
 
