@@ -572,7 +572,7 @@ Arquivos alterados:
 ### GitHub
 
 - Issue: [#14 - Criar a página do projeto](https://github.com/crispolas/ASTRA/issues/14)
-- Commit ou Pull Request: A preencher.
+- Commit ou Pull Request: [#57 - Cria a página do projeto](https://github.com/crispolas/ASTRA/pull/57)
 
 ---
 
