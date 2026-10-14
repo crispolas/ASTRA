@@ -1,4 +1,4 @@
-import { buscarTarefa } from '../../../lib/api';
+import { buscarTarefa } from '#lib/api';
 import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
@@ -15,7 +15,7 @@ export const load: PageLoad = async ({ params }) => {
     return {
       tarefa
     };
-  } catch (err) {
+  } catch (err: any) {
     if (err && typeof err === 'object' && 'status' in err) {
       throw err;
     }
