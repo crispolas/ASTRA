@@ -387,24 +387,93 @@ As funções podem ser importadas de `$lib/api`. A busca de projeto deve acessar
 
 ## Issue 11 - Criar a tela de lista de tarefas
 
-**Responsável:** A preencher
+**Responsável:** Gabriel Crispim Galvão.
 
 ### Objetivo
 
-Consultar as tarefas na API e apresentá-las usando o cartão reutilizável.
+Consultar todas as tarefas da API na página inicial, apresentar um TarefaCard por tarefa e usar o identificador como chave, conforme a prática do Marco 2 na Aula 10.
 
 ### O que foi feito
 
-A preencher.
+A página `src/routes/+page.svelte` passou a usar `listarTarefas()` da issue #10. Os dois exemplos fixos da #7 foram removidos; o componente TarefaCard continua sendo reutilizado e recebe cada tarefa por prop.
+
+A tela distingue quatro situações: carregamento, falha da consulta, resposta sem tarefas e lista preenchida. A repetição usa `{#each tarefas as tarefa (tarefa.id)}`, como a professora orienta. Cada cartão mantém seu link para a rota `/tarefas/:id` criada na #9; a implementação dos detalhes pertence à #8.
+
+Arquivos alterados:
+
+- `src/routes/+page.svelte`: consulta e apresentação da lista.
+- `tests/tarefa-card.test.mjs`: mantém a verificação de reutilização do cartão sem depender dos exemplos fixos que foram removidos da página.
+- `docs/marco-2.md`: registro desta issue.
+
+### Passo a passo: o que foi feito, como e por quê
+
+1. **Criar a branch a partir da main atualizada.** A branch `feat/issue-11-lista-tarefas` contém somente esta tarefa e usa as implementações integradas da #7 e #10.
+2. **Importar a função existente.** `listarTarefas` vem de `../lib/api`. A página reutiliza a consulta da #10 em vez de duplicar o endereço da API e o `fetch`.
+3. **Preparar os estados da tela.** `tarefas` começa como uma lista vazia, `carregando` começa como verdadeiro e `erro` começa como texto vazio. `$state` permite que a tela acompanhe a atualização desses valores.
+4. **Buscar ao entrar na página.** `onMount` executa a consulta quando o componente aparece no navegador. `await listarTarefas()` espera a resposta para preencher a lista.
+5. **Tratar o resultado.** `try` tenta a consulta, `catch` registra uma mensagem de falha e `finally` encerra o carregamento, com sucesso ou erro.
+6. **Renderizar cada situação.** Os blocos `{#if}` mostram carregamento, erro ou lista vazia. O bloco `{#each}` apresenta um cartão para cada tarefa; `(tarefa.id)` fornece a chave única de cada item.
+7. **Remover os exemplos antigos.** `primeiraTarefa` e `segundaTarefa` deixaram de ser necessárias. O teste de duas instâncias do cartão passou a fornecer seus próprios exemplos, sem exigir dados fixos na página real.
+8. **Validar antes do commit.** Foram executados os testes do projeto, a verificação de tipos, o build e cinco cenários no navegador, incluindo uma consulta ao json-server real.
+
+### O que significam os termos?
+
+| Termo | Significado nesta tela |
+| --- | --- |
+| `Tarefa[]` | Lista de objetos com o formato Tarefa definido pela equipe. |
+| `$state` | Estado reativo do Svelte 5: alterar seu valor atualiza a tela. |
+| `onMount` | Executa a busca quando a página aparece no navegador; não roda na renderização inicial do servidor. |
+| `async` e `await` | Permitem esperar uma operação assíncrona, como a resposta da API, sem bloquear a interface. |
+| `try`, `catch`, `finally` | Organizam a tentativa, o tratamento da falha e o encerramento do carregamento. |
+| `{#if}` | Escolhe o trecho de interface correspondente à situação atual. |
+| `{#each}` | Repete o componente para cada elemento da lista. |
+| Chave `(tarefa.id)` | Identifica cada cartão de forma estável; o índice da lista não substitui o ID. |
+| Prop `tarefa` | Dado entregue pela página ao cartão, que apenas o apresenta. |
 
 ### Como testar
 
-A preencher.
+Na raiz do projeto, execute:
+
+```sh
+npm test
+npm run check
+npm run build
+```
+
+No Windows PowerShell, use `npm.cmd` quando necessário.
+
+Resultados nesta implementação: **13 testes aprovados**, nenhuma falha; **zero erros e zero avisos** na verificação Svelte/TypeScript; **build concluído**.
+
+Para conferir a funcionalidade:
+
+1. Em um terminal, execute `npx --no-install json-server db.json`.
+2. Em outro terminal, execute `npm run dev`.
+3. Abra a página inicial no endereço informado pelo Vite.
+4. Confira um cartão por tarefa retornada por `GET /tarefas`. Com o banco inicial, são cinco cartões, com os dados correspondentes.
+5. Clique no título de um cartão: ele deve apontar para `/tarefas/` seguido do ID. A conclusão da tela de detalhe pertence à #8.
+6. Pare a API e recarregue a página: deve aparecer a mensagem de falha, sem apresentar uma lista vazia como se fosse uma consulta bem-sucedida.
+7. Ligue a API novamente e recarregue para repetir a consulta.
+
+A validação em Chromium verificou cinco cenários: API real com cinco cartões e links corretos; resposta atrasada mostrando carregamento; resposta vazia; erro HTTP 503; e falha de rede. Todos passaram. No cenário com API real houve uma consulta a `/tarefas` ao montar a página. Os outros cenários usaram respostas controladas no navegador, sem alterar o banco do repositório.
+
+A suíte `npm test` verifica o módulo da API, as rotas e o cartão. Os cinco cenários acima foram verificações funcionais adicionais no navegador; não são cinco novos casos dessa suíte. Como a busca ocorre em `onMount`, os cartões aparecem após a execução do JavaScript no navegador, não no HTML inicial retornado pelo servidor.
+
+### Dificuldades e soluções
+
+**Importação da API.** O caminho `#lib/api` funcionou no navegador, mas não foi resolvido pela verificação de TypeScript na configuração atual. O import passou a usar `../lib/api`, sem alterar a configuração ou instalar bibliotecas.
+
+**Teste ligado à demonstração antiga.** Um teste da #7 exigia que a página inicial mostrasse exatamente dois exemplos fixos. Ele foi adaptado para renderizar diretamente duas instâncias do cartão com dados próprios. A reutilização continua verificada, enquanto a lista real pode ter qualquer quantidade de tarefas.
+
+**Distinguir lista vazia de falha.** Uma resposta bem-sucedida com `[]` mostra “Nenhuma tarefa encontrada”. Falhas de rede ou HTTP mostram um alerta; ambas encerram o carregamento corretamente.
+
+**Verificar o código que roda no navegador.** Uma requisição HTTP isolada não executa `onMount`. Por isso, a consulta e os estados da tela foram testados em Chromium, além dos testes existentes do projeto.
 
 ### GitHub
 
-- Issue: [#11 - Criar a tela de lista de tarefas](https://github.com/crispolas/ASTRA/issues/11)
-- Commit ou Pull Request: A preencher.
+- Issue: [#11 - Criar a tela de lista de tarefas](https://github.com/crispolas/ASTRA/issues/11).
+- Branch: `feat/issue-11-lista-tarefas`.
+- Commit: mensagem `Implementa lista de tarefas da API para a issue 11`; consulte o identificador com `git log -1 --oneline` nessa branch.
+- PR e integração na main: pendentes.
 
 ---
 

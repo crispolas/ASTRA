@@ -3,7 +3,6 @@ import { after, before, test } from 'node:test';
 import { createServer } from 'vite';
 
 let server;
-let baseUrl;
 let TarefaCard;
 let render;
 
@@ -13,9 +12,6 @@ before(async () => {
 		server: { host: '127.0.0.1', port: 0 }
 	});
 	await server.listen();
-	const address = server.httpServer?.address();
-	assert(address && typeof address !== 'string');
-	baseUrl = `http://127.0.0.1:${address.port}`;
 	({ default: TarefaCard } = await server.ssrLoadModule('/src/lib/components/TarefaCard.svelte'));
 	({ render } = await server.ssrLoadModule('svelte/server'));
 });
@@ -73,13 +69,14 @@ test('o cartão preserva a prop, escapa texto e codifica o identificador do link
 	assert(html.includes('href="/tarefas/a%2Fb%3Fc"'));
 });
 
-test('a página demonstra duas instâncias com tarefas diferentes', async () => {
-	const response = await fetch(`${baseUrl}/`);
-	const html = await response.text();
-	assert.equal(response.status, 200);
-	assert.equal((html.match(/<article\b/g) ?? []).length, 2);
-	assert(html.includes('Criar o repositório'));
-	assert(html.includes('Subir o json-server'));
-	assert(html.includes('href="/tarefas/1"'));
-	assert(html.includes('href="/tarefas/2"'));
+test('o mesmo componente pode apresentar duas tarefas diferentes', () => {
+	const primeira = { ...exemplo, id: '1', titulo: 'Primeira tarefa' };
+	const segunda = { ...exemplo, id: '2', titulo: 'Segunda tarefa' };
+	const primeiroHtml = render(TarefaCard, { props: { tarefa: primeira } }).body;
+	const segundoHtml = render(TarefaCard, { props: { tarefa: segunda } }).body;
+	assert(primeiroHtml.includes('Primeira tarefa'));
+	assert(primeiroHtml.includes('href="/tarefas/1"'));
+	assert(segundoHtml.includes('Segunda tarefa'));
+	assert(segundoHtml.includes('href="/tarefas/2"'));
+	assert(!segundoHtml.includes('Primeira tarefa'));
 });
