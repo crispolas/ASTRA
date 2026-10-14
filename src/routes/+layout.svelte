@@ -19,7 +19,7 @@
                 <a href="/projetos">Projetos</a> 
             </li>
             <li>
-                <a href="/tarefas/[id]">Tarefas</a>
+                <a href="/">Tarefas</a>
             </li>
         </ul>
     </nav>

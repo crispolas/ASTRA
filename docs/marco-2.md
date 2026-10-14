@@ -50,7 +50,7 @@ npm run check
 npm run build
 ```
 
-`npm test` verifica as rotas, `npm run check` procura erros de Svelte e TypeScript e `npm run build` gera o build. Registre os resultados reais na issue correspondente.
+`npm test` executa as suítes automatizadas, `npm run check` procura erros de Svelte e TypeScript e `npm run build` gera o build. Registre os resultados reais na issue correspondente.
 
 ## Ordem recomendada de integração
 
@@ -103,24 +103,118 @@ Os campos das tarefas ainda não documentadas permanecem **A preencher**. Não d
 
 ## Issue 7 - Criar o componente de cartão de tarefa
 
-**Responsável:** A preencher
+**Responsável:** Gabriel Crispim Galvão.
 
 ### Objetivo
 
-Disponibilizar um componente reutilizável para representar uma tarefa.
+Criar um cartão reutilizável que recebe uma `Tarefa` por prop e mostra seus dados, conforme a Aula 10. Demonstrar o mesmo componente duas vezes na página inicial, com tarefas diferentes.
 
 ### O que foi feito
 
-A preencher.
+Foi criado `src/lib/components/TarefaCard.svelte`. O cartão mostra título, descrição, status, prioridade, responsável e prazo. O título contém um link para `/tarefas/:id`, usando a rota criada pelo Felipe.
+
+A página inicial usa duas instâncias do componente com exemplos fixos. Essa demonstração pertence à issue #7: ela não consulta a API e não implementa a listagem da issue #11. Quando a lista for desenvolvida, os exemplos poderão ser substituídos pelos dados reais.
+
+O cartão apenas lê os dados recebidos. Ele não altera o status nem guarda uma cópia própria do estado da tarefa. Não há botão de conclusão nesta implementação de leitura.
+
+Arquivos envolvidos:
+
+- `src/lib/components/TarefaCard.svelte`: componente, marcação HTML e estilos.
+- `src/routes/+page.svelte`: dois exemplos fixos para demonstrar a reutilização.
+- `tests/tarefa-card.test.mjs`: três testes do cartão e da demonstração.
+- `tests/routes.test.mjs`: ajuste das verificações de títulos para aceitar atributos HTML gerados pelo Svelte.
+- `docs/marco-2.md`: este registro.
+
+O banco, os tipos existentes, as dependências, as rotas de detalhe e o layout não foram alterados. A implementação está na branch `feat/issue-7-cartao-tarefa`; sua integração à `main` ainda depende de PR e merge.
+
+### Passo a passo: o que foi feito, como e por quê
+
+1. **Partir da versão atualizada da equipe.** Foi criada a branch `feat/issue-7-cartao-tarefa` a partir da `main` atualizada, que já contém as rotas do Felipe e o layout do Brenno. Uma branch separa a implementação até a revisão.
+2. **Reutilizar o contrato existente.** O componente importa `Tarefa` de `src/tipos.ts`. Esse tipo descreve os campos obrigatórios e evita criar outro formato incompatível com a API.
+3. **Definir a entrada do cartão.** A interface `Props` declara uma propriedade obrigatória `tarefa: Readonly<Tarefa>`. `let { tarefa }: Props = $props()` recebe essa propriedade no Svelte 5. `Readonly` faz o TypeScript rejeitar atribuições diretas aos campos; não é um congelamento automático do objeto em execução.
+4. **Mostrar os dados recebidos.** As chaves dentro do HTML, como `{tarefa.titulo}`, colocam os valores da tarefa na tela. Os códigos de status e prioridade são convertidos para rótulos legíveis, como “Em revisão” e “Média”.
+5. **Criar o link e apresentar o prazo.** O título aponta para `/tarefas/` seguido do identificador. `encodeURIComponent` evita que caracteres especiais do identificador mudem a estrutura da URL. O prazo permanece em formato ISO no atributo `datetime` e aparece como dia/mês/ano na tela, sem conversão de fuso horário.
+6. **Estilizar o cartão.** O bloco `<style>` define borda, espaçamento e disposição dos campos. O CSS é limitado pelo Svelte ao componente. O título é um link acessível por teclado, com indicação de foco.
+7. **Demonstrar a reutilização.** A página importa o cartão pelo alias `#lib` e o usa duas vezes: `<TarefaCard tarefa={primeiraTarefa} />` e `<TarefaCard tarefa={segundaTarefa} />`. Os dados ficam na página, que é o componente pai; o cartão é o filho que recebe a prop.
+8. **Verificar e registrar.** Foram executados os testes do cartão, os testes de rotas, a verificação de Svelte/TypeScript e o build. Depois, a alteração foi preparada para um commit apenas da issue #7.
+
+### O que significam os termos usados?
+
+| Termo | Significado nesta tarefa |
+| --- | --- |
+| Componente | Arquivo reutilizável que reúne a apresentação e a lógica do cartão. |
+| Prop | Dado entregue por um componente pai ao filho; aqui, uma tarefa inteira. |
+| Pai e filho | A página é o pai; cada `TarefaCard` utilizado nela é um filho. |
+| Tipo/interface | Descrição dos campos e valores que o TypeScript aceita. |
+| `$props()` | Recurso do Svelte 5 para receber as propriedades do componente. |
+| `Readonly<Tarefa>` | Versão do tipo que não permite atribuir diretamente novos valores a seus campos pelo TypeScript. |
+| `satisfies` | Confere que o mapa de rótulos corresponde aos valores possíveis do tipo, sem perder os tipos específicos. |
+| `#lib` | Atalho já configurado no projeto para importar arquivos de `src/lib`. |
+| Instância | Cada uso separado do mesmo componente; dois cartões são duas instâncias. |
+| Build | Geração dos arquivos da aplicação para produção; ajuda a detectar falhas de compilação. |
+| Commit | Registro local das alterações; não envia ao GitHub e não integra automaticamente à `main`. |
+
+Exemplo de uso, depois de importar `TarefaCard` e obter um objeto `tarefa` compatível com o contrato:
+
+```svelte
+<TarefaCard tarefa={tarefa} />
+```
 
 ### Como testar
 
-A preencher.
+Na raiz do projeto, execute:
+
+```sh
+node --test tests/tarefa-card.test.mjs
+npm test
+npm run check
+npm run build
+```
+
+No PowerShell, use `npm.cmd` se a política de execução bloquear `npm`.
+
+Resultados verificados nesta implementação:
+
+- Testes do cartão: **3 aprovados**, nenhum falhou. Verificam dados, todos os rótulos de status/prioridade, prazo, link, preservação da prop, escape de texto e duas instâncias diferentes na página.
+- Testes existentes das rotas: **5 aprovados**, nenhum falhou.
+- Svelte/TypeScript: **zero erros e zero avisos**.
+- Build: **concluído**. O adapter-auto continua sem um destino de deploy de produção configurado; isso não impede esta demonstração local.
+
+Atualmente, `npm test` executa todas as suítes `*.test.mjs`, incluindo os testes do cartão, das rotas e do módulo da API.
+
+Para conferir no seu computador:
+
+1. Execute `npm run dev`.
+2. Abra a página inicial no endereço informado pelo Vite.
+3. Confira dois cartões: “Criar o repositório”, de Ana, e “Subir o json-server”, de Bruno.
+4. Confira seus status, prioridades, descrições e prazo “06/10/2026”.
+5. Clique no título: o endereço deve ser `/tarefas/1` ou `/tarefas/2`. A tela de detalhe ainda é a página provisória da issue #9.
+6. Use Tab para alcançar os links e verificar a indicação de foco.
+
+A demonstração usa dados fixos e funciona sem iniciar o json-server. A renderização da página foi verificada por HTTP nos testes; as etapas visuais acima são orientações para a conferência no navegador.
+
+### Dificuldades e soluções
+
+**Receber dados sem mudar a tarefa.** O cartão usa a prop diretamente para leitura. Não foi criada uma variável de estado com uma cópia da tarefa, nem uma atribuição a `tarefa.status`. Essa separação segue a regra da professora: o dono do estado altera o dado.
+
+**Reutilizar o cartão sem antecipar a issue #11.** A solução foi demonstrar dois exemplos fixos, sem `fetch`, integração com a API ou implementação da lista dinâmica.
+
+**Testar componentes no mesmo ambiente de execução do Svelte.** A primeira tentativa de renderização misturou o runtime importado diretamente pelo Node com o componente carregado pelo Vite, causando um erro interno. O teste passou a carregar também `svelte/server` pelo Vite, mantendo os dois no mesmo ambiente.
+
+**Preservar os testes de rotas com CSS.** Os testes antigos esperavam literalmente `<h1>Tarefas</h1>`. Com estilos, o Svelte adicionou uma classe ao elemento e o teste falhou, embora o título estivesse correto. As verificações foram ajustadas para aceitar atributos no `h1` e no `h2`, mantendo a exigência do texto e dos códigos HTTP originais.
+
+### Para continuar
+
+Na issue #11, importar este componente, buscar as tarefas pelo módulo da API e usar cada identificador como chave da lista, conforme a professora orienta. A consulta à API e a lista dinâmica ainda não fazem parte deste commit.
+
+Felipe também poderá reutilizar o cartão na issue #14, passando cada tarefa do projeto pela prop `tarefa`.
 
 ### GitHub
 
-- Issue: [#7 - Criar o componente de cartão de tarefa](https://github.com/crispolas/ASTRA/issues/7)
-- Commit ou Pull Request: A preencher.
+- Issue: [#7 - Criar o componente de cartão de tarefa](https://github.com/crispolas/ASTRA/issues/7).
+- Branch: `feat/issue-7-cartao-tarefa`.
+- Commit desta implementação: mensagem `Cria cartão de tarefa reutilizável para a issue 7`; consulte seu identificador com `git log -1 --oneline` nessa branch.
+- Pull Request e integração na `main`: pendentes.
 
 ---
 
@@ -245,7 +339,7 @@ As quatro primeiras páginas devem mostrar seus títulos provisórios. O último
 
 ## Issue 10 - Criar o módulo de acesso à API (leitura)
 
-**Responsável:** A preencher
+**Responsável:** Felipe Borges Barros.
 
 ### Objetivo
 
@@ -253,16 +347,42 @@ Disponibilizar acesso tipado de leitura a tarefas e projetos para as telas do ma
 
 ### O que foi feito
 
-A preencher.
+Foi criado `src/lib/api.ts`, que centraliza as consultas de leitura à API local em `http://localhost:3000`. O módulo exporta quatro funções assíncronas e tipadas:
+
+- `listarTarefas()` consulta `GET /tarefas`;
+- `buscarTarefa(id)` consulta `GET /tarefas/:id`;
+- `listarProjetos()` consulta `GET /projetos`;
+- `buscarProjeto(id)` consulta `GET /projetos/:id?_embed=tarefas`.
+
+O tipo `ProjetoComTarefas` foi adicionado a `src/tipos.ts` para representar o projeto retornado pela última consulta. Ele contém todos os campos de `Projeto` e um vetor `tarefas` do tipo `Tarefa[]`.
+
+Todas as funções usam o mesmo helper interno para executar o `fetch`, converter o JSON para o tipo esperado e lançar um erro com o status HTTP quando a API responde sem sucesso. Assim, as telas podem importar as funções sem repetir URLs ou tratamento básico de resposta.
+
+O arquivo `tests/api.test.mjs` verifica os quatro endpoints, os dados retornados e o tratamento de erro. O comando `npm test` foi ampliado para executar todas as suítes `*.test.mjs`, incluindo esses testes e os testes existentes.
 
 ### Como testar
 
-A preencher.
+Na raiz do projeto, execute:
+
+```sh
+npm test
+npm run check
+npm run build
+```
+
+Para testar a API manualmente, inicie o json-server em outro terminal:
+
+```sh
+npx --no-install json-server db.json
+```
+
+As funções podem ser importadas de `$lib/api`. A busca de projeto deve acessar um endereço como `http://localhost:3000/projetos/1?_embed=tarefas` e devolver o projeto com a propriedade `tarefas`.
 
 ### GitHub
 
 - Issue: [#10 - Criar o módulo de acesso à API (leitura)](https://github.com/crispolas/ASTRA/issues/10)
-- Commit ou Pull Request: A preencher.
+- Branch: `feat/issue-10-api-leitura`.
+- Pull Request: [#52 - Cria módulo de leitura da API](https://github.com/crispolas/ASTRA/pull/52).
 
 ---
 
