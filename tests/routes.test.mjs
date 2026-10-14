@@ -35,8 +35,8 @@ for (const [path, heading, subheading] of pages) {
 		const html = await response.text();
 
 		assert.equal(response.status, 200);
-		assert.match(html, new RegExp(`<h1>${heading}</h1>`));
-		assert.match(html, new RegExp(`<h2>${subheading}</h2>`));
+		assert.match(html, new RegExp(`<h1(?:\\s[^>]*)?>${heading}</h1>`));
+		assert.match(html, new RegExp(`<h2(?:\\s[^>]*)?>${subheading}</h2>`));
 	});
 }
 
