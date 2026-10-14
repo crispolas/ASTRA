@@ -381,7 +381,7 @@ As funções podem ser importadas de `$lib/api`. A busca de projeto deve acessar
 
 - Issue: [#10 - Criar o módulo de acesso à API (leitura)](https://github.com/crispolas/ASTRA/issues/10)
 - Branch: `feat/issue-10-api-leitura`.
-- Pull Request: pendente.
+- Pull Request: [#52 - Cria módulo de leitura da API](https://github.com/crispolas/ASTRA/pull/52).
 
 ---
 
