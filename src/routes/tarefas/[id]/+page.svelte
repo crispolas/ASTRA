@@ -3,10 +3,7 @@
 <script lang="ts">
   import type { PageData } from './$types';
 
-  // No Svelte 5 (Runes), utiliza-se $props() em vez de 'export let'
   let { data }: { data: PageData } = $props();
-
-  // Reatividade para extrair a tarefa dos dados recebidos
   let tarefa = $derived(data.tarefa);
 </script>
 
@@ -23,7 +20,11 @@
       <h2>Descrição</h2>
       <p>{tarefa.descricao || 'Nenhuma descrição fornecida.'}</p>
 
-      <div class="meta-info">
+      <div class="grid-info">
+        <p><strong>Prioridade:</strong> {tarefa.prioridade || 'Não informada'}</p>
+        <p><strong>Responsável:</strong> {tarefa.responsavel || 'Não atribuído'}</p>
+        <p><strong>Prazo:</strong> {tarefa.prazo || 'Sem prazo'}</p>
+        <p><strong>ID do Projeto:</strong> {tarefa.projetoId ?? 'N/A'}</p>
         <p><strong>ID da Tarefa:</strong> {tarefa.id}</p>
       </div>
     </div>
@@ -57,16 +58,20 @@
     border-radius: 8px;
     margin-top: 1.5rem;
   }
+  .grid-info {
+    margin-top: 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    border-top: 1px solid #333;
+    padding-top: 1rem;
+    font-size: 0.95rem;
+  }
   .badge {
     background-color: #2563eb;
     color: #fff;
     padding: 0.25rem 0.75rem;
     border-radius: 9999px;
     font-size: 0.875rem;
-  }
-  .meta-info {
-    margin-top: 1rem;
-    font-size: 0.9rem;
-    color: #aaa;
   }
 </style>

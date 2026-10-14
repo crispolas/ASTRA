@@ -1,27 +1,24 @@
 import { buscarTarefa } from '../../../lib/api';
-import db from '../../../../db.json';
 import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ params }) => {
-    const idParam = params.id;
-    let tarefa = null;
+  const idParam = params.id;
 
-    try {
-        tarefa = await buscarTarefa(idParam);
-    } catch (err) {
-        console.warn('API não respondeu, usando fallback local db.json');
-    }
-
-    if (!tarefa && db.tarefas) {
-        tarefa = db.tarefas.find((t) => String(t.id) === String(idParam));
-    }
+  try {
+    const tarefa = await buscarTarefa(idParam);
 
     if (!tarefa) {
-        throw error(404, 'Tarefa não encontrada');
+      throw error(404, 'Tarefa não encontrada');
     }
 
     return {
-        tarefa
+      tarefa
     };
+  } catch (err) {
+    if (err && typeof err === 'object' && 'status' in err) {
+      throw err;
+    }
+    throw error(404, 'Tarefa não encontrada');
+  }
 };
