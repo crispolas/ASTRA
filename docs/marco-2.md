@@ -126,24 +126,25 @@ A preencher.
 
 ## Issue 8 - Criar a tela de detalhe da tarefa
 
-**Responsável:** A preencher
+**Responsável:** Eurípedes Rocha
 
 ### Objetivo
-
 Consultar e exibir os dados da tarefa identificada na rota de detalhe.
 
 ### O que foi feito
-
-A preencher.
+- Criação e estruturação da rota dinâmica `/tarefas/[id]` no SvelteKit 5 (`src/routes/tarefas/[id]/+page.svelte` e `+page.ts`).
+- Implementação da busca dinâmica de dados de tarefas a partir do arquivo `db.json` com base no parâmetro `id` da URL.
+- Configuração de tratamento para tarefas não encontradas (redirecionamento/exibição da página de erro 404).
 
 ### Como testar
-
-A preencher.
+1. Executar o servidor com `npm run dev`.
+2. Acessar `http://localhost:5174/tarefas/1` no navegador.
+3. Verificar se o título ("Criar o repositório"), a descrição, a badge de status ("concluída") e o ID da tarefa são exibidos corretamente.
+4. Acessar uma rota com ID inexistente (ex: `/tarefas/999`) para validar a tela de erro 404.
 
 ### GitHub
-
 - Issue: [#8 - Criar a tela de detalhe da tarefa](https://github.com/crispolas/ASTRA/issues/8)
-- Commit ou Pull Request: A preencher.
+- Commit ou Pull Request: Branch `8-criar-a-tela-de-detalhe-da-tarefa`
 
 ---
 
