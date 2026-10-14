@@ -374,8 +374,8 @@ A preencher
 ### #12 — Criar o layout base e a navegação
 
 **Issue:** [#12 — Criar o layout base e a navegação](https://github.com/crispolas/ASTRA/issues/12)\
-**Responsável:** A preencher\
-**Status:** A preencher\
+**Responsável:** Brenno Milhomem Farias
+**Status:** Implementeado.
 **Dependências:** #9.
 
 #### Resultado esperado
@@ -384,37 +384,41 @@ Disponibilizar layout compartilhado e navegação entre tarefas e projetos.
 
 #### O que foi implementado
 
-A preencher
+Um layout de navegação entre as páginas do código
 
 #### Arquivos criados ou modificados
 
-A preencher
+src/routes/+layout.svelte 
+src/routes/+page.svelte 
+docs/marco-2.md
 
 #### Passo a passo técnico da implementação
 
-A preencher
+Criação do arquivo de layout raiz src/routes/+layout.svelte  para encapsular a estrutura comum da aplicação.
+
+Adição da barra de navegação contendo os links para as rotas do sistema.
+
+Um link com o diretório das páginas que serão acessadas.
 
 #### Como executar e testar
 
-A preencher
+Após iniciar a será possível ver uma tela inicial com Página inicial, Projetos e Tarefas respectivamente e ao clicar os mesmos eles devem lhe redirecionar para uma nova tela.
 
 #### Decisões técnicas e justificativas
 
-A preencher
-
-#### Problemas encontrados e soluções
-
-A preencher
+Layout Compartilhado com +layout.svelte: Adotado o padrão nativo do SvelteKit para evitar duplicar componentes de interface (como navbar e header) em cada subpágina, facilitando a manutenção e garantindo consistência visual.
 
 #### Orientações para o próximo integrante
 
-A preencher
+Elementos compartilhados: O cabeçalho, o logotipo e a barra de menu estão definidos no arquivo src/routes/+layout.svelte. Tudo o que for inserido fora da tag <slot /> (ou {@render children()}) permanecerá visível em todas as telas da aplicação.
 
-Ao atualizar este campo: explicar quais elementos são compartilhados, onde cada página é renderizada e como acrescentar links sem duplicar o layout.
+Onde cada página é renderizada: O SvelteKit injeta o conteúdo de cada página individual (+page.svelte de cada pasta dentro de src/routes/) exatamente onde a tag <slot /> (ou {@render children()}) está posicionada no +layout.svelte.
+
+Como acrescentar links sem duplicar o layout: Para adicionar uma nova rota ao menu, basta criar a pasta correspondente em src/routes/sua-nova-rota/+page.svelte e incluir a tag <a href="/sua-nova-rota"> dentro do arquivo +layout.svelte. Não é necessário importar o layout ou a navbar dentro da nova página criada.
 
 #### Referência ao commit ou Pull Request
 
-A preencher
+[Adicionado layout e navegacao base- #49](https://github.com/crispolas/ASTRA/pull/49)
 
 ### #13 — Criar a tela de lista de projetos
 
