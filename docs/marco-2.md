@@ -50,7 +50,7 @@ npm run check
 npm run build
 ```
 
-`npm test` verifica as rotas, `npm run check` procura erros de Svelte e TypeScript e `npm run build` gera o build. Registre os resultados reais na issue correspondente.
+`npm test` executa as suítes automatizadas, `npm run check` procura erros de Svelte e TypeScript e `npm run build` gera o build. Registre os resultados reais na issue correspondente.
 
 ## Ordem recomendada de integração
 
@@ -180,7 +180,7 @@ Resultados verificados nesta implementação:
 - Svelte/TypeScript: **zero erros e zero avisos**.
 - Build: **concluído**. O adapter-auto continua sem um destino de deploy de produção configurado; isso não impede esta demonstração local.
 
-`npm test` continua executando apenas a suíte de rotas; os três testes do cartão são executados pelo primeiro comando. Não foi alterado o `package.json`.
+Atualmente, `npm test` executa todas as suítes `*.test.mjs`, incluindo os testes do cartão, das rotas e do módulo da API.
 
 Para conferir no seu computador:
 
@@ -338,7 +338,7 @@ As quatro primeiras páginas devem mostrar seus títulos provisórios. O último
 
 ## Issue 10 - Criar o módulo de acesso à API (leitura)
 
-**Responsável:** A preencher
+**Responsável:** Felipe Borges Barros.
 
 ### Objetivo
 
@@ -346,16 +346,42 @@ Disponibilizar acesso tipado de leitura a tarefas e projetos para as telas do ma
 
 ### O que foi feito
 
-A preencher.
+Foi criado `src/lib/api.ts`, que centraliza as consultas de leitura à API local em `http://localhost:3000`. O módulo exporta quatro funções assíncronas e tipadas:
+
+- `listarTarefas()` consulta `GET /tarefas`;
+- `buscarTarefa(id)` consulta `GET /tarefas/:id`;
+- `listarProjetos()` consulta `GET /projetos`;
+- `buscarProjeto(id)` consulta `GET /projetos/:id?_embed=tarefas`.
+
+O tipo `ProjetoComTarefas` foi adicionado a `src/tipos.ts` para representar o projeto retornado pela última consulta. Ele contém todos os campos de `Projeto` e um vetor `tarefas` do tipo `Tarefa[]`.
+
+Todas as funções usam o mesmo helper interno para executar o `fetch`, converter o JSON para o tipo esperado e lançar um erro com o status HTTP quando a API responde sem sucesso. Assim, as telas podem importar as funções sem repetir URLs ou tratamento básico de resposta.
+
+O arquivo `tests/api.test.mjs` verifica os quatro endpoints, os dados retornados e o tratamento de erro. O comando `npm test` foi ampliado para executar todas as suítes `*.test.mjs`, incluindo esses testes e os testes existentes.
 
 ### Como testar
 
-A preencher.
+Na raiz do projeto, execute:
+
+```sh
+npm test
+npm run check
+npm run build
+```
+
+Para testar a API manualmente, inicie o json-server em outro terminal:
+
+```sh
+npx --no-install json-server db.json
+```
+
+As funções podem ser importadas de `$lib/api`. A busca de projeto deve acessar um endereço como `http://localhost:3000/projetos/1?_embed=tarefas` e devolver o projeto com a propriedade `tarefas`.
 
 ### GitHub
 
 - Issue: [#10 - Criar o módulo de acesso à API (leitura)](https://github.com/crispolas/ASTRA/issues/10)
-- Commit ou Pull Request: A preencher.
+- Branch: `feat/issue-10-api-leitura`.
+- Pull Request: pendente.
 
 ---
 

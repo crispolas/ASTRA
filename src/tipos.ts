@@ -21,4 +21,8 @@ export interface Tarefa {
   prazo: string
 }
 
+export interface ProjetoComTarefas extends Projeto {
+  tarefas: Tarefa[]
+}
+
 export type NovaTarefa = Omit<Tarefa, 'id'>
