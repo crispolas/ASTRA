@@ -410,7 +410,7 @@ A preencher.
 
 ## Issue 12 - Criar o layout base e a navegação
 
-**Responsável:** A preencher
+**Responsável:** Brenno Milhomem Farias
 
 ### Objetivo
 
@@ -418,11 +418,15 @@ Disponibilizar layout compartilhado e navegação entre tarefas e projetos.
 
 ### O que foi feito
 
-A preencher.
+Criado e configurado o arquivo src/routes/+layout.svelte para servir de layout base compartilhado para todas as páginas da aplicação.   
+Implementada a barra de navegação no cabeçalho (<header>) com links interativos para a Página Inicial (/), a lista de Projetos (/projetos) e Tarefas. 
 
 ### Como testar
 
-A preencher.
+Inicie o servidor de desenvolvimento do SvelteKit no terminal: npm run dev
+Acesse a aplicação no navegador (http://localhost:5173).
+Verifique se o cabeçalho com o menu de navegação aparece no topo da página.   
+Clique nos links do menu ("Página inicial", "Projetos" e "Tarefas") e confirme que a navegação entre as rotas ocorre corretamente, mantendo o cabeçalho visível em todas as telas.
 
 ### GitHub
 
@@ -433,7 +437,7 @@ A preencher.
 
 ## Issue 13 - Criar a tela de lista de projetos
 
-**Responsável:** A preencher
+**Responsável:** Brenno Milhomem Farias
 
 ### Objetivo
 
@@ -441,11 +445,23 @@ Consultar e apresentar os projetos da API com acesso às respectivas páginas.
 
 ### O que foi feito
 
-A preencher.
+Implementado o carregamento de dados (load) consumindo a API local (json-server) na porta 3000.   
+
+Desenvolvida a interface da lista de projetos utilizando a sintaxe de Runes ($props()) do Svelte 5 e estilização em grid.
+
+Adicionado tratamento de falhas na requisição para evitar travamentos de tela em caso de indisponibilidade da API.
+
+Criados os links direcionando cada projeto para a sua respectiva rota de detalhes (/projetos/[id]).
 
 ### Como testar
 
-A preencher.
+Inicie a API local executando no terminal:Bashnpx json-server --watch db.json --port 3000
+
+Em um segundo terminal, inicie o servidor de desenvolvimento: npm run dev
+
+Acesse http://localhost:5173/projetos (ou a porta correspondente, ex.: 5174) no navegador.
+
+Verifique se a lista de projetos cadastrados no db.json é exibida na tela.Clique em "Ver detalhes do projeto" em qualquer um dos itens para validar o redirecionamento.
 
 ### GitHub
 
