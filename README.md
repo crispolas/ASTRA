@@ -16,6 +16,7 @@ SvelteKit com TypeScript.
 ## Documentação técnica
 
 - [Diário técnico do Marco 2](docs/marco-2.md): dependências, registros de implementação, testes e orientações para continuidade entre integrantes.
+- [Diário técnico do Marco 3](docs/marco-3.md): divisão das tarefas, cadastro e edição, validação e acessibilidade dos formulários.
 
 ## Configuração do projeto
 
