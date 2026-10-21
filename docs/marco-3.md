@@ -297,7 +297,7 @@ A página é fornecida por `scripts/testar-formulario.mjs` e `tests/fixtures/Tar
 
 ## Issue 18 - Criar a tela de nova tarefa
 
-**Responsável:** Brenno Milhomem Farias.
+**Responsável:** Felipe Borges Barros.
 
 ### Objetivo
 
@@ -307,11 +307,32 @@ Depende da API de escrita #16 e do formulário #17 para concluir o fluxo; a estr
 
 ### O que foi feito
 
-A preencher.
+Criada a rota `src/routes/tarefas/nova/+page.svelte`, que reaproveita o `TarefaFormulario` da #17. Ao enviar, a tela chama `criarTarefa` da #16 e, depois da confirmação da API, navega para a lista (`/`) com `goto`. Se a API falhar, a navegação não ocorre e o formulário mostra a mensagem de erro.
+
+O projeto pré-selecionado vem do parâmetro `projeto` da URL (`/tarefas/nova?projeto=ID`), lido com `page.url.searchParams` e passado ao formulário em `valoresIniciais`. Sem o parâmetro, o campo abre em "Selecione um projeto".
+
+Foram adicionados links "Nova tarefa" na lista de tarefas (`/`) e na página do projeto, esta com `?projeto=ID`.
+
+O segmento `nova` não é interpretado como ID: o SvelteKit dá prioridade à rota estática `tarefas/nova` sobre a dinâmica `tarefas/[id]`, sem tratamento extra no código.
+
+### Como foi feito e por quê
+
+1. **Criar a rota pela pasta.** O SvelteKit usa roteamento por pastas: `src/routes/tarefas/nova/+page.svelte` vira `/tarefas/nova`. Começamos só com a casca (título e link Voltar) para confirmar que a rota existia antes de acrescentar lógica. Como `nova` é uma pasta estática, tem prioridade sobre `tarefas/[id]`, e por isso não é lida como ID.
+2. **Reaproveitar o formulário.** A tela monta o `TarefaFormulario` da #17 com `aoEnviar` e `textoBotao="Criar tarefa"`, em vez de criar outro formulário. A mesma peça atende criação, edição e a validação da #20. O formulário só entrega os dados; quem decide o destino deles é a tela.
+3. **Gravar e navegar.** `salvar` chama `await criarTarefa(dados)` (POST, que gera o `id` no json-server) e só depois `await goto('/')`. Se a API falhar, `criarTarefa` lança erro, o `goto` não roda e o `catch` do formulário mostra a mensagem. Por isso a tela não precisa de `try/catch`. A lista fica em `/`, que é o destino pedido pela issue.
+4. **Pré-selecionar o projeto pela URL.** A página do projeto aponta para `/tarefas/nova?projeto=ID`. A tela lê o parâmetro com `page.url.searchParams.get('projeto') ?? ''` e o passa em `valoresIniciais`. O `?? ''` cobre o acesso direto, sem parâmetro, para o seletor abrir em "Selecione um projeto". O objeto é criado uma única vez no `<script>`, e não dentro do markup, para o `$effect` do formulário não redefinir o que o usuário digitou.
+5. **Adicionar os links.** "Nova tarefa" na lista (sem parâmetro) e na página do projeto (com `?projeto=ID`), para a tela ser alcançável pela navegação.
+6. **Importar a API por caminho relativo.** Ao rodar `npm run check`, o import `#lib/api` não foi resolvido pelo TypeScript, porque o alias `#lib/*` aponta para `./src/lib/*` e só funciona com a extensão completa, como em `.svelte`. As outras rotas usam caminho relativo, e a tela passou a fazer o mesmo (commit `8fc0299`).
 
 ### Como testar
 
-A preencher.
+Com a API (`npx --no-install json-server db.json`) e o `npm run dev` ligados:
+
+1. Em `/`, clique em "Nova tarefa", preencha, envie e confira que a tarefa aparece na lista.
+2. Abra um projeto em `/projetos`, clique em "Nova tarefa" e confira que o projeto já vem selecionado.
+3. Acesse `/tarefas/nova` direto e confira que o projeto não vem selecionado e que a tela abre como formulário, não como detalhe de tarefa.
+
+Os testes criam tarefas no `db.json`. Para repetir `npm test`, restaure com `git checkout db.json`.
 
 ### GitHub
 
@@ -322,7 +343,7 @@ A preencher.
 
 ## Issue 19 - Criar a tela de edição de tarefa
 
-**Responsável:** Eurípedes Rocha Neto.
+**Responsável:** Felipe Borges Barros
 
 ### Objetivo
 
@@ -332,11 +353,32 @@ Depende da API de escrita #16 e do formulário #17 para concluir o fluxo. A leit
 
 ### O que foi feito
 
-A preencher.
+Criada a rota `src/routes/tarefas/[id]/editar/`. O `+page.ts` busca a tarefa com `buscarTarefa(params.id)` e, se a API não a encontrar, lança `error(404, 'Tarefa não encontrada')`. O `+page.svelte` reaproveita o `TarefaFormulario` da #17, preenchido com `valoresIniciais={data.tarefa}`. Ao enviar, chama `atualizarTarefa` da #16 (PATCH) e, depois da confirmação da API, navega para o detalhe `/tarefas/ID` com `goto`. O formulário não envia o `id` no corpo da requisição, só na URL.
+
+Foi adicionado o link "Editar" na página de detalhe da tarefa.
+
+### Como foi feito e por quê
+
+1. **Rota dentro de `[id]`.** A pasta `src/routes/tarefas/[id]/editar/` gera `/tarefas/ID/editar`, e o ID chega em `params.id`. Fica ao lado da rota de detalhe que já existia.
+2. **Carregar a tarefa no `load`.** O `+page.ts` roda antes de a tela abrir e retorna `{ tarefa }`, que chega ao `+page.svelte` como `data`. Assim o formulário já nasce com os dados, sem estado de carregamento próprio. Usa `buscarTarefa`, que já existia no módulo da API, e importa por caminho relativo (quatro níveis até `src/lib/api`).
+3. **Tratar tarefa inexistente.** Quando a API responde 404, `buscarTarefa` lança erro. O `load` o converte em `error(404, 'Tarefa não encontrada')`, para o SvelteKit mostrar a página de erro em vez de um formulário vazio que, ao salvar, falharia.
+4. **Preencher o formulário.** `valoresIniciais={data.tarefa}` entrega a tarefa ao formulário da #17. Ele copia só os sete campos editáveis, então o `id` não entra no corpo do envio.
+5. **Gravar e voltar ao detalhe.** `salvar` chama `await atualizarTarefa(data.tarefa.id, dados)` (PATCH em `/tarefas/ID`, com o ID na URL) e depois `await goto('/tarefas/ID')`. Voltamos ao detalhe, e não à lista, porque quem edita quer ver o resultado; a rota de detalhe refaz o `load`, e os dados novos aparecem sem recarregar. Como na #18, o `await` impede a navegação quando a API falha.
+6. **Adicionar o link "Editar".** No detalhe, para a tela ser alcançável pela navegação.
 
 ### Como testar
 
-A preencher.
+Com a API e o `npm run dev` ligados:
+
+1. Abra `/tarefas/ID`, clique em "Editar" e confira que o formulário vem com os dados atuais.
+2. Altere um campo e salve. Confira que o detalhe mostra o valor novo e que a lista (`/`) também.
+3. Abra `/tarefas/9999/editar` e confira que aparece o erro 404.
+
+A edição altera o `db.json`. Para repetir `npm test`, restaure com `git checkout db.json`.
+
+### Observações
+
+- Ao abrir `/tarefas/ID/editar` com um ID que não existe (por exemplo `/tarefas/12/editar`), a tela mostra apenas "Página não encontrada / Erro 404", sem dizer que a tarefa não existe. O `load` da rota já lança `error(404, 'Tarefa não encontrada')`, mas o `src/routes/+error.svelte`, compartilhado por todas as rotas, usa um texto fixo e não exibe a mensagem recebida. O comportamento é o mesmo nas outras rotas e foi mantido fora do escopo da #19, para não alterar um arquivo comum sem combinar com a equipe. Ajuste previsto: exibir `page.error?.message` (e `page.status`) no `+error.svelte`.
 
 ### GitHub
 
@@ -347,7 +389,7 @@ A preencher.
 
 ## Issue 20 - Validar o formulário
 
-**Responsável:** Eurípedes Rocha Neto.
+**Responsável:** Felipe Borges Barros
 
 ### Objetivo
 
@@ -357,11 +399,44 @@ Aplicar a validação ao formulário compartilhado da #17, respeitando o contrat
 
 ### O que foi feito
 
-A preencher.
+Acrescentada a validação ao `src/lib/components/TarefaFormulario.svelte`, o mesmo formulário usado pelas telas de nova tarefa e de edição.
+
+Regras adotadas: **título** e **projeto** são obrigatórios. O título é validado com `trim`, então um valor só com espaços é recusado. Descrição, responsável e prazo continuam opcionais, porque o contrato de dados (`Tarefa`) não os exige.
+
+A função `validar` guarda uma mensagem por campo em `erros` e é chamada no envio. Se há erro, `aoEnviar` não é chamada e nada é gravado na API. A mensagem ("Informe o título." ou "Selecione um projeto.") aparece logo abaixo do campo, com `role="alert"`.
+
+Durante o envio, o estado `enviando` desabilita o botão, troca o texto para "Enviando..." e impede um segundo envio, inclusive por Enter. O `finally` libera o formulário no sucesso e na falha, para o usuário poder tentar de novo.
+
+A ligação formal entre mensagem e campo (`aria-describedby`, `aria-invalid`) fica para a #21.
+
+### Como foi feito e por quê
+
+1. **Validar no componente compartilhado.** A validação foi para o `TarefaFormulario`, e não para cada tela, porque criação e edição usam o mesmo formulário. Assim as duas telas ganham a regra de uma vez e não há duas cópias para manter.
+2. **Escolher os campos obrigatórios.** Título e projeto: o título identifica a tarefa, e o projeto a liga ao restante do sistema. Os demais campos seguem opcionais, porque o contrato não os exige e o doc pede para não presumir regras extras.
+3. **Guardar um erro por campo.** O estado `erros` tem uma chave por campo com problema, e `validar` o esvazia antes de conferir. Sem isso, a mensagem de uma tentativa anterior ficaria na tela depois da correção. `validar` devolve `true` ou `false`, e quem chama decide o que fazer. O título usa `trim` para recusar valores só com espaços.
+4. **Interromper o envio quando há erro.** Em `enviar`, `if (enviando || !validar()) return;` vem antes de `aoEnviar`, então a API nunca recebe uma tarefa inválida.
+5. **Mostrar a mensagem junto do campo.** Um `<p role="alert">` dentro do mesmo `<div>` do campo, que mantém o texto encostado nele, e `role="alert"` faz leitores de tela o anunciarem. É o mesmo padrão das mensagens de erro já existentes.
+6. **Bloquear durante o envio.** O estado `enviando` liga antes do `await aoEnviar(...)`, e um `finally` o desliga no sucesso e na falha, para um erro de API não deixar o formulário travado. O botão usa `disabled={enviando}` e mostra "Enviando...". A checagem de `enviando` em `enviar` cobre o Enter dentro de um campo, que também envia o formulário sem passar pelo botão.
 
 ### Como testar
 
-A preencher.
+Com a API e o `npm run dev` ligados:
+
+1. Em `/tarefas/nova`, clique em "Criar tarefa" com tudo vazio. Devem aparecer "Informe o título." e "Selecione um projeto." junto dos campos, sem gravar nada.
+2. Preencha só o título e envie. Deve ficar apenas a mensagem do projeto.
+3. Digite só espaços no título e envie. A mensagem do título deve aparecer.
+4. Em `/tarefas/ID/editar`, apague o título e salve. A mensagem deve aparecer e a tarefa não deve ser alterada.
+5. Preencha tudo e envie. A tarefa deve ser criada normalmente.
+6. Para ver o bloqueio, use o DevTools (aba Network, throttling "Slow 3G") e envie. O botão fica desabilitado com "Enviando...", e cliques extras não duplicam a tarefa.
+7. Pare a API e envie. Deve aparecer "Não foi possível enviar a tarefa.", e o botão deve voltar ao normal.
+
+Verificações automáticas: `npm run check` (0 erros), `npm test` (23 testes) e `npm run build`.
+
+### Dificuldades e soluções
+
+**Quatro testes de rota falharam em `npm test`.** Na execução completa, os testes de `tests/routes.test.mjs` (`/`, `/projetos`, `/tarefas/1` e a URL desconhecida) falharam juntos, e as verificações de `npm run check` e dos demais arquivos passaram. A princípio parecia um erro causado pela validação, mas a mensagem mostrava outra causa: `ENOENT: no such file or directory, rename '.../node_modules/.vite/deps_ssr' -> '.../deps_ssr_temp_...'`. O `npm test` executa os arquivos de teste em paralelo, e `routes.test.mjs` e `projeto-page.test.mjs` sobem, cada um, um servidor Vite que usa a mesma pasta de cache. Quando um renomeia a pasta enquanto o outro a usa, o `before` do primeiro falha e derruba todos os seus testes.
+
+Não era defeito do código. Rodando só `node --test tests/routes.test.mjs`, os quatro testes passaram. Repetindo `npm test` (depois de `rm -rf node_modules/.vite`), os 23 testes passaram. Caso a falha volte, a alternativa é executar em série: `node --test --test-concurrency=1 tests/*.test.mjs`. Não alteramos o script `test` do `package.json`, porque é um arquivo compartilhado e fora do escopo da #20.
 
 ### GitHub
 
@@ -397,7 +472,7 @@ A preencher.
 
 ## Issue 22 - Criar cadastro e edição de projeto
 
-**Responsável:** Felipe Borges Barros.
+**Responsável:** 
 
 ### Objetivo
 

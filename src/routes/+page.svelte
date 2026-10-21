@@ -22,6 +22,8 @@
 <h1>Tarefas</h1>
 <h2>Página inicial</h2>
 
+<a href="/tarefas/nova">Nova tarefa</a>
+
 <section aria-label="Lista de tarefas">
 	{#if carregando}
 		<p role="status">Carregando tarefas...</p>

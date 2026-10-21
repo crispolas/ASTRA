@@ -12,6 +12,7 @@
 	{@const projeto = data.projeto}
 	<section aria-labelledby="nome-projeto">
 		<h2 id="nome-projeto">{projeto.nome}</h2>
+		<a href="/tarefas/nova?projeto={projeto.id}">Nova tarefa</a>
 		<p>{projeto.descricao}</p>
 		<dl>
 			<div>
