@@ -11,6 +11,9 @@
   <a href="/" class="btn-voltar">← Voltar</a>
 
   {#if tarefa}
+  
+    <a href="/tarefas/{tarefa.id}/editar">Editar</a>
+
     <header class="header-tarefa">
       <h1>{tarefa.titulo}</h1>
       <span class="badge">{tarefa.status || 'Pendente'}</span>
