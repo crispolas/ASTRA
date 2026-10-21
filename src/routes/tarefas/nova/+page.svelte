@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { criarTarefa } from '#lib/api';
+	import { criarTarefa } from '../../../lib/api';
 	import TarefaFormulario from '#lib/components/TarefaFormulario.svelte';
 	import type { NovaTarefa } from '../../../tipos';
     import { page } from '$app/state';
