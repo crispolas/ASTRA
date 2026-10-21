@@ -297,7 +297,7 @@ A página é fornecida por `scripts/testar-formulario.mjs` e `tests/fixtures/Tar
 
 ## Issue 18 - Criar a tela de nova tarefa
 
-**Responsável:** Felipe Borges Barros, que assumiu a tarefa de Brenno Milhomem Farias.
+**Responsável:** Felipe Borges Barros.
 
 ### Objetivo
 
@@ -343,7 +343,7 @@ Os testes criam tarefas no `db.json`. Para repetir `npm test`, restaure com `git
 
 ## Issue 19 - Criar a tela de edição de tarefa
 
-**Responsável:** Eurípedes Rocha Neto.
+**Responsável:** Felipe Borges Barros
 
 ### Objetivo
 
@@ -389,7 +389,7 @@ A edição altera o `db.json`. Para repetir `npm test`, restaure com `git checko
 
 ## Issue 20 - Validar o formulário
 
-**Responsável:** Eurípedes Rocha Neto.
+**Responsável:** Felipe Borges Barros
 
 ### Objetivo
 
@@ -472,7 +472,7 @@ A preencher.
 
 ## Issue 22 - Criar cadastro e edição de projeto
 
-**Responsável:** Felipe Borges Barros.
+**Responsável:** 
 
 ### Objetivo
 
