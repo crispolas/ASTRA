@@ -26,3 +26,5 @@ export interface ProjetoComTarefas extends Projeto {
 }
 
 export type NovaTarefa = Omit<Tarefa, 'id'>
+
+export type NovoProjeto = Omit<Projeto, 'id'>
