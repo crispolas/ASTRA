@@ -29,6 +29,16 @@
 	let carregandoProjetos = $state(true);
 	let erroProjetos = $state('');
 	let erroEnvio = $state('');
+	let erros = $state<{ titulo?: string; projetoId?: string }>({});
+	let enviando = $state(false);
+
+	function validar(): boolean {
+		erros = {};
+		if (!campos.titulo.trim()) erros.titulo = 'Informe o título.';
+		if (!campos.projetoId) erros.projetoId = 'Selecione um projeto.';
+		return Object.keys(erros).length === 0;
+	}
+
 
 	// Uma tarefa carregada pela tela de edição atualiza os campos, sem alterar a prop.
 	$effect(() => {
@@ -47,19 +57,30 @@
 
 	async function enviar(evento: SubmitEvent) {
 		evento.preventDefault();
+		if (enviando || !validar()) return;
 		erroEnvio = '';
+		enviando = true;
 		try {
 			await aoEnviar({ ...campos });
 		} catch {
 			erroEnvio = 'Não foi possível enviar a tarefa.';
+		} finally {
+			enviando = false;
 		}
 	}
+
+
+
 </script>
 
 <form onsubmit={enviar}>
 	<div>
 		<label for={`${id}-titulo`}>Título</label>
 		<input id={`${id}-titulo`} name="titulo" bind:value={campos.titulo} />
+		{#if erros.titulo}
+			<p role="alert">{erros.titulo}</p>
+		{/if}
+
 	</div>
 	<div>
 		<label for={`${id}-descricao`}>Descrição</label>
@@ -73,6 +94,10 @@
 				<option value={projeto.id}>{projeto.nome}</option>
 			{/each}
 		</select>
+		{#if erros.projetoId}
+			<p role="alert">{erros.projetoId}</p>
+		{/if}
+
 		{#if carregandoProjetos}
 			<p role="status">Carregando projetos...</p>
 		{:else if erroProjetos}
@@ -109,7 +134,8 @@
 	{#if erroEnvio}
 		<p role="alert">{erroEnvio}</p>
 	{/if}
-	<button type="submit">{textoBotao}</button>
+	<button type="submit" disabled={enviando}>{enviando ? 'Enviando...' : textoBotao}</button>
+
 </form>
 
 <style>
