@@ -5,48 +5,60 @@
 	let { data }: { data: PageData } = $props();
 </script>
 
-<h1>Detalhes do projeto</h1>
-<a href="/projetos">Voltar para projetos</a>
+<main class="astra-page">
+	<div class="astra-head">
+		<div style="display:flex; flex-direction:column; gap:8px;">
+			<span class="astra-eyebrow">Projetos</span>
+			<h1>Detalhes do projeto</h1>
+		</div>
+		<a class="astra-pill" href="/projetos">Voltar para projetos</a>
+	</div>
 
-{#if data.projeto}
-	{@const projeto = data.projeto}
-	<section aria-labelledby="nome-projeto">
-		<h2 id="nome-projeto">{projeto.nome}</h2>
-		<a href="/tarefas/nova?projeto={projeto.id}">Nova tarefa</a>
-		<p>{projeto.descricao}</p>
-		<dl>
-			<div>
-				<dt>Disciplina</dt>
-				<dd>{projeto.disciplina}</dd>
+	{#if data.projeto}
+		{@const projeto = data.projeto}
+		<section class="bloco" aria-labelledby="nome-projeto">
+			<div class="astra-card bloco">
+				<div class="astra-head">
+					<h2 id="nome-projeto">{projeto.nome}</h2>
+					<a class="astra-btn" href="/tarefas/nova?projeto={projeto.id}" style="text-decoration:none;">Nova tarefa</a>
+				</div>
+				<p class="astra-muted">{projeto.descricao}</p>
+				<dl class="astra-meta">
+					<div>
+						<dt>Disciplina</dt>
+						<dd>{projeto.disciplina}</dd>
+					</div>
+					<div>
+						<dt>Criado em</dt>
+						<dd>
+							<time datetime={projeto.criadoEm}>{projeto.criadoEm.split('-').reverse().join('/')}</time>
+						</dd>
+					</div>
+				</dl>
 			</div>
-			<div>
-				<dt>Criado em</dt>
-				<dd>
-					<time datetime={projeto.criadoEm}>{projeto.criadoEm.split('-').reverse().join('/')}</time>
-				</dd>
-			</div>
-		</dl>
-	</section>
+		</section>
 
-	<section aria-labelledby="tarefas-projeto">
-		<h2 id="tarefas-projeto">Tarefas</h2>
-		{#if projeto.tarefas.length === 0}
-			<p>Este projeto ainda não tem tarefas.</p>
-		{:else}
-			<div class="cartoes">
-				{#each projeto.tarefas as tarefa (tarefa.id)}
-					<TarefaCard {tarefa} />
-				{/each}
-			</div>
-		{/if}
-	</section>
-{:else}
-	<p role="alert">Não foi possível carregar o projeto. Confira se a API está ligada e se o projeto existe.</p>
-{/if}
+		<section class="bloco" aria-labelledby="tarefas-projeto">
+			<h2 id="tarefas-projeto">Tarefas</h2>
+			{#if projeto.tarefas.length === 0}
+				<p class="astra-muted">Este projeto ainda não tem tarefas.</p>
+			{:else}
+				<div class="astra-list">
+					{#each projeto.tarefas as tarefa (tarefa.id)}
+						<TarefaCard {tarefa} />
+					{/each}
+				</div>
+			{/if}
+		</section>
+	{:else}
+		<p class="astra-error" role="alert">Erro: não foi possível carregar o projeto. Confira se a API está ligada e se o projeto existe.</p>
+	{/if}
+</main>
 
 <style>
-	.cartoes {
-		display: grid;
-		gap: 1rem;
+	.bloco {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
 	}
 </style>

@@ -13,9 +13,13 @@
 	}
 </script>
 
+<main class="astra-page">
+	<div class="astra-head">
+		<div style="display:flex; flex-direction:column; gap:8px;">
+			<h1>Editar tarefa</h1>
+		</div>
+		<a class="astra-pill" href="/tarefas/{data.tarefa.id}">Voltar</a>
+	</div>
 
-<h1>Editar tarefa</h1>
-
-<a href="/tarefas/{data.tarefa.id}">Voltar</a>
-
-<TarefaFormulario valoresIniciais={data.tarefa} aoEnviar={salvar} textoBotao="Salvar alterações" />
+	<TarefaFormulario valoresIniciais={data.tarefa} aoEnviar={salvar} textoBotao="Salvar alterações" />
+</main>

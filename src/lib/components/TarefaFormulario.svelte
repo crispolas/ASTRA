@@ -68,95 +68,99 @@
 			enviando = false;
 		}
 	}
-
-
-
 </script>
 
-<form onsubmit={enviar}>
-	<div>
-		<label for={`${id}-titulo`}>Título</label>
-		<input id={`${id}-titulo`} name="titulo" bind:value={campos.titulo} />
+<form class="astra-card astra-form" onsubmit={enviar}>
+	<div class="astra-field">
+		<label class="astra-label" for={`${id}-titulo`}>Título</label>
+		<input
+			class="astra-input"
+			id={`${id}-titulo`}
+			name="titulo"
+			bind:value={campos.titulo}
+			aria-invalid={erros.titulo ? 'true' : undefined}
+			aria-describedby={erros.titulo ? `${id}-titulo-erro` : undefined}
+		/>
 		{#if erros.titulo}
-			<p role="alert">{erros.titulo}</p>
+			<p class="astra-error" id={`${id}-titulo-erro`} role="alert">Erro: {erros.titulo}</p>
 		{/if}
-
 	</div>
-	<div>
-		<label for={`${id}-descricao`}>Descrição</label>
-		<textarea id={`${id}-descricao`} name="descricao" bind:value={campos.descricao}></textarea>
+	<div class="astra-field">
+		<label class="astra-label" for={`${id}-descricao`}>Descrição</label>
+		<textarea class="astra-textarea" id={`${id}-descricao`} name="descricao" bind:value={campos.descricao}></textarea>
 	</div>
-	<div>
-		<label for={`${id}-projeto`}>Projeto</label>
-		<select id={`${id}-projeto`} name="projetoId" bind:value={campos.projetoId}>
+	<div class="astra-field">
+		<label class="astra-label" for={`${id}-projeto`}>Projeto</label>
+		<select
+			class="astra-select"
+			id={`${id}-projeto`}
+			name="projetoId"
+			bind:value={campos.projetoId}
+			aria-invalid={erros.projetoId ? 'true' : undefined}
+			aria-describedby={erros.projetoId ? `${id}-projeto-erro` : undefined}
+		>
 			<option value="">Selecione um projeto</option>
 			{#each projetos as projeto (projeto.id)}
 				<option value={projeto.id}>{projeto.nome}</option>
 			{/each}
 		</select>
 		{#if erros.projetoId}
-			<p role="alert">{erros.projetoId}</p>
+			<p class="astra-error" id={`${id}-projeto-erro`} role="alert">Erro: {erros.projetoId}</p>
 		{/if}
 
 		{#if carregandoProjetos}
-			<p role="status">Carregando projetos...</p>
+			<p class="astra-muted" role="status">Carregando projetos...</p>
 		{:else if erroProjetos}
-			<p role="alert">{erroProjetos}</p>
+			<p class="astra-error" role="alert">Erro: {erroProjetos}</p>
 		{:else if projetos.length === 0}
-			<p>Nenhum projeto disponível.</p>
+			<p class="astra-muted">Nenhum projeto disponível.</p>
 		{/if}
 	</div>
-	<div>
-		<label for={`${id}-status`}>Status</label>
-		<select id={`${id}-status`} name="status" bind:value={campos.status}>
+	<div class="astra-field">
+		<label class="astra-label" for={`${id}-status`}>Status</label>
+		<select class="astra-select" id={`${id}-status`} name="status" bind:value={campos.status}>
 			<option value="a-fazer">A fazer</option>
 			<option value="em-andamento">Em andamento</option>
 			<option value="em-revisao">Em revisão</option>
 			<option value="concluida">Concluída</option>
 		</select>
 	</div>
-	<div>
-		<label for={`${id}-prioridade`}>Prioridade</label>
-		<select id={`${id}-prioridade`} name="prioridade" bind:value={campos.prioridade}>
+	<div class="astra-field">
+		<label class="astra-label" for={`${id}-prioridade`}>Prioridade</label>
+		<select class="astra-select" id={`${id}-prioridade`} name="prioridade" bind:value={campos.prioridade}>
 			<option value="baixa">Baixa</option>
 			<option value="media">Média</option>
 			<option value="alta">Alta</option>
 		</select>
 	</div>
-	<div>
-		<label for={`${id}-responsavel`}>Responsável</label>
-		<input id={`${id}-responsavel`} name="responsavel" bind:value={campos.responsavel} />
+	<div class="astra-field">
+		<label class="astra-label" for={`${id}-responsavel`}>Responsável</label>
+		<input class="astra-input" id={`${id}-responsavel`} name="responsavel" bind:value={campos.responsavel} />
 	</div>
-	<div>
-		<label for={`${id}-prazo`}>Prazo</label>
-		<input id={`${id}-prazo`} name="prazo" type="date" bind:value={campos.prazo} />
+	<div class="astra-field">
+		<label class="astra-label" for={`${id}-prazo`}>Prazo</label>
+		<input class="astra-input" id={`${id}-prazo`} name="prazo" type="date" bind:value={campos.prazo} />
 	</div>
 	{#if erroEnvio}
-		<p role="alert">{erroEnvio}</p>
+		<p class="astra-error" role="alert">Erro: {erroEnvio}</p>
 	{/if}
-	<button type="submit" disabled={enviando}>{enviando ? 'Enviando...' : textoBotao}</button>
-
+	<button class="astra-btn" type="submit" disabled={enviando}>{enviando ? 'Enviando...' : textoBotao}</button>
 </form>
 
 <style>
-	form {
+	.astra-form {
 		display: grid;
-		gap: 1rem;
+		gap: 20px;
 		max-width: 36rem;
 	}
 
-	label {
-		display: block;
-		margin-bottom: 0.25rem;
+	.astra-form :global(.astra-textarea) {
+		min-height: 120px;
+		resize: vertical;
 	}
 
-	input, textarea, select, button {
-		box-sizing: border-box;
-		font: inherit;
-		padding: 0.5rem;
-	}
-
-	input, textarea, select {
-		width: 100%;
+	/* o seletor de data usa o esquema escuro do tema */
+	.astra-form :global(input[type='date']) {
+		color-scheme: dark;
 	}
 </style>
