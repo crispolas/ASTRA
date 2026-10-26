@@ -65,6 +65,17 @@
       "prioridade": "baixa",
       "responsavel": "Ana",
       "prazo": "2026-10-20"
+    },
+    {
+      "projetoId": "2",
+      "titulo": "Revisar critérios da E3",
+      "descricao": "Verificar se está correto",
+      "status": "a-fazer",
+      "prioridade": "media",
+      "responsavel": "Diego",
+      "prazo": "2026-10-22",
+      "id": "Mf8yXBiUj90"
     }
-  ]
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }

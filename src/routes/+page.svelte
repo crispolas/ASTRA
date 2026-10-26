@@ -19,30 +19,28 @@
 	});
 </script>
 
-<h1>Tarefas</h1>
-<h2>Página inicial</h2>
-
-<a href="/tarefas/nova">Nova tarefa</a>
-
-<section aria-label="Lista de tarefas">
-	{#if carregando}
-		<p role="status">Carregando tarefas...</p>
-	{:else if erro}
-		<p role="alert">{erro}</p>
-	{:else if tarefas.length === 0}
-		<p>Nenhuma tarefa encontrada.</p>
-	{:else}
-		<div class="cartoes">
-			{#each tarefas as tarefa (tarefa.id)}
-				<TarefaCard tarefa={tarefa} />
-			{/each}
+<main class="astra-page">
+	<div class="astra-head">
+		<div style="display:flex; flex-direction:column; gap:8px;">
+			<span class="astra-eyebrow">Página inicial</span>
+			<h1>Tarefas</h1>
 		</div>
-	{/if}
-</section>
+		<a class="astra-btn" href="/tarefas/nova" style="text-decoration:none;">Nova tarefa</a>
+	</div>
 
-<style>
-	.cartoes {
-		display: grid;
-		gap: 1rem;
-	}
-</style>
+	<section aria-label="Lista de tarefas">
+		{#if carregando}
+			<p class="astra-muted" role="status">Carregando tarefas...</p>
+		{:else if erro}
+			<p class="astra-error" role="alert">Erro: {erro}</p>
+		{:else if tarefas.length === 0}
+			<p class="astra-muted">Nenhuma tarefa encontrada.</p>
+		{:else}
+			<div class="astra-list">
+				{#each tarefas as tarefa (tarefa.id)}
+					<TarefaCard tarefa={tarefa} />
+				{/each}
+			</div>
+		{/if}
+	</section>
+</main>

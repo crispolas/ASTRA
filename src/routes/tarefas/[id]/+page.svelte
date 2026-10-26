@@ -1,80 +1,88 @@
-<h1>Detalhes da tarefa</h1>
-
 <script lang="ts">
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();
   let tarefa = $derived(data.tarefa);
+
+  const nomesStatus: Record<string, string> = {
+    'a-fazer': 'A fazer',
+    'em-andamento': 'Em andamento',
+    'em-revisao': 'Em revisão',
+    concluida: 'Concluída'
+  };
+
+  const classesStatus: Record<string, string> = {
+    'a-fazer': 'astra-tag--todo',
+    'em-andamento': 'astra-tag--doing',
+    'em-revisao': 'astra-tag--doing',
+    concluida: 'astra-tag--done'
+  };
+
+  const nomesPrioridade: Record<string, string> = {
+    baixa: 'Baixa',
+    media: 'Média',
+    alta: 'Alta'
+  };
 </script>
 
-<main class="detalhe-container">
-  <a href="/" class="btn-voltar">← Voltar</a>
+<main class="astra-page">
+  <div class="astra-head">
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <span class="astra-eyebrow">Detalhes da tarefa</span>
+      <h1>{tarefa ? tarefa.titulo : 'Tarefa'}</h1>
+    </div>
+    <div style="display:flex; gap:12px; flex-wrap:wrap;">
+      <a class="astra-pill" href="/">← Voltar</a>
+      {#if tarefa}
+        <a class="astra-btn" href="/tarefas/{tarefa.id}/editar" style="text-decoration:none;">Editar</a>
+      {/if}
+    </div>
+  </div>
 
   {#if tarefa}
-  
-    <a href="/tarefas/{tarefa.id}/editar">Editar</a>
-
-    <header class="header-tarefa">
-      <h1>{tarefa.titulo}</h1>
-      <span class="badge">{tarefa.status || 'Pendente'}</span>
-    </header>
-
-    <div class="card-detalhes">
+    <article class="astra-card detalhe">
       <h2>Descrição</h2>
-      <p>{tarefa.descricao || 'Nenhuma descrição fornecida.'}</p>
+      <p class="astra-muted">{tarefa.descricao || 'Nenhuma descrição fornecida.'}</p>
 
-      <div class="grid-info">
-        <p><strong>Prioridade:</strong> {tarefa.prioridade || 'Não informada'}</p>
-        <p><strong>Responsável:</strong> {tarefa.responsavel || 'Não atribuído'}</p>
-        <p><strong>Prazo:</strong> {tarefa.prazo || 'Sem prazo'}</p>
-        <p><strong>ID do Projeto:</strong> {tarefa.projetoId ?? 'N/A'}</p>
-        <p><strong>ID da Tarefa:</strong> {tarefa.id}</p>
-      </div>
-    </div>
+      <dl class="astra-meta">
+        <div>
+          <dt>Status</dt>
+          <dd>
+            <span class="astra-tag {classesStatus[tarefa.status] ?? 'astra-tag--todo'}">
+              {nomesStatus[tarefa.status] ?? tarefa.status ?? 'Pendente'}
+            </span>
+          </dd>
+        </div>
+        <div>
+          <dt>Prioridade</dt>
+          <dd>{nomesPrioridade[tarefa.prioridade] ?? tarefa.prioridade ?? 'Não informada'}</dd>
+        </div>
+        <div>
+          <dt>Responsável</dt>
+          <dd>{tarefa.responsavel || 'Não atribuído'}</dd>
+        </div>
+        <div>
+          <dt>Prazo</dt>
+          <dd>
+            {#if tarefa.prazo}
+              <time datetime={tarefa.prazo}>{tarefa.prazo.split('-').reverse().join('/')}</time>
+            {:else}
+              Sem prazo
+            {/if}
+          </dd>
+        </div>
+      </dl>
+    </article>
+  {:else}
+    <p class="astra-error" role="alert">Erro: não foi possível carregar a tarefa. Confira se a API está ligada e se a tarefa existe.</p>
   {/if}
 </main>
 
 <style>
-  .detalhe-container {
-    max-width: 700px;
-    margin: 2rem auto;
-    padding: 1.5rem;
-    font-family: sans-serif;
-  }
-  .btn-voltar {
-    display: inline-block;
-    margin-bottom: 1rem;
-    color: #3b82f6;
-    text-decoration: none;
-  }
-  .header-tarefa {
+  .detalhe {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid #333;
-    padding-bottom: 1rem;
-  }
-  .card-detalhes {
-    background-color: #1e1e1e;
-    color: #fff;
-    padding: 1.5rem;
-    border-radius: 8px;
-    margin-top: 1.5rem;
-  }
-  .grid-info {
-    margin-top: 1.5rem;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.75rem;
-    border-top: 1px solid #333;
-    padding-top: 1rem;
-    font-size: 0.95rem;
-  }
-  .badge {
-    background-color: #2563eb;
-    color: #fff;
-    padding: 0.25rem 0.75rem;
-    border-radius: 9999px;
-    font-size: 0.875rem;
+    flex-direction: column;
+    gap: 16px;
+    overflow-wrap: anywhere;
   }
 </style>

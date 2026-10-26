@@ -1,0 +1,328 @@
+/* ASTRA · tema global (verde, branco e preto, estrela de quatro pontas)
+   Importe uma vez no layout: import '#lib/astra-theme.css';
+   Para usar a paleta roxo e azul, coloque data-tema="roxo" na tag <html> (src/app.html). */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+:root {
+  /* cores */
+  --astra-bg-0: #050a07;
+  --astra-bg-1: #0b1f14;
+  --astra-accent: #34d399;
+  --astra-accent-soft: #6ee7b7;
+  --astra-accent-pale: #a7f3d0;
+  --astra-accent-2: #6ee7b7;
+  --astra-text: #f4fbf7;
+  --astra-muted: #a9c4b6;
+  --astra-error: #fca5a5;
+  --astra-on-action: #04130c; /* texto sobre botões e pílulas ativas */
+
+  /* luzes do fundo */
+  --astra-glow-1: rgba(52, 211, 153, 0.35);
+  --astra-glow-2: rgba(16, 185, 129, 0.28);
+
+  /* degradês */
+  --astra-grad-action: linear-gradient(90deg, #34d399, #a7f3d0);
+  --astra-grad-star: linear-gradient(135deg, #34d399, #a7f3d0);
+  --astra-grad-glass: linear-gradient(160deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03));
+  --astra-grad-glass-accent: linear-gradient(160deg, rgba(52, 211, 153, 0.16), rgba(255, 255, 255, 0.03));
+
+  /* transparência */
+  --astra-glass-border: rgba(167, 243, 208, 0.28);
+  --astra-field-border: rgba(167, 243, 208, 0.45);
+  --astra-field-bg: rgba(255, 255, 255, 0.06);
+
+  /* forma */
+  --astra-radius-sm: 16px;
+  --astra-radius-lg: 28px;
+  --astra-radius-pill: 999px;
+
+  /* espaço */
+  --astra-space-1: 8px;
+  --astra-space-2: 16px;
+  --astra-space-3: 24px;
+  --astra-space-4: 32px;
+  --astra-space-5: 48px;
+
+  --astra-font: 'Space Grotesk', Arial, sans-serif;
+
+  /* estrela de quatro pontas com cantos arredondados (usada como máscara) */
+  --astra-sparkle-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 1C12.8 7.5 16.5 11.2 23 12C16.5 12.8 12.8 16.5 12 23C11.2 16.5 7.5 12.8 1 12C7.5 11.2 11.2 7.5 12 1Z' stroke='black' stroke-width='1.5' stroke-linejoin='round'/></svg>");
+}
+
+/* paleta alternativa: preto, roxo e azul */
+html[data-tema='roxo'] {
+  --astra-bg-0: #05030f;
+  --astra-bg-1: #0b0b2b;
+  --astra-accent: #8b5cf6;
+  --astra-accent-soft: #a78bfa;
+  --astra-accent-pale: #c4b5fd;
+  --astra-accent-2: #60a5fa;
+  --astra-text: #f1eeff;
+  --astra-muted: #b4b0dc;
+  --astra-on-action: #ffffff;
+
+  --astra-glow-1: rgba(139, 92, 246, 0.42);
+  --astra-glow-2: rgba(59, 130, 246, 0.32);
+
+  --astra-grad-action: linear-gradient(90deg, #6d28d9, #2563eb);
+  --astra-grad-star: linear-gradient(135deg, #a78bfa, #60a5fa);
+  --astra-grad-glass-accent: linear-gradient(160deg, rgba(139, 92, 246, 0.2), rgba(59, 130, 246, 0.06));
+
+  --astra-glass-border: rgba(196, 181, 253, 0.3);
+  --astra-field-border: rgba(196, 181, 253, 0.5);
+}
+
+/* base */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body { min-height: 100%; }
+
+body {
+  margin: 0;
+  font-family: var(--astra-font);
+  font-size: 18px;
+  line-height: 1.5;
+  color: var(--astra-text);
+  background:
+    radial-gradient(circle at 85% 0%, var(--astra-glow-1) 0%, transparent 48%),
+    radial-gradient(circle at 0% 100%, var(--astra-glow-2) 0%, transparent 52%),
+    linear-gradient(160deg, var(--astra-bg-0) 0%, var(--astra-bg-1) 100%);
+  background-attachment: fixed;
+}
+
+/* campo de estrelas pequenas (fixo, atrás do conteúdo) */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(1.5px 1.5px at 8% 15%, rgba(244, 251, 247, 0.8) 50%, transparent 51%),
+    radial-gradient(2px 2px at 22% 8%, rgba(244, 251, 247, 0.5) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 43% 5%, rgba(244, 251, 247, 0.8) 50%, transparent 51%),
+    radial-gradient(2px 2px at 63% 12%, rgba(244, 251, 247, 0.6) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 82% 6%, rgba(244, 251, 247, 0.7) 50%, transparent 51%),
+    radial-gradient(2px 2px at 94% 24%, rgba(244, 251, 247, 0.5) 50%, transparent 51%),
+    radial-gradient(2px 2px at 4% 54%, rgba(244, 251, 247, 0.6) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 97% 60%, rgba(244, 251, 247, 0.7) 50%, transparent 51%),
+    radial-gradient(2px 2px at 6% 90%, rgba(244, 251, 247, 0.5) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 53% 96%, rgba(244, 251, 247, 0.7) 50%, transparent 51%),
+    radial-gradient(2px 2px at 84% 93%, rgba(244, 251, 247, 0.6) 50%, transparent 51%);
+}
+
+/* três estrelas de quatro pontas grandes, decorativas, no fundo */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: var(--astra-grad-star);
+  opacity: 0.5;
+  -webkit-mask-image: var(--astra-sparkle-mask), var(--astra-sparkle-mask), var(--astra-sparkle-mask);
+  mask-image: var(--astra-sparkle-mask), var(--astra-sparkle-mask), var(--astra-sparkle-mask);
+  -webkit-mask-size: 56px 56px, 28px 28px, 22px 22px;
+  mask-size: 56px 56px, 28px 28px, 22px 22px;
+  -webkit-mask-position: 94% 24%, 3% 46%, 88% 90%;
+  mask-position: 94% 24%, 3% 46%, 88% 90%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+h1, h2, h3 { margin: 0; line-height: 1.1; font-weight: 700; }
+h1 { font-size: 52px; }
+h2 { font-size: 32px; }
+h3 { font-size: 24px; }
+
+a { color: var(--astra-accent-pale); }
+a:hover { color: var(--astra-text); }
+
+/* estrela de quatro pontas como ícone */
+.astra-sparkle {
+  display: inline-block;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  background: var(--astra-grad-star);
+  -webkit-mask: var(--astra-sparkle-mask) center / contain no-repeat;
+  mask: var(--astra-sparkle-mask) center / contain no-repeat;
+}
+.astra-sparkle--lg { width: 36px; height: 36px; }
+
+/* marca */
+.astra-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+}
+
+.astra-eyebrow {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--astra-accent-soft);
+}
+
+/* layout de página */
+.astra-page {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;                           /* centraliza na tela */
+  padding: 0 clamp(24px, 8vw, 96px) 64px;   /* afasta das laterais: 24px no celular, até 96px no desktop */
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+.astra-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.astra-list { display: flex; flex-direction: column; gap: 20px; }
+.astra-muted { color: var(--astra-muted); margin: 0; }
+
+/* menu sem bolinhas */
+.astra-nav ul { list-style: none; margin: 0; padding: 0; display: flex; gap: 12px; flex-wrap: wrap; }
+
+/* cartões translúcidos */
+.astra-card {
+  padding: var(--astra-space-4);
+  background: var(--astra-grad-glass);
+  border: 1px solid var(--astra-glass-border);
+  border-radius: var(--astra-radius-lg);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+.astra-card--accent { background: var(--astra-grad-glass-accent); }
+
+.astra-card h3 a { color: var(--astra-text); text-decoration: none; }
+.astra-card h3 a:hover { color: var(--astra-accent-pale); text-decoration: underline; }
+
+/* dados em colunas (Status, Prioridade, Responsável, Prazo) */
+.astra-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin: 0; }
+.astra-meta dt { font-size: 18px; color: var(--astra-muted); }
+.astra-meta dd { margin: 4px 0 0; font-size: 20px; font-weight: 500; }
+
+/* formulários */
+.astra-field { display: flex; flex-direction: column; gap: var(--astra-space-1); }
+
+.astra-label { font-size: 20px; font-weight: 600; }
+
+.astra-input,
+.astra-select,
+.astra-textarea {
+  width: 100%;
+  padding: 14px 16px;
+  font: inherit;
+  font-size: 20px;
+  color: var(--astra-text);
+  background: var(--astra-field-bg);
+  border: 1px solid var(--astra-field-border);
+  border-radius: var(--astra-radius-sm);
+}
+.astra-select { background: var(--astra-bg-1); }
+.astra-input::placeholder,
+.astra-textarea::placeholder { color: var(--astra-muted); }
+
+.astra-input[aria-invalid='true'],
+.astra-select[aria-invalid='true'],
+.astra-textarea[aria-invalid='true'] {
+  border: 2px solid var(--astra-error);
+}
+
+.astra-error {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--astra-error);
+  margin: 0;
+}
+
+/* foco visível para teclado */
+:where(a, button, input, select, textarea):focus-visible {
+  outline: 3px solid var(--astra-accent-2);
+  outline-offset: 3px;
+}
+
+/* botões */
+.astra-btn {
+  display: inline-block;
+  min-height: 48px;
+  padding: 14px 28px;
+  font: inherit;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--astra-on-action);
+  background: var(--astra-grad-action);
+  border: none;
+  border-radius: var(--astra-radius-sm);
+  cursor: pointer;
+}
+.astra-btn:hover { filter: brightness(1.1); color: var(--astra-on-action); }
+.astra-btn:disabled { opacity: 0.55; cursor: not-allowed; filter: none; }
+
+.astra-btn--ghost {
+  font-weight: 600;
+  color: var(--astra-text);
+  background: transparent;
+  border: 1px solid var(--astra-field-border);
+}
+
+/* navegação e etiquetas */
+.astra-pill {
+  display: inline-block;
+  padding: 10px 22px;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--astra-text);
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--astra-glass-border);
+  border-radius: var(--astra-radius-pill);
+}
+.astra-pill:hover { color: var(--astra-text); border-color: var(--astra-accent-soft); }
+.astra-pill--active {
+  font-weight: 600;
+  color: var(--astra-on-action);
+  background: var(--astra-grad-action);
+  border-color: transparent;
+}
+
+.astra-tag {
+  display: inline-block;
+  padding: 3px 12px;
+  font-size: 18px;
+  font-weight: 600;
+  border: 1px solid currentColor;
+  border-radius: var(--astra-radius-pill);
+}
+.astra-tag--done { color: var(--astra-bg-1); background: var(--astra-accent-pale); border-color: transparent; }
+.astra-tag--doing { color: var(--astra-text); border-color: var(--astra-accent-2); }
+.astra-tag--todo { color: var(--astra-muted); }
+
+/* item de lista */
+.astra-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: rgba(5, 10, 7, 0.55);
+  border-radius: 18px;
+}
+
+.astra-form {
+	display: grid;
+	gap: 20px;
+	width: 100%;
+	max-width: 36rem;
+	margin-inline: auto;
+}
+
+main.astra-page { padding-top: 48px; gap: 40px; }
+
+/* respeita quem prefere menos movimento */
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}

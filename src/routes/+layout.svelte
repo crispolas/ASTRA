@@ -1,6 +1,9 @@
 <script lang="ts">
+
 	import favicon from '#lib/assets/favicon.svg';
+    import '#lib/astra-theme.css';
 	import type { LayoutProps } from './$types';
+
 
 	let { children }: LayoutProps = $props();
 </script>
@@ -9,20 +12,21 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
-<header>
-    <nav>
+<header class="astra-page" style="padding-top: 32px; padding-bottom: 0;">
+	<nav class="astra-nav">
         <ul>
             <li>
-                <a href="/">Página inicial</a>
+                <a class="astra-pill" href="/">Página inicial</a>
             </li>
             <li>
-                <a href="/projetos">Projetos</a> 
+                <a class="astra-pill" href="/projetos">Projetos</a> 
             </li>
             <li>
-                <a href="/">Tarefas</a>
+                <a class="astra-pill" href="/">Tarefas</a>
             </li>
         </ul>
     </nav>
 </header>
 
 {@render children()}
+

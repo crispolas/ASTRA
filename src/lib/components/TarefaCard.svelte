@@ -19,17 +19,25 @@
 		media: 'Média',
 		alta: 'Alta'
 	} satisfies Record<Tarefa['prioridade'], string>;
+
+	// Classe visual de cada status (o texto continua dizendo o status, não só a cor).
+	const classesStatus = {
+		'a-fazer': 'astra-tag--todo',
+		'em-andamento': 'astra-tag--doing',
+		'em-revisao': 'astra-tag--doing',
+		concluida: 'astra-tag--done'
+	} satisfies Record<Tarefa['status'], string>;
 </script>
 
-<article class="tarefa-card">
+<article class="astra-card tarefa-card">
 	<h3>
 		<a href={`/tarefas/${encodeURIComponent(tarefa.id)}`}>{tarefa.titulo}</a>
 	</h3>
-	<p>{tarefa.descricao}</p>
-	<dl>
+	<p class="astra-muted">{tarefa.descricao}</p>
+	<dl class="astra-meta">
 		<div>
 			<dt>Status</dt>
-			<dd>{nomesStatus[tarefa.status]}</dd>
+			<dd><span class="astra-tag {classesStatus[tarefa.status]}">{nomesStatus[tarefa.status]}</span></dd>
 		</div>
 		<div>
 			<dt>Prioridade</dt>
@@ -48,40 +56,9 @@
 
 <style>
 	.tarefa-card {
-		max-width: 32rem;
-		padding: 1rem;
-		border: 1px solid #cbd5e1;
-		border-radius: 0.5rem;
-		background: #fff;
-		color: #1e293b;
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
 		overflow-wrap: anywhere;
-	}
-
-	h3 {
-		margin: 0;
-	}
-
-	a {
-		color: #1d4ed8;
-	}
-
-	a:focus-visible {
-		outline: 2px solid #1d4ed8;
-		outline-offset: 3px;
-	}
-
-	dl {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
-		gap: 1rem;
-		margin-bottom: 0;
-	}
-
-	dt {
-		font-weight: 600;
-	}
-
-	dd {
-		margin: 0.25rem 0 0;
 	}
 </style>
