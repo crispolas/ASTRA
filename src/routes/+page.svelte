@@ -1,9 +1,9 @@
 <script lang="ts">
     import { onMount } from 'svelte';
-    import TarefaCard from '$lib/components/TarefaCard.svelte';
-    import Filtros from '$lib/components/Filtros.svelte';
-    import { buscaTexto, filtroStatus, filtroPrioridade } from '$lib/stores/filtros';
-    import { listarTarefas } from '$lib/api';
+    import TarefaCard from '#lib/components/TarefaCard.svelte';
+    import Filtros from '#lib/components/Filtros.svelte';
+    import { buscaTexto, filtroStatus, filtroPrioridade } from '#lib/stores/filtros';
+    import { listarTarefas } from '#lib/api';
     import type { Tarefa } from '../tipos';
 
     let tarefas = $state<Tarefa[]>([]);
