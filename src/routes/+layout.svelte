@@ -24,6 +24,9 @@
             <li>
                 <a class="astra-pill" href="/">Tarefas</a>
             </li>
+            <li>
+                <a class="astra-pill" href="/quadro">Quadro Kanban</a>
+            </li>
         </ul>
     </nav>
 </header>
