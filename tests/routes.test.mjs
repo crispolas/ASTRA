@@ -28,13 +28,13 @@ const pages = [
 ];
 
 for (const [path, heading, subheading] of pages) {
-    test(`${path} responde com a página provisória`, async () => {
+    test(`${path} responde com o título e a identificação da página`, async () => {
         const response = await fetch(`${baseUrl}${path}`);
         const html = await response.text();
 
         assert.equal(response.status, 200);
         assert.match(html, new RegExp(`<h1(?:\\s[^>]*)?>${heading}</h1>`));
-        assert.match(html, new RegExp(`<h2(?:\\s[^>]*)?>${subheading}</h2>`));
+        assert.match(html, new RegExp(`<span[^>]*class="[^"]*\\bastra-eyebrow\\b[^"]*"[^>]*>${subheading}</span>`));
     });
 }
 

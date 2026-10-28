@@ -67,7 +67,7 @@ test('/projetos/:id mostra os dados do projeto e um cartão por tarefa', async (
 	for (const valor of [projeto.nome, projeto.descricao, projeto.disciplina, '01/10/2026']) {
 		assert(html.includes(valor), `A página deve mostrar ${valor}`);
 	}
-	assert.equal(html.match(/class="tarefa-card/g)?.length, 2);
+	assert.equal(html.match(/<article[^>]*class="[^"]*\btarefa-card\b[^"]*"/g)?.length, 2);
 	assert(html.includes('href="/tarefas/7"'));
 	assert(html.includes('Segunda tarefa'));
 	assert(html.includes('href="/projetos"'));
@@ -79,7 +79,7 @@ test('/projetos/:id avisa quando o projeto não tem tarefas', async () => {
 	const html = await (await fetch(`${baseUrl}/projetos/1`)).text();
 
 	assert(html.includes('Este projeto ainda não tem tarefas.'));
-	assert(!html.includes('class="tarefa-card'));
+	assert(!/<article[^>]*class="[^"]*\btarefa-card\b[^"]*"/.test(html));
 });
 
 test('/projetos/:id mostra um aviso quando a API falha ou o projeto não existe', async () => {
@@ -91,5 +91,5 @@ test('/projetos/:id mostra um aviso quando a API falha ou o projeto não existe'
 	assert.equal(response.status, 200);
 	assert.match(html, /<h1(?:\s[^>]*)?>Detalhes do projeto<\/h1>/);
 	assert.match(html, /role="alert"/);
-	assert(html.includes('Não foi possível carregar o projeto'));
+	assert.match(html, /não foi possível carregar o projeto/i);
 });

@@ -2,7 +2,7 @@
 	// Substitua a importação com $lib por caminho relativo
 	import TarefaCard from '../../lib/components/TarefaCard.svelte';
 	import type { PageData } from './$types';
-	import type { Tarefa } from '../../lib/tipos';
+	import type { Tarefa } from '../../tipos';
 
 	interface Props {
 		data: PageData;
