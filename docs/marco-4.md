@@ -148,7 +148,7 @@ Registrado em [issue-28.md](issue-28.md).
 ### GitHub
 
 - Issue: [#28 - Alternar entre lista e quadro](https://github.com/crispolas/ASTRA/issues/28).
-- Pull Request: [#64](https://github.com/crispolas/ASTRA/pull/64), integrado na branch `feat/entrada-lunar-astra`.
+- Pull Request: [#64](https://github.com/crispolas/ASTRA/pull/64), integrado na branch `feat/entrada-lunar-astra`, que chegou à `main` pelo [#65](https://github.com/crispolas/ASTRA/pull/65).
 
 ---
 
@@ -235,7 +235,7 @@ Lista de verificações planejadas; nenhuma funcionalidade é declarada aprovada
 
 | Issues | Decisão ou problema | Solução ou acordo | Responsável | Referência |
 | --- | --- | --- | --- | --- |
-| #28 e #29 | O PR da #28 foi integrado em `feat/entrada-lunar-astra`, não na `main` | A #29 parte da entrega da #28; falta o PR de `feat/entrada-lunar-astra` para a `main` | A preencher | PR #64 |
+| #28 e #29 | O PR da #28 foi integrado em `feat/entrada-lunar-astra`, não direto na `main` | A #29 parte da entrega da #28; `feat/entrada-lunar-astra` chegou à `main` pelo PR #65, e a #29 vai para a `main` em PR próprio | Gabriel Crispim Galvão e Felipe Borges Barros | PRs #64 e #65 |
 | A preencher | A preencher | A preencher | A preencher | A preencher |
 
 Mantenha o histórico do Marco 3 em seu próprio documento.
