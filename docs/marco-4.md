@@ -196,7 +196,7 @@ A página do projeto (`/projetos/:id`) também mostra o seletor e grava o status
 ### GitHub
 
 - Issue: [#29 - Mudar o status pelo cartão](https://github.com/crispolas/ASTRA/issues/29).
-- Pull Request: A preencher.
+- Pull Request: [#66](https://github.com/crispolas/ASTRA/pull/66).
 
 ---
 
