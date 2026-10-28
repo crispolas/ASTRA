@@ -16,6 +16,7 @@ SvelteKit com TypeScript.
 ## Documentação técnica
 
 - [Interface e abertura lunar](docs/tela-inicial.md): a entrada fica em `/inicio`; o gerenciador com céu ASCII e cartões flutuantes continua em `/`.
+- [Issue 28 — Lista e quadro](docs/issue-28.md): alternância entre visões com busca e filtros compartilhados.
 
 - [Diário técnico do Marco 2](docs/marco-2.md): dependências, registros de implementação, testes e orientações para continuidade entre integrantes.
 - [Diário técnico do Marco 3](docs/marco-3.md): divisão das tarefas, cadastro e edição, validação e acessibilidade dos formulários.
