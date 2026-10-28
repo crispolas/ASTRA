@@ -8,7 +8,7 @@
 		onstatus?: (tarefa: Tarefa) => void;
 	}
 
-	let { tarefa, variante = 'padrao', onstatus }: Props = $props();
+	let { tarefa, variante = 'catalogo', onstatus }: Props = $props();
 
 	let salvando = $state(false);
 	let erroStatus = $state('');
