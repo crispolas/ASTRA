@@ -31,3 +31,5 @@ O maior cuidado foi distinguir guardar o valor do filtro de aplicar esse valor: 
 O visual aprovado e as rotas foram preservados. Esta issue não implementa mudança de status pelo cartão (#29), arrastar e soltar, exclusão ou novas opções de filtro.
 
 - Issue: [#28 — Alternar entre lista e quadro](https://github.com/crispolas/ASTRA/issues/28)
+- Implementação: [a66dd29](https://github.com/crispolas/ASTRA/commit/a66dd29), na branch `feat/issue-28-alternar-visoes`.
+- Base da entrega: `feat/entrada-lunar-astra`, que contém a interface branca aprovada. A referência `Refs #28` identifica a entrega sem encerrar a issue antes da integração.
