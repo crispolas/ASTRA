@@ -49,7 +49,8 @@
         {:else}
             <div class="astra-list">
                 {#each tarefasFiltradas as tarefa (tarefa.id)}
-                    <TarefaCard tarefa={tarefa} variante="catalogo" />
+                    <TarefaCard tarefa={tarefa} variante="catalogo"
+                        onstatus={(nova) => tarefas = tarefas.map((t) => t.id === nova.id ? nova : t)} />
                 {/each}
             </div>
         {/if}

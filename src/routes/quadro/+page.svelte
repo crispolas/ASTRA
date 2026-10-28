@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { invalidateAll } from '$app/navigation';
 	import TarefaCard from '../../lib/components/TarefaCard.svelte';
 	import Filtros from '../../lib/components/Filtros.svelte';
 	import AlternarVisao from '../../lib/components/AlternarVisao.svelte';
@@ -51,7 +52,7 @@
 
 				<div class="lista-cards">
 					{#each tarefasColuna as tarefa (tarefa.id)}
-						<TarefaCard {tarefa} />
+						<TarefaCard {tarefa} onstatus={() => invalidateAll()} />
 					{:else}
 						<p class="vazio">Nenhuma tarefa nesta coluna.</p>
 					{/each}
@@ -159,11 +160,6 @@
 		line-clamp: 2;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
-	}
-
-	/* o status já é dado pela coluna: esconde o primeiro campo (Status) */
-	.lista-cards :global(.tarefa-card .astra-meta > div:first-child) {
-		display: none;
 	}
 
 	.lista-cards :global(.tarefa-card .astra-meta) {

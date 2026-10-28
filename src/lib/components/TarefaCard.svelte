@@ -1,12 +1,31 @@
 <script lang="ts">
-	import type { Tarefa } from '../../tipos';
+	import { atualizarTarefa } from '../api';
+	import type { Status, Tarefa } from '../../tipos';
 
 	interface Props {
 		tarefa: Readonly<Tarefa>;
 		variante?: 'padrao' | 'catalogo';
+		onstatus?: (tarefa: Tarefa) => void;
 	}
 
-	let { tarefa, variante = 'padrao' }: Props = $props();
+	let { tarefa, variante = 'padrao', onstatus }: Props = $props();
+
+	let salvando = $state(false);
+	let erroStatus = $state('');
+
+	async function mudarStatus(event: Event) {
+		const select = event.currentTarget as HTMLSelectElement;
+		salvando = true;
+		erroStatus = '';
+		try {
+			onstatus?.(await atualizarTarefa(tarefa.id, { status: select.value as Status }));
+		} catch {
+			select.value = tarefa.status;
+			erroStatus = 'Não foi possível salvar o status. Confira se a API está ligada.';
+		} finally {
+			salvando = false;
+		}
+	}
 
 	function mover(event: PointerEvent) {
 		if (!matchMedia('(hover: hover) and (pointer: fine)').matches ||
@@ -61,7 +80,14 @@
 	<dl class="astra-meta">
 		<div>
 			<dt>Status</dt>
-			<dd><span class="astra-tag {classesStatus[tarefa.status]}">{nomesStatus[tarefa.status]}</span></dd>
+			<dd>
+				<select class="astra-tag status-select {classesStatus[tarefa.status]}" value={tarefa.status}
+					aria-label={`Status de ${tarefa.titulo}`} disabled={salvando} onchange={mudarStatus}>
+					{#each Object.entries(nomesStatus) as [valor, nome] (valor)}
+						<option value={valor}>{nome}</option>
+					{/each}
+				</select>
+			</dd>
 		</div>
 		<div>
 			<dt>Prioridade</dt>
@@ -76,6 +102,7 @@
 			<dd><time datetime={tarefa.prazo}>{tarefa.prazo.split('-').reverse().join('/')}</time></dd>
 		</div>
 	</dl>
+	{#if erroStatus}<p class="astra-error" role="alert">{erroStatus}</p>{/if}
 </article>
 </div>
 
@@ -86,6 +113,8 @@
 		gap: 16px;
 		overflow-wrap: anywhere;
 	}
+	.status-select { max-width:100%; font:inherit; cursor:pointer; color-scheme:dark; }
+	.status-select:disabled { cursor:progress; opacity:.6; }
 	.suporte { display:contents; }
 	.orbita { display:block; min-width:0; animation:gravidade-zero 9s ease-in-out infinite; }
 	.orbita:nth-child(2n) { animation-duration:10.8s; animation-delay:-2s; }
