@@ -1,6 +1,8 @@
 <script lang="ts">
-	// Substitua a importação com $lib por caminho relativo
 	import TarefaCard from '../../lib/components/TarefaCard.svelte';
+	import Filtros from '../../lib/components/Filtros.svelte';
+	import AlternarVisao from '../../lib/components/AlternarVisao.svelte';
+	import { buscaTexto, filtroStatus, filtroPrioridade, aplicarFiltros } from '../../lib/stores/filtros';
 	import type { PageData } from './$types';
 	import type { Tarefa } from '../../tipos';
 
@@ -9,6 +11,9 @@
 	}
 
 	let { data }: Props = $props();
+	let tarefasFiltradas = $derived(
+		aplicarFiltros(data.tarefas, $buscaTexto, $filtroStatus, $filtroPrioridade)
+	);
 
 	const colunas: { id: Tarefa['status']; titulo: string }[] = [
 		{ id: 'a-fazer', titulo: 'A fazer' },
@@ -18,7 +23,7 @@
 	];
 
 	function filtrarPorStatus(status: Tarefa['status']): Tarefa[] {
-		return data.tarefas.filter((t: Tarefa) => t.status === status);
+		return tarefasFiltradas.filter((t: Tarefa) => t.status === status);
 	}
 </script>
 
@@ -30,6 +35,9 @@
 		</div>
 		<a class="astra-btn" href="/tarefas/nova" style="text-decoration:none;">Nova tarefa</a>
 	</div>
+
+	<AlternarVisao atual="quadro" />
+	<Filtros />
 
 	<div class="quadro-container">
 		{#each colunas as coluna (coluna.id)}

@@ -2,7 +2,8 @@
     import { onMount } from 'svelte';
     import TarefaCard from '#lib/components/TarefaCard.svelte';
     import Filtros from '#lib/components/Filtros.svelte';
-    import { buscaTexto, filtroStatus, filtroPrioridade } from '../lib/stores/filtros';
+    import AlternarVisao from '#lib/components/AlternarVisao.svelte';
+    import { buscaTexto, filtroStatus, filtroPrioridade, aplicarFiltros } from '../lib/stores/filtros';
     import { listarTarefas } from '../lib/api';
     import type { Tarefa } from '../tipos';
 
@@ -10,14 +11,8 @@
     let carregando = $state(true);
     let erro = $state('');
 
-    // Reatividade para aplicar os 3 filtros simultaneamente
     let tarefasFiltradas = $derived(
-        tarefas.filter((t) => {
-            const bateTexto = t.titulo.toLowerCase().includes($buscaTexto.toLowerCase());
-            const bateStatus = $filtroStatus ? t.status === $filtroStatus : true;
-            const batePrioridade = $filtroPrioridade ? t.prioridade === $filtroPrioridade : true;
-            return bateTexto && bateStatus && batePrioridade;
-        })
+        aplicarFiltros(tarefas, $buscaTexto, $filtroStatus, $filtroPrioridade)
     );
 
     onMount(async () => {
@@ -41,6 +36,7 @@
         <a class="astra-btn nova-tarefa" href="/tarefas/nova"><span aria-hidden="true">+</span> Nova tarefa</a>
     </div>
 
+    <AlternarVisao atual="lista" />
     <Filtros />
 
     <section aria-label="Lista de tarefas">
