@@ -83,10 +83,10 @@
 		flex-direction: column;
 		gap: 16px;
 		padding: 16px;
-		background: rgba(5, 10, 7, 0.45);
+		background: #101319;
 		border: 1px solid var(--astra-glass-border);
-		border-top: 5px solid var(--cor-status);
-		border-radius: 20px;
+		border-top: 2px solid var(--cor-status);
+		border-radius: 3px;
 		-webkit-backdrop-filter: blur(12px);
 		backdrop-filter: blur(12px);
 	}
@@ -117,7 +117,7 @@
 		text-align: center;
 		color: var(--astra-on-action);
 		background: var(--cor-status);
-		border-radius: 999px;
+		border-radius: 3px;
 	}
 
 	.lista-cards {
@@ -130,15 +130,13 @@
 
 	/* cartão compacto de kanban */
 	.lista-cards :global(.tarefa-card) {
-		padding: 16px;
+		padding: 16px 16px 16px 36px;
 		gap: 10px;
 		background: var(--astra-grad-glass);
-		border-radius: 16px;
-		transition: transform 0.15s ease, border-color 0.15s ease;
+		border-radius: 3px;
 	}
 
 	.lista-cards :global(.tarefa-card:hover) {
-		transform: translateY(-2px);
 		border-color: var(--astra-accent-soft);
 	}
 
@@ -184,8 +182,12 @@
 		text-align: center;
 		color: var(--astra-muted);
 		border: 1px dashed var(--astra-glass-border);
-		border-radius: 16px;
+		border-radius: 3px;
 	}
+
+	.lista-cards :global(.estrela) { left:12px; top:17px; font-size:18px; }
+	@media(max-width:1100px) { .quadro-container { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+	@media(max-width:640px) { .quadro-container { grid-template-columns:minmax(0,1fr); } }
 
 	@media (prefers-reduced-motion: reduce) {
 		.lista-cards :global(.tarefa-card) {

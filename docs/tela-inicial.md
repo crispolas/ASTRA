@@ -14,9 +14,9 @@ A rota `/inicio` integra a abertura aprovada no protótipo. A lista de tarefas p
 
 ## O que foi preservado
 
-A lista inicial usa fundo preto, branco e cinza, com cartões que flutuam lentamente e ganham brilho branco e inclinação discreta sob o cursor. O céu desenha estrelas com caracteres de texto. O nome ASTRA no cabeçalho conecta essa tela à abertura lunar.
+O gerenciador inteiro usa fundo preto, branco e cinza. Os cartões de tarefa flutuam lentamente e ganham brilho branco e inclinação discreta sob o cursor. O céu desenha estrelas com caracteres de texto. O nome ASTRA no cabeçalho conecta essa tela à abertura lunar.
 
-A variante `catalogo` do cartão é ativada somente na lista inicial. Nas páginas de projetos e no quadro Kanban, o cartão mantém a apresentação anterior. Busca, filtros compartilhados, dados, cadastro, edição e rotas mantêm seu funcionamento. O cabeçalho preserva Tarefas, Projetos e Quadro Kanban, com indicação da seção atual. Nenhuma tela fictícia do HTML foi incorporada.
+A variante `catalogo` é a apresentação padrão do cartão nas listas, nos projetos e no quadro Kanban. O tema compartilhado também cobre detalhes, cadastro e edição. O quadro adapta as quatro colunas para duas e depois uma em telas menores. Busca, filtros compartilhados, dados, cadastro, edição e rotas mantêm seu funcionamento. O cabeçalho preserva Tarefas, Projetos e Quadro Kanban, com indicação da seção atual e brilho branco em cada item no hover e no foco. Os textos decorativos acima do título da lista foram removidos. Nenhuma tela fictícia do HTML foi incorporada.
 
 ## Organização
 
@@ -25,8 +25,8 @@ A variante `catalogo` do cartão é ativada somente na lista inicial. Nas págin
 - `src/lib/entrada/constelacao.ts`: geometria compartilhada das letras.
 - `src/lib/entrada/transicao.ts`: estado temporário da passagem da marca entre as duas telas.
 - `MarcaAstra.svelte` e `TransicaoEntrada.svelte`: marca persistente e animação até o cabeçalho, dentro do layout.
-- `CeuAscii.svelte`: céu decorativo em Canvas, montado apenas na lista inicial; remove eventos e cancela a animação ao sair da rota. Pausa na aba oculta e respeita movimento reduzido.
-- `TarefaCard.svelte`: variante visual opcional com flutuação, brilho e reação ao cursor; a variante padrão permanece disponível para projetos e quadro.
+- `CeuAscii.svelte`: céu decorativo em Canvas, montado no layout compartilhado das páginas do gerenciador; é desmontado ao entrar na abertura lunar. Pausa na aba oculta e respeita movimento reduzido.
+- `TarefaCard.svelte`: variante visual opcional com flutuação, brilho e reação ao cursor; o mesmo visual é reutilizado em projetos e no quadro.
 - `Filtros.svelte`: apresentação dos controles existentes, com rótulos visíveis e adaptação a telas pequenas.
 
 O uso de `onMount` mantém Canvas e eventos no navegador. `goto` troca a rota sem recarregar o documento. A transição fica no layout para que o nome não desapareça quando a abertura é desmontada.
@@ -55,6 +55,10 @@ As duas verificações novas de rota estão em `tests/entrada.test.mjs`. A abert
 
 Os imports da lista inicial e os imports de tipos do quadro foram ajustados para os caminhos existentes. A main já utiliza subpath imports; não foi necessário manter o alias depreciado `$lib` que havia sido usado no protótipo anterior.
 
-`npm run check`, `npm run build` e os 25 testes da suíte passaram. As expectativas antigas de apresentação foram atualizadas para conferir o rótulo em `astra-eyebrow`, contar cartões por classe independente da ordem e aceitar a capitalização da mensagem já existente. As verificações de título, campos, quantidade de cartões, URL da API e alerta de erro permanecem.
+`npm run check`, `npm run build` e os 29 testes da suíte passaram. As expectativas antigas de apresentação foram atualizadas para conferir o rótulo em `astra-eyebrow`, contar cartões por classe independente da ordem e aceitar a capitalização da mensagem já existente. As verificações de título, campos, quantidade de cartões, URL da API e alerta de erro permanecem.
 
 Para verificar o efeito, passe o mouse sobre os cartões e aproxime-o das estrelas nas margens. Com movimento reduzido, o céu fica estático e os cartões não flutuam nem inclinam. No celular, os filtros se empilham e os metadados usam duas colunas. A alteração não adiciona mudança de status, exclusão, novos filtros ou funcionalidades de marcos futuros.
+
+## Conferência da consistência visual
+
+Verificadas no navegador, em desktop e celular: lista, quadro, lista de projetos, detalhe do projeto, detalhe da tarefa, nova tarefa e edição. Conferidos também o brilho da navegação, filtros, alternância de visões, preenchimento da edição, abertura lunar e gravação de status pelo cartão. O status usado no teste foi restaurado ao final. A mudança é de apresentação e não altera os contratos da API nem os fluxos de cadastro e edição.
