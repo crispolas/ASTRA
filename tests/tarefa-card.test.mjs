@@ -80,3 +80,12 @@ test('o mesmo componente pode apresentar duas tarefas diferentes', () => {
 	assert(segundoHtml.includes('href="/tarefas/2"'));
 	assert(!segundoHtml.includes('Primeira tarefa'));
 });
+
+test('o cartão oferece um seletor de status com o status atual escolhido', () => {
+	const tarefa = Object.freeze({ ...exemplo, status: 'em-revisao' });
+	const html = render(TarefaCard, { props: { tarefa } }).body;
+	assert(html.includes('aria-label="Status de Documentar o componente"'));
+	assert.equal(html.match(/<option\b/g)?.length, 4);
+	assert.match(html, /<option value="em-revisao"[^>]*selected[^>]*>Em revisão<\/option>/);
+	assert.doesNotMatch(html, /<option value="a-fazer"[^>]*selected/);
+});
