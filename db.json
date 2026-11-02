@@ -21,7 +21,7 @@
       "projetoId": "1",
       "titulo": "Criar o repositório",
       "descricao": "Repositório da equipe no GitHub, com todos os integrantes",
-      "status": "concluida",
+      "status": "em-andamento",
       "prioridade": "alta",
       "responsavel": "Ana",
       "prazo": "2026-10-06"
@@ -75,6 +75,16 @@
       "responsavel": "Diego",
       "prazo": "2026-10-22",
       "id": "Mf8yXBiUj90"
+    },
+    {
+      "projetoId": "2",
+      "titulo": "Bla",
+      "descricao": "",
+      "status": "a-fazer",
+      "prioridade": "media",
+      "responsavel": "",
+      "prazo": "",
+      "id": "SPwBuwheFhs"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
