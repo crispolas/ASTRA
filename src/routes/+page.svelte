@@ -49,7 +49,8 @@
             <div class="astra-list">
                 {#each tarefasFiltradas as tarefa (tarefa.id)}
                     <TarefaCard tarefa={tarefa} variante="catalogo"
-                        onstatus={(nova) => tarefas = tarefas.map((t) => t.id === nova.id ? nova : t)} />
+                        onstatus={(nova) => tarefas = tarefas.map((t) => t.id === nova.id ? nova : t)}
+                        onexcluir={(id) => tarefas = tarefas.filter((t) => t.id !== id)} />
                 {/each}
             </div>
         {/if}

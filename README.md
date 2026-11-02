@@ -15,6 +15,9 @@ SvelteKit com TypeScript.
 
 ## Documentação técnica
 
+- [Diário técnico do Marco 5](docs/marco-5.md): implementação e testes da exclusão de tarefas (#31), com organização das próximas entregas.
+- [Slides iniciais do Marco 5](docs/slides-marco-5/index.html): apresentação em HTML com letras grandes e notas ocultas; baixe o arquivo e abra no navegador.
+
 - [Interface e abertura lunar](docs/tela-inicial.md): a entrada fica em `/inicio`; o gerenciador com céu ASCII e cartões flutuantes continua em `/`.
 - [Issue 28 — Lista e quadro](docs/issue-28.md): alternância entre visões com busca e filtros compartilhados.
 
