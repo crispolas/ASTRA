@@ -89,3 +89,11 @@ test('o cartão oferece um seletor de status com o status atual escolhido', () =
 	assert.match(html, /<option value="em-revisao"[^>]*selected[^>]*>Em revisão<\/option>/);
 	assert.doesNotMatch(html, /<option value="a-fazer"[^>]*selected/);
 });
+
+test('o botão de excluir só aparece quando a página oferece o callback de exclusão', () => {
+	const padrao = render(TarefaCard, { props: { tarefa: exemplo } }).body;
+	assert(!padrao.includes('aria-label="Excluir tarefa'));
+	const naLista = render(TarefaCard, { props: { tarefa: exemplo, onexcluir() {} } }).body;
+	assert(naLista.includes('aria-label="Excluir tarefa Documentar o componente"'));
+	assert(naLista.includes('type="button"'));
+});

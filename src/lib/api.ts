@@ -44,6 +44,14 @@ export async function atualizarTarefa(id: string, dados: Partial<NovaTarefa>): P
 	return enviarJson<Tarefa>(`/tarefas/${encodeURIComponent(id)}`, 'PATCH', dados);
 }
 
+export async function excluirTarefa(id: string): Promise<void> {
+	const resposta = await fetch(`${API_URL}/tarefas/${encodeURIComponent(id)}`, { method: 'DELETE' });
+	if (!resposta.ok) {
+		throw new Error(`Erro ao acessar a API: ${resposta.status} ${resposta.statusText}`);
+	}
+	// DELETE pode responder 204, sem corpo: não há JSON para converter.
+}
+
 export async function criarProjeto(dados: NovoProjeto): Promise<Projeto> {
 	return enviarJson<Projeto>('/projetos', 'POST', dados);
 }

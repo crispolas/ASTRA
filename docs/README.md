@@ -2,6 +2,9 @@
 
 Este documento registra o que foi desenvolvido no projeto. Cada membro da equipe deve adicionar uma seção para explicar sua issue de forma simples.
 
+- [Marco 5](marco-5.md): diário técnico e divisão inicial das tarefas.
+- [Apresentação inicial do Marco 5](slides-marco-5/index.html): exclusão de tarefas (#31), com tipografia ampliada para projeção.
+
 ## Sobre o projeto
 
 O ASTRA é um gerenciador de tarefas acadêmicas desenvolvido para a disciplina de Desenvolvimento Frontend.

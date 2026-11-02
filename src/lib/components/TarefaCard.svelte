@@ -1,17 +1,35 @@
 <script lang="ts">
-	import { atualizarTarefa } from '../api';
+	import { atualizarTarefa, excluirTarefa } from '../api';
 	import type { Status, Tarefa } from '../../tipos';
 
 	interface Props {
 		tarefa: Readonly<Tarefa>;
 		variante?: 'padrao' | 'catalogo';
 		onstatus?: (tarefa: Tarefa) => void;
+		onexcluir?: (id: string) => void;
 	}
 
-	let { tarefa, variante = 'catalogo', onstatus }: Props = $props();
+	let { tarefa, variante = 'catalogo', onstatus, onexcluir }: Props = $props();
 
 	let salvando = $state(false);
 	let erroStatus = $state('');
+	let excluindo = $state(false);
+	let erroExclusao = $state('');
+
+	async function confirmarExclusao() {
+		if (excluindo || salvando || !onexcluir) return;
+		if (!window.confirm(`Excluir a tarefa “${tarefa.titulo}”? Essa ação não pode ser desfeita.`)) return;
+		excluindo = true;
+		erroExclusao = '';
+		try {
+			await excluirTarefa(tarefa.id);
+			onexcluir(tarefa.id);
+		} catch {
+			erroExclusao = 'Não foi possível excluir a tarefa. Confira se a API está ligada e tente novamente.';
+		} finally {
+			excluindo = false;
+		}
+	}
 
 	async function mudarStatus(event: Event) {
 		const select = event.currentTarget as HTMLSelectElement;
@@ -82,7 +100,7 @@
 			<dt>Status</dt>
 			<dd>
 				<select class="astra-tag status-select {classesStatus[tarefa.status]}" value={tarefa.status}
-					aria-label={`Status de ${tarefa.titulo}`} disabled={salvando} onchange={mudarStatus}>
+					aria-label={`Status de ${tarefa.titulo}`} disabled={salvando || excluindo} onchange={mudarStatus}>
 					{#each Object.entries(nomesStatus) as [valor, nome] (valor)}
 						<option value={valor}>{nome}</option>
 					{/each}
@@ -103,6 +121,15 @@
 		</div>
 	</dl>
 	{#if erroStatus}<p class="astra-error" role="alert">{erroStatus}</p>{/if}
+	{#if onexcluir}
+		<div class="acoes-tarefa">
+			<button type="button" class="astra-pill excluir-tarefa" onclick={confirmarExclusao}
+				aria-label={`Excluir tarefa ${tarefa.titulo}`} disabled={excluindo || salvando}>
+				{excluindo ? 'Excluindo...' : 'Excluir'}
+			</button>
+		</div>
+	{/if}
+	{#if erroExclusao}<p class="astra-error" role="alert">{erroExclusao}</p>{/if}
 </article>
 </div>
 
@@ -115,6 +142,9 @@
 	}
 	.status-select { max-width:100%; font:inherit; cursor:pointer; color-scheme:dark; }
 	.status-select:disabled { cursor:progress; opacity:.6; }
+	.acoes-tarefa { display:flex; justify-content:flex-end; padding-top:8px; }
+	.excluir-tarefa { cursor:pointer; font-size:12px; }
+	.excluir-tarefa:disabled { opacity:.55; cursor:progress; }
 	.suporte { display:contents; }
 	.orbita { display:block; min-width:0; animation:gravidade-zero 9s ease-in-out infinite; }
 	.orbita:nth-child(2n) { animation-duration:10.8s; animation-delay:-2s; }
