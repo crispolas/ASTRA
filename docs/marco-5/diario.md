@@ -123,3 +123,8 @@ A entrega foi integrada pelo [PR #71](https://github.com/crispolas/ASTRA/pull/71
 A apresentação explica a conferência de teclado, foco visível e tela pequena usando recursos presentes na interface: labels associados aos campos, `:focus-visible` no tema e media queries no Kanban. Os dois últimos slides têm demonstrações locais de teclado e reorganização das colunas. Essas regras já existentes são exemplos do que conferir, não alterações atribuídas ao commit da auditoria.
 
 Para demonstrar no site, percorra os controles com Tab e Shift + Tab, acione botões com Enter e confira no modo de dispositivos do DevTools se os controles e textos permanecem utilizáveis. Execute Lighthouse para inspecionar os apontamentos do navegador. Não foi adicionada dependência ao projeto.
+
+
+### Metodologia da apresentação
+
+Os slides mostram a implementação em etapas, com código curto, significado dos recursos e motivo das decisões. As explicações essenciais de callback, estado reativo, ciclo de vida, tratamento de falhas e CSS ficam visíveis; o roteiro oculto complementa a fala. As interações demonstram o mecanismo explicado em cada cena.
