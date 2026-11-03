@@ -65,3 +65,28 @@ time { font:13px ui-monospace,'Courier New',monospace; }
 .astra-form { display:grid; gap:20px; width:100%; max-width:40rem; margin-inline:auto; padding:clamp(18px,4vw,32px); background:#111318; border:1px solid var(--astra-glass-border); border-radius:3px; }
 @media(max-width:600px) { .astra-meta { grid-template-columns:repeat(2,minmax(0,1fr)); } .astra-card { padding:20px; } h2 { font-size:23px; } main.astra-page { gap:24px; } }
 @media(prefers-reduced-motion:reduce) { * { transition:none!important; animation:none!important; } }
+
+/* Movimento compartilhado: tarefas, projetos e cartões do Kanban. */
+.astra-list { gap:34px; }
+.astra-orbita { min-width:0; animation:gravidade-suave 10s ease-in-out infinite; transform-origin:center; }
+.astra-orbita:nth-child(2n) { animation-duration:12.8s; animation-delay:-3.8s; }
+.astra-orbita:nth-child(3n) { animation-duration:11.4s; animation-delay:-4.2s; animation-direction:reverse; }
+.astra-orbita:hover,.astra-orbita:focus-within { animation-play-state:paused; }
+@keyframes gravidade-suave {
+  0%,100% { transform:translate3d(-4px,6px,0) rotate(-.18deg); }
+  25% { transform:translate3d(1px,-3px,0) rotate(.04deg); }
+  50% { transform:translate3d(4px,-7px,0) rotate(.18deg); }
+  75% { transform:translate3d(0,1px,0) rotate(-.04deg); }
+}
+.astra-card[data-orbital] { position:relative; isolation:isolate; transform:perspective(1100px) translate3d(var(--tx,0px),var(--ty,0px),0) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)); transition:transform 420ms ease-out,border-color 300ms,box-shadow 300ms; }
+.astra-card[data-orbital]::after { content:''; position:absolute; inset:0; z-index:-1; border-radius:inherit; pointer-events:none; opacity:0; background:radial-gradient(ellipse 600px 270px at var(--mx,50%) var(--my,50%),#f3f6ff17,transparent 72%); transition:opacity 300ms; }
+.astra-card[data-orbital]:hover::after,.astra-card[data-orbital]:focus-within::after { opacity:1; }
+.astra-card[data-orbital]:hover,.astra-card[data-orbital]:focus-within { border-color:#cadbffa8; box-shadow:0 0 22px #dceaff18,0 22px 45px #0006; }
+@media(max-width:700px) {
+  .astra-list { gap:30px; }
+  @keyframes gravidade-suave { 0%,100% { transform:translate3d(-1px,5px,0) rotate(-.08deg); } 50% { transform:translate3d(1px,-6px,0) rotate(.08deg); } }
+}
+@media(prefers-reduced-motion:reduce) {
+  .astra-orbita { animation:none; }
+  .astra-card[data-orbital] { transform:none; }
+}
