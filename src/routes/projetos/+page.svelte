@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { interacaoOrbital } from '../../lib/visual/interacao';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -15,12 +16,14 @@
 	{#if data.projetos && data.projetos.length > 0}
 		<ul class="astra-list lista-projetos">
 			{#each data.projetos as projeto (projeto.id)}
-				<li class="astra-card card-projeto">
+				<li class="astra-orbita">
+					<article class="astra-card card-projeto" use:interacaoOrbital>
 					<h3>{projeto.nome}</h3>
 					{#if projeto.descricao}
 						<p class="astra-muted">{projeto.descricao}</p>
 					{/if}
 					<a class="astra-pill" href="/projetos/{projeto.id}">Ver detalhes do projeto</a>
+					</article>
 				</li>
 			{/each}
 		</ul>
