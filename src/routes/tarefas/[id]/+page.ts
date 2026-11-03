@@ -1,24 +1,10 @@
-import { buscarTarefa } from '../../../lib/api';
-import { error } from '@sveltejs/kit';
+import { buscarTarefa, ErroApi } from '../../../lib/api';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ params }) => {
-  const idParam = params.id;
-
   try {
-    const tarefa = await buscarTarefa(idParam);
-
-    if (!tarefa) {
-      throw error(404, 'Tarefa não encontrada');
-    }
-
-    return {
-      tarefa
-    };
-  } catch (err: any) {
-    if (err && typeof err === 'object' && 'status' in err) {
-      throw err;
-    }
-    throw error(404, 'Tarefa não encontrada');
+    return { tarefa: await buscarTarefa(params.id), naoEncontrada: false };
+  } catch (erro) {
+    return { tarefa: null, naoEncontrada: erro instanceof ErroApi && erro.status === 404 };
   }
 };

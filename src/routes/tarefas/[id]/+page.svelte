@@ -73,8 +73,10 @@
         </div>
       </dl>
     </article>
+  {:else if data.naoEncontrada}
+    <p class="astra-error" role="alert">Tarefa não encontrada. Ela pode ter sido excluída ou o endereço está errado.</p>
   {:else}
-    <p class="astra-error" role="alert">Erro: não foi possível carregar a tarefa. Confira se a API está ligada e se a tarefa existe.</p>
+    <p class="astra-error" role="alert">Erro: não foi possível carregar a tarefa. Confira se a API está ligada.</p>
   {/if}
 </main>
 

@@ -50,8 +50,10 @@
 				</div>
 			{/if}
 		</section>
+	{:else if data.naoEncontrado}
+		<p class="astra-error" role="alert">Projeto não encontrado. Ele pode ter sido removido ou o endereço está errado.</p>
 	{:else}
-		<p class="astra-error" role="alert">Erro: não foi possível carregar o projeto. Confira se a API está ligada e se o projeto existe.</p>
+		<p class="astra-error" role="alert">Erro: não foi possível carregar o projeto. Confira se a API está ligada.</p>
 	{/if}
 </main>
 
