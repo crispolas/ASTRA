@@ -16,7 +16,7 @@ Diário técnico de exclusão, erros e estados da tela.
 | #34 | Estado vazio | A definir | Sem implementação registrada neste documento |
 | #35 | Tarefa ou projeto inexistente | A definir | Sem implementação registrada neste documento |
 | #36 | Falha ao salvar e excluir | A confirmar pela equipe | Comportamento verificado em cadastro, edição e exclusão; slides e roteiro incluídos |
-| #37 | Auditoria de acessibilidade e responsividade | A definir | Sem auditoria registrada neste documento |
+| #37 | Auditoria de acessibilidade e responsividade | Brenno Milhomem Farias | Integrada pelo PR #71; slides e roteiro incluídos |
 | #38 | Apresentação do Marco 5 | Gabriel Crispim Galvão | Slides da #31 e dos estados da lista (#32 e #33) em slides/index.html |
 
 Os responsáveis não definidos não foram atribuídos automaticamente. Os slides são parciais: não apresentam as demais issues como concluídas. O marco só estará completo após as entregas restantes.
@@ -89,7 +89,7 @@ O [PR #69](https://github.com/crispolas/ASTRA/pull/69), de Eurípedes Rocha Neto
 
 ## Apresentação inicial — Issue 38
 
-Abra [slides/index.html](slides/index.html) no navegador. O HTML é independente, sem API ou instalação. Letras grandes, margens curtas e contraste alto foram priorizados para projeção. Setas navegam, F ativa tela cheia e N abre o roteiro oculto. A simulação de exclusão é local à apresentação e não altera os dados do ASTRA. A apresentação contém dez slides: exclusão, carregamento, erro na lista e tratamento de falhas ao salvar e excluir. Explica onMount, $state, await, try/catch/finally e os blocos condicionais do Svelte. O botão Tentar novamente ainda não está implementado e não é apresentado como concluído. As demais issues serão acrescentadas após a implementação.
+Abra [slides/index.html](slides/index.html) no navegador. O HTML é independente, sem API ou instalação. Letras grandes, margens curtas e contraste alto foram priorizados para projeção. Setas navegam, F ativa tela cheia e N abre o roteiro oculto. A simulação de exclusão é local à apresentação e não altera os dados do ASTRA. A apresentação contém doze slides: exclusão, carregamento, erro na lista, tratamento de falhas ao salvar e excluir e auditoria de acessibilidade e responsividade. Explica onMount, $state, await, try/catch/finally e os blocos condicionais do Svelte. O botão Tentar novamente ainda não está implementado e não é apresentado como concluído. As demais issues serão acrescentadas após a implementação.
 
 
 Os slides usam fontes ampliadas, margens curtas e notas ocultas. **← / →** navegam, **F** solicita tela cheia e **N** abre ou fecha o roteiro. O botão das notas fica oculto na lateral esquerda, aparecendo no hover ou no foco. A [versão PDF](slides/apresentacao.pdf) serve de reserva, sem notas. O HTML pode ser baixado do GitHub e aberto diretamente no navegador.
@@ -112,3 +112,14 @@ Na exclusão, `onexcluir` só é chamado depois do sucesso do DELETE. Se houver 
 Simule HTTP 500 em POST e PATCH: os campos, a página e os dados digitados devem permanecer, com aviso e botão reabilitado. Simule HTTP 500 em DELETE: a tarefa deve continuar na lista, com aviso e nova tentativa disponível. A conferência no navegador usou respostas interceptadas, sem gravar ou excluir dados reais.
 
 Os dois últimos slides e seus roteiros mostram esses fluxos com simulações locais. Issue: [#36](https://github.com/crispolas/ASTRA/issues/36).
+
+
+## Issue 37 — Auditar acessibilidade e responsividade
+
+**Responsável:** Brenno Milhomem Farias.
+
+A entrega foi integrada pelo [PR #71](https://github.com/crispolas/ASTRA/pull/71). O commit registra conferência com Lighthouse no DevTools e adiciona uma meta description em `src/app.html`, documento base do SvelteKit. O repositório não contém relatório com notas; os slides não atribuem pontuações à auditoria. A descrição é um metadado do site, não uma comprovação de acessibilidade.
+
+A apresentação explica a conferência de teclado, foco visível e tela pequena usando recursos presentes na interface: labels associados aos campos, `:focus-visible` no tema e media queries no Kanban. Os dois últimos slides têm demonstrações locais de teclado e reorganização das colunas. Essas regras já existentes são exemplos do que conferir, não alterações atribuídas ao commit da auditoria.
+
+Para demonstrar no site, percorra os controles com Tab e Shift + Tab, acione botões com Enter e confira no modo de dispositivos do DevTools se os controles e textos permanecem utilizáveis. Execute Lighthouse para inspecionar os apontamentos do navegador. Não foi adicionada dependência ao projeto.
