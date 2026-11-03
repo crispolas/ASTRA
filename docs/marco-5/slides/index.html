@@ -28,6 +28,17 @@
 @media(max-height:800px) and (min-width:801px){.cover h1{font-size:145px}.cover-marco{font-size:48px;margin-top:24px}.cover-subject{font-size:34px}.cover-team{font-size:24px;margin-top:28px}}
 @media(max-width:800px){.cover-copy{width:100%}.cover h1{font-size:clamp(75px,16vw,120px)}.cover-marco{font-size:36px}.cover-subject{font-size:29px}.cover-team{font-size:22px}.cover{justify-content:center;min-height:calc(100svh - 50px)}}
 @media print{.cover h1{font-size:125px}.cover-marco{font-size:45px}.cover-subject{font-size:31px}.cover-team{font-size:22px}.cover{justify-content:center}.cover-copy{width:90%}}
+
+/* A demonstração de exclusão usa toda a largura, sem coluna lateral. */
+[data-scene="delete"] .layout{display:flex;flex-direction:column;align-items:stretch;justify-content:center;gap:24px}
+[data-scene="delete"] .demo-col{gap:16px}
+[data-scene="delete"] .task{padding:20px 22px}
+[data-scene="delete"] .task>div{flex:1 1 260px}
+[data-scene="delete"] .reading{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;font-size:25px;line-height:1.4}
+[data-scene="delete"] .reading p{margin:0;padding-top:14px;border-top:1px solid #ffffff30;min-width:0}
+[data-scene="delete"] .reading p+p{margin:0}
+@media(max-width:1100px){[data-scene="delete"]{height:auto;min-height:calc(100svh - 52px)}[data-scene="delete"] .layout{flex:none}[data-scene="delete"] .reading{grid-template-columns:minmax(0,1fr);gap:14px;font-size:25px}[data-scene="delete"] .reading p{padding-top:12px}main:has([data-scene="delete"]:not([hidden])){height:auto;min-height:100svh}}
+@media print{[data-scene="delete"] .layout{gap:16px}[data-scene="delete"] .reading{grid-template-columns:repeat(3,minmax(0,1fr));font-size:21px}[data-scene="delete"] .task{padding:16px}[data-scene="delete"]{height:195mm;min-height:0}}
 </style></head><body>
 <canvas id="space" aria-hidden="true"></canvas>
 <main>
