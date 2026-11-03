@@ -13,8 +13,8 @@ Diário técnico de exclusão, erros e estados da tela.
 | #31 | Excluir tarefa com confirmação | Gabriel Crispim Galvão | Integrada à main pelo PR #68 |
 | #32 | Estado de carregamento | Eurípedes Rocha Neto | PR #69: alterações na lista geral; demais telas ainda precisam de conferência |
 | #33 | Estado de erro e tentar novamente | Eurípedes Rocha Neto | PR #69: alterações na lista geral; demais telas ainda precisam de conferência |
-| #34 | Estado vazio | Felipe Borges Barros | Lista e quadro separam "nenhuma tarefa cadastrada" de "nenhum resultado"; commit 38d11c7, PR em aberto |
-| #35 | Tarefa ou projeto inexistente | Felipe Borges Barros | `/tarefas/:id` e `/projetos/:id` mostram "não encontrado" no 404; commit 4c33e25, PR em aberto |
+| #34 | Estado vazio | Felipe Borges Barros | Lista e quadro separam "nenhuma tarefa cadastrada" de "nenhum resultado"; commit 38d11c7, PR #72 |
+| #35 | Tarefa ou projeto inexistente | Felipe Borges Barros | `/tarefas/:id` e `/projetos/:id` mostram "não encontrado" no 404; commit 4c33e25, PR #72 |
 | #36 | Falha ao salvar e excluir | A confirmar pela equipe | Comportamento verificado em cadastro, edição e exclusão; slides e roteiro incluídos |
 | #37 | Auditoria de acessibilidade e responsividade | Brenno Milhomem Farias | Integrada pelo PR #71; slides e roteiro incluídos |
 | #38 | Apresentação do Marco 5 | Gabriel Crispim Galvão | Slides da #31 e dos estados da lista (#32 e #33) em slides/index.html |
@@ -121,7 +121,7 @@ Com `npx --no-install json-server db.json` e `npm run dev`:
 ### GitHub
 
 - Issue: [#34 - Mostrar o estado vazio](https://github.com/crispolas/ASTRA/issues/34).
-- Commit: `38d11c7`. Pull request: em aberto.
+- Commit: `38d11c7`. Pull request: [#72](https://github.com/crispolas/ASTRA/pull/72).
 
 ## Issue 35 — Tratar tarefa ou projeto inexistente
 
@@ -163,7 +163,7 @@ A tela de edição (`/tarefas/:id/editar`) não foi alterada; a issue cita apena
 ### GitHub
 
 - Issue: [#35 - Tratar tarefa ou projeto inexistente](https://github.com/crispolas/ASTRA/issues/35).
-- Commit: `4c33e25`. Pull request: em aberto.
+- Commit: `4c33e25`. Pull request: [#72](https://github.com/crispolas/ASTRA/pull/72).
 
 ## Apresentação inicial — Issue 38
 
