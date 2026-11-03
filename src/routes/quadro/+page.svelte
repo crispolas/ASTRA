@@ -123,14 +123,14 @@
 	.lista-cards {
 		display: flex;
 		flex-direction: column;
-		gap: 12px;
+		gap: 28px;
 		flex: 1;
 		min-height: 140px;
 	}
 
 	/* cartão compacto de kanban */
 	.lista-cards :global(.tarefa-card) {
-		padding: 16px 16px 16px 36px;
+		padding: 18px;
 		gap: 10px;
 		background: var(--astra-grad-glass);
 		border-radius: 3px;
@@ -185,7 +185,6 @@
 		border-radius: 3px;
 	}
 
-	.lista-cards :global(.estrela) { left:12px; top:17px; font-size:18px; }
 	@media(max-width:1100px) { .quadro-container { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 	@media(max-width:640px) { .quadro-container { grid-template-columns:minmax(0,1fr); } }
 
