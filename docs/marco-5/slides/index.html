@@ -19,11 +19,15 @@
 @media(max-height:800px) and (min-width:801px){.hero h1{font-size:65px}.hero .lead{font-size:30px}.slide h2{font-size:46px}.slide{gap:18px}.reading{font-size:26px}.reading p+p{margin-top:18px}.flow-explain{font-size:29px}.statement{font-size:25px}.small,.scene-note{font-size:23px}pre{font-size:25px}.terminal{padding:22px}[data-scene="loading"] .small{font-size:24px}[data-scene="save-failure"] .small{font-size:23px}[data-scene="responsive"] .scene-note{font-size:22px}}
 @media(min-width:1600px){.hero .lead{font-size:41px}.reading{font-size:35px}.small,.scene-note{font-size:29px}.statement{font-size:33px}.flow-explain{font-size:36px}}
 @media print{.hero h1{font-size:52px}.hero .lead{font-size:27px}.slide h2{font-size:33px}.statement,.reading{font-size:24px}.small,.scene-note{font-size:21px}.flow-explain{font-size:25px}.terminal{padding:17px}pre{font-size:22px}}
+
+/* As colunas podem encolher sem empurrar a explicação para fora da tela. */
+.layout{grid-template-columns:repeat(2,minmax(0,1fr))}.layout>*{min-width:0}.hero .layout{grid-template-columns:minmax(0,1.35fr) minmax(0,.85fr)}.task{flex-wrap:wrap}.task>div{min-width:0;flex:1 1 220px}.task .action{flex:none}.reading,.task h3,.terminal-title{overflow-wrap:anywhere}
+@media(max-width:800px){.layout,.hero .layout{grid-template-columns:minmax(0,1fr)}}
 </style></head><body>
 <canvas id="space" aria-hidden="true"></canvas>
 <main>
 <section class="slide hero" tabindex="-1" data-scene="hero">
-<div class="layout"><div><p class="label"><span>ASTRA</span> / MARCO 5 / #31</p><h1>Como implementamos<br>a exclusão</h1><p class="lead">Dividimos o fluxo entre o cartão, o módulo de API e a página que guarda as tarefas.</p></div><div class="hero-art"><p class="caption">api.ts → json-server</p></div></div>
+<div class="layout"><div><p class="label"><span>ASTRA</span> / MARCO 5 / #31</p><h1>Como implementamos<br>a exclusão</h1><p class="lead">Dividimos o fluxo entre o cartão, o módulo de API e a página que guarda as tarefas.</p></div><div class="hero-art"></div></div>
 <div class="hero-bottom"><p><b>01 / NAVEGADOR</b>Cartão pede confirmação</p><p><b>02 / API</b>api.ts envia DELETE</p><p><b>03 / SVELTE</b>Página altera o $state</p></div>
 </section>
 <section class="slide" tabindex="-1" hidden data-scene="api"><p class="label">#31 / COMUNICAÇÃO COM A API</p><h2>Enviar a exclusão para a API</h2><div class="layout"><div class="terminal"><div class="terminal-title">src/lib/api.ts</div><pre><span class="dim">// url: /tarefas/ID</span>
