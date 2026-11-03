@@ -15,9 +15,9 @@ Diário técnico de exclusão, erros e estados da tela.
 | #33 | Estado de erro e tentar novamente | Eurípedes Rocha Neto | PR #69: alterações na lista geral; demais telas ainda precisam de conferência |
 | #34 | Estado vazio | A definir | Sem implementação registrada neste documento |
 | #35 | Tarefa ou projeto inexistente | A definir | Sem implementação registrada neste documento |
-| #36 | Falha ao salvar e excluir | A definir | Complementa os fluxos de escrita |
+| #36 | Falha ao salvar e excluir | A confirmar pela equipe | Comportamento verificado em cadastro, edição e exclusão; slides e roteiro incluídos |
 | #37 | Auditoria de acessibilidade e responsividade | A definir | Sem auditoria registrada neste documento |
-| #38 | Apresentação do Marco 5 | Gabriel Crispim Galvão | Material inicial da #31 em slides/index.html |
+| #38 | Apresentação do Marco 5 | Gabriel Crispim Galvão | Slides da #31 e dos estados da lista (#32 e #33) em slides/index.html |
 
 Os responsáveis não definidos não foram atribuídos automaticamente. Os slides são parciais: não apresentam as demais issues como concluídas. O marco só estará completo após as entregas restantes.
 
@@ -37,7 +37,7 @@ Excluir uma tarefa após confirmação e atualizar a lista depois do sucesso na 
 - `window.confirm` pede confirmação antes da requisição. Cancelar não envia DELETE.
 - O botão fica bloqueado enquanto exclui ou salva um status; o seletor de status também fica bloqueado durante a exclusão, evitando gravações concorrentes nesse cartão.
 - Depois do sucesso, o cartão avisa a página. A página remove o ID da coleção local, preservando as outras tarefas e as escolhas dos filtros.
-- Em falha, a tarefa permanece na tela, o botão é reabilitado e aparece uma mensagem básica. A #36 continua responsável pelo tratamento mais amplo das falhas de escrita.
+- Em falha, a tarefa permanece na tela, o botão é reabilitado e aparece uma mensagem básica. O tratamento de falhas é detalhado na seção da #36.
 
 ### Como e por quê
 
@@ -89,7 +89,26 @@ O [PR #69](https://github.com/crispolas/ASTRA/pull/69), de Eurípedes Rocha Neto
 
 ## Apresentação inicial — Issue 38
 
-Abra [slides/index.html](slides/index.html) no navegador. O HTML é independente, sem API ou instalação. Letras grandes, margens curtas e contraste alto foram priorizados para projeção. Setas navegam, F ativa tela cheia e N abre o roteiro oculto. A simulação de exclusão é local à apresentação e não altera os dados do ASTRA. O restante do Marco 5 será documentado e acrescentado aos slides quando implementado.
+Abra [slides/index.html](slides/index.html) no navegador. O HTML é independente, sem API ou instalação. Letras grandes, margens curtas e contraste alto foram priorizados para projeção. Setas navegam, F ativa tela cheia e N abre o roteiro oculto. A simulação de exclusão é local à apresentação e não altera os dados do ASTRA. A apresentação contém dez slides: exclusão, carregamento, erro na lista e tratamento de falhas ao salvar e excluir. Explica onMount, $state, await, try/catch/finally e os blocos condicionais do Svelte. O botão Tentar novamente ainda não está implementado e não é apresentado como concluído. As demais issues serão acrescentadas após a implementação.
 
 
 Os slides usam fontes ampliadas, margens curtas e notas ocultas. **← / →** navegam, **F** solicita tela cheia e **N** abre ou fecha o roteiro. O botão das notas fica oculto na lateral esquerda, aparecendo no hover ou no foco. A [versão PDF](slides/apresentacao.pdf) serve de reserva, sem notas. O HTML pode ser baixado do GitHub e aberto diretamente no navegador.
+
+
+## Issue 36 — Tratar falha ao salvar e ao excluir
+
+### Objetivo
+
+Avisar a pessoa quando uma operação falhar e preservar o que ela digitou.
+
+### Como funciona
+
+O formulário compartilhado mantém os campos em `$state`, ligados aos controles com `bind:value`. O `catch` define `erroEnvio` sem limpar os campos; `finally` libera o envio. Cadastro e edição só navegam após o sucesso da API.
+
+Na exclusão, `onexcluir` só é chamado depois do sucesso do DELETE. Se houver falha, o cartão permanece, aparece um alerta e `finally` reabilita o botão. Não foram necessárias dependências adicionais.
+
+### Como conferir
+
+Simule HTTP 500 em POST e PATCH: os campos, a página e os dados digitados devem permanecer, com aviso e botão reabilitado. Simule HTTP 500 em DELETE: a tarefa deve continuar na lista, com aviso e nova tentativa disponível. A conferência no navegador usou respostas interceptadas, sem gravar ou excluir dados reais.
+
+Os dois últimos slides e seus roteiros mostram esses fluxos com simulações locais. Issue: [#36](https://github.com/crispolas/ASTRA/issues/36).
