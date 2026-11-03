@@ -10,14 +10,14 @@ Diário técnico de exclusão, erros e estados da tela.
 
 | Issue | Tarefa | Responsável | Registro |
 | --- | --- | --- | --- |
-| #31 | Excluir tarefa com confirmação | Gabriel Crispim Galvão | Implementada e verificada nesta branch; aguarda integração |
-| #32 | Estado de carregamento | A definir | Sem implementação registrada neste documento |
-| #33 | Estado de erro e tentar novamente | A definir | Sem implementação registrada neste documento |
+| #31 | Excluir tarefa com confirmação | Gabriel Crispim Galvão | Integrada à main pelo PR #68 |
+| #32 | Estado de carregamento | Eurípedes Rocha Neto | PR #69: alterações na lista geral; demais telas ainda precisam de conferência |
+| #33 | Estado de erro e tentar novamente | Eurípedes Rocha Neto | PR #69: alterações na lista geral; demais telas ainda precisam de conferência |
 | #34 | Estado vazio | A definir | Sem implementação registrada neste documento |
 | #35 | Tarefa ou projeto inexistente | A definir | Sem implementação registrada neste documento |
 | #36 | Falha ao salvar e excluir | A definir | Complementa os fluxos de escrita |
 | #37 | Auditoria de acessibilidade e responsividade | A definir | Sem auditoria registrada neste documento |
-| #38 | Apresentação do Marco 5 | Gabriel Crispim Galvão | Material inicial da #31 em slides-marco-5/index.html |
+| #38 | Apresentação do Marco 5 | Gabriel Crispim Galvão | Material inicial da #31 em slides/index.html |
 
 Os responsáveis não definidos não foram atribuídos automaticamente. Os slides são parciais: não apresentam as demais issues como concluídas. O marco só estará completo após as entregas restantes.
 
@@ -81,8 +81,15 @@ Os testes de API cobrem ID codificado, DELETE sem corpo, respostas de sucesso 20
 
 - Issue: [#31](https://github.com/crispolas/ASTRA/issues/31).
 - Branch: `feat/issue-31-excluir-tarefa`.
-- O PR deve usar `Closes #31` para vincular a entrega e encerrar a issue somente quando integrado à main.
+- Pull request: [#68](https://github.com/crispolas/ASTRA/pull/68), integrado à main.
+
+## Registro das issues 32 e 33
+
+O [PR #69](https://github.com/crispolas/ASTRA/pull/69), de Eurípedes Rocha Neto, foi integrado à main e alterou `src/routes/+page.svelte` para carregamento e erro. Este registro identifica a integração; não equivale a uma auditoria do comportamento em todas as rotas. As seções técnicas detalhadas podem ser complementadas pelo responsável.
 
 ## Apresentação inicial — Issue 38
 
-Abra [slides-marco-5/index.html](slides-marco-5/index.html) no navegador. O HTML é independente, sem API ou instalação. Letras grandes, margens curtas e contraste alto foram priorizados para projeção. Setas navegam, F ativa tela cheia e N abre o roteiro oculto. A simulação de exclusão é local à apresentação e não altera os dados do ASTRA. O restante do Marco 5 será documentado e acrescentado aos slides quando implementado.
+Abra [slides/index.html](slides/index.html) no navegador. O HTML é independente, sem API ou instalação. Letras grandes, margens curtas e contraste alto foram priorizados para projeção. Setas navegam, F ativa tela cheia e N abre o roteiro oculto. A simulação de exclusão é local à apresentação e não altera os dados do ASTRA. O restante do Marco 5 será documentado e acrescentado aos slides quando implementado.
+
+
+Os slides usam fontes ampliadas, margens curtas e notas ocultas. **← / →** navegam, **F** solicita tela cheia e **N** abre ou fecha o roteiro. O botão das notas fica oculto na lateral esquerda, aparecendo no hover ou no foco. A [versão PDF](slides/apresentacao.pdf) serve de reserva, sem notas. O HTML pode ser baixado do GitHub e aberto diretamente no navegador.

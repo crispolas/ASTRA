@@ -1,187 +1,30 @@
 # Documentação do ASTRA
 
-Este documento registra o que foi desenvolvido no projeto. Cada membro da equipe deve adicionar uma seção para explicar sua issue de forma simples.
+## Diários e apresentações
 
-- [Marco 5](marco-5.md): diário técnico e divisão inicial das tarefas.
-- [Apresentação inicial do Marco 5](slides-marco-5/index.html): exclusão de tarefas (#31), com tipografia ampliada para projeção.
+| Marco | Diário técnico | Apresentação versionada |
+| --- | --- | --- |
+| 2 — Listagem e rotas | [Diário](marco-2/diario.md) | [PDF](marco-2/apresentacao.pdf) |
+| 3 — Cadastro e edição | [Diário](marco-3/diario.md) | Não há arquivo versionado nesta pasta |
+| 4 — Busca, filtros e quadro | [Diário](marco-4/diario.md) | Não há arquivo versionado nesta pasta |
+| 5 — Exclusão, erros e estados | [Diário](marco-5/diario.md) | [HTML](marco-5/slides/index.html) · [PDF](marco-5/slides/apresentacao.pdf) |
 
-## Sobre o projeto
-
-O ASTRA é um gerenciador de tarefas acadêmicas desenvolvido para a disciplina de Desenvolvimento Frontend.
-
-## Equipe
-
-- Brenno Milhomem Farias
-- Eurípedes Rocha Neto
-- Gabriel Crispim Galvão
-- Felipe Borges Barros
-
-## Tecnologia
-
-O projeto usa SvelteKit com TypeScript.
-
-## Como instalar
-
-Na primeira execução, instale as dependências:
-
-```sh
-npm install
-```
-
-## Como iniciar a aplicação
-
-```sh
-npm run dev -- --open
-```
-
-A aplicação normalmente estará disponível em:
-
-```text
-http://localhost:5173
-```
-
-## Como iniciar a API local
-
-Abra outro terminal e execute:
-
-```sh
-npx json-server db.json
-```
-
-A API estará disponível em `http://localhost:3000`.
-
-Os principais endereços são:
-
-```text
-http://localhost:3000/tarefas
-http://localhost:3000/projetos
-```
-
-## Como verificar o projeto
-
-```sh
-npm test
-npm run check
-npm run build
-```
-
-- `npm test` executa os testes automatizados.
-- `npm run check` procura erros de Svelte e TypeScript.
-- `npm run build` confirma que a aplicação pode ser gerada para produção.
+A explicação da issue #28 está no diário do Marco 4. A documentação da abertura lunar e do tema compartilhado está em [Interface](interface.md). A seção original da issue #9 permanece integralmente no diário do Marco 2.
 
 ## Como documentar uma issue
 
-Cada membro deve adicionar sua issue neste documento usando esta estrutura:
+Acrescente a implementação ao diário do marco correspondente, preservando os registros dos colegas. Use:
 
-```md
-## Issue número - Nome da issue
+- **Issue e responsável:** número, título e nome.
+- **Objetivo:** resultado esperado.
+- **O que foi feito e por quê:** alterações, decisões e relação com o framework.
+- **Como testar:** comandos e passos para conferir o funcionamento.
+- **GitHub:** links da issue e do PR, com o estado de integração confirmado.
 
-**Responsável:** Nome da pessoa
+Guarde os arquivos das apresentações na pasta do marco. Quando houver HTML e PDF, use `slides/index.html` e `slides/apresentacao.pdf`. As instruções e o roteiro ficam no diário ou nas notas ocultas da apresentação; não há README separado nos slides.
 
-### Objetivo
+## Observações sobre os registros
 
-Explique o resultado esperado.
+Os diários preservam explicações e registros históricos. Campos “A preencher” significam falta de documentação, não necessariamente falta de implementação. Consulte também os PRs integrados para verificar o andamento.
 
-### O que foi feito
-
-Explique as alterações realizadas.
-
-### Como testar
-
-Explique como outra pessoa pode conferir o funcionamento.
-```
-
----
-
-## Issue 9 - Configurar o roteador
-
-**Responsável:** Felipe Borges Barros
-
-### Objetivo
-
-Criar as rotas iniciais do ASTRA e uma página personalizada para endereços que não existem.
-
-As páginas criadas nesta issue são simples e usam apenas um título (`h1`) e um subtítulo (`h2`).
-
-### Como o roteamento funciona
-
-O SvelteKit cria as rotas usando as pastas e os arquivos dentro de `src/routes`. Por isso, não foi necessário instalar outra biblioteca de roteamento.
-
-Um arquivo chamado `+page.svelte` representa uma página que pode ser aberta no navegador.
-
-Por exemplo, este arquivo:
-
-```text
-src/routes/projetos/+page.svelte
-```
-
-Cria este endereço:
-
-```text
-/projetos
-```
-
-### Rotas criadas
-
-| Endereço | Arquivo | Conteúdo atual |
-| --- | --- | --- |
-| `/` | `src/routes/+page.svelte` | Página inicial de tarefas |
-| `/tarefas/:id` | `src/routes/tarefas/[id]/+page.svelte` | Detalhes provisórios de uma tarefa |
-| `/projetos` | `src/routes/projetos/+page.svelte` | Lista provisória de projetos |
-| `/projetos/:id` | `src/routes/projetos/[id]/+page.svelte` | Detalhes provisórios de um projeto |
-
-### O que significa `[id]`?
-
-Os colchetes indicam uma parte variável do endereço.
-
-Estes endereços usam a mesma página:
-
-```text
-/tarefas/1
-/tarefas/25
-/tarefas/abc
-```
-
-Em cada endereço, o valor depois de `/tarefas/` é o `id`.
-
-### Página não encontrada
-
-O arquivo `src/routes/+error.svelte` personaliza a página de erro.
-
-Quando alguém abre um endereço que não existe, como `/pagina-inexistente`, o servidor responde com o status HTTP `404` e mostra a mensagem "Página não encontrada".
-
-### Testes criados
-
-O arquivo `tests/routes.test.mjs` contém os testes de integração das rotas. Eles iniciam um servidor local e acessam as páginas como um navegador faria.
-
-Os testes verificam:
-
-- se as quatro rotas respondem com o status `200`;
-- se cada página mostra o `h1` e o `h2` esperados;
-- se um endereço inexistente responde com o status `404`;
-- se a página personalizada de erro é exibida.
-
-Para executar os testes:
-
-```sh
-npm test
-```
-
-### Como testar manualmente
-
-Inicie a aplicação com `npm run dev -- --open` e abra estes endereços:
-
-```text
-http://localhost:5173/
-http://localhost:5173/tarefas/1
-http://localhost:5173/projetos
-http://localhost:5173/projetos/1
-http://localhost:5173/pagina-inexistente
-```
-
-As quatro primeiras páginas devem mostrar seus títulos provisórios. O último endereço deve mostrar a página personalizada de erro 404.
-
-### GitHub
-
-- Issue: [#9 - Configurar o roteador](https://github.com/crispolas/ASTRA/issues/9)
-- Pull request: [#47 - Configura as rotas iniciais da aplicação](https://github.com/crispolas/ASTRA/pull/47)
+Para instalar e executar o projeto, consulte o [README principal](../README.md).

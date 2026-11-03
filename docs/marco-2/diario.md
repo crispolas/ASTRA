@@ -123,7 +123,7 @@ Arquivos envolvidos:
 - `src/routes/+page.svelte`: dois exemplos fixos para demonstrar a reutilização.
 - `tests/tarefa-card.test.mjs`: três testes do cartão e da demonstração.
 - `tests/routes.test.mjs`: ajuste das verificações de títulos para aceitar atributos HTML gerados pelo Svelte.
-- `docs/marco-2.md`: este registro.
+- `docs/marco-2/diario.md`: este registro.
 
 O banco, os tipos existentes, as dependências, as rotas de detalhe e o layout não foram alterados. A implementação está na branch `feat/issue-7-cartao-tarefa`; sua integração à `main` ainda depende de PR e merge.
 
@@ -404,7 +404,7 @@ Arquivos alterados:
 
 - `src/routes/+page.svelte`: consulta e apresentação da lista.
 - `tests/tarefa-card.test.mjs`: mantém a verificação de reutilização do cartão sem depender dos exemplos fixos que foram removidos da página.
-- `docs/marco-2.md`: registro desta issue.
+- `docs/marco-2/diario.md`: registro desta issue.
 
 ### Passo a passo: o que foi feito, como e por quê
 
@@ -620,7 +620,7 @@ Antes de considerar uma issue concluída, confira:
 
 ## Próximos marcos
 
-Para os próximos marcos, reutilize este formato em `docs/marco-3.md`, `docs/marco-4.md` e assim por diante, com as tarefas e o prazo correspondentes. Acrescente o link ao README quando cada documento for criado; preserve o histórico dos marcos anteriores.
+Para os próximos marcos, reutilize este formato em `docs/marco-3/diario.md`, `docs/marco-4/diario.md` e assim por diante, com as tarefas e o prazo correspondentes. Acrescente o link ao README quando cada documento for criado; preserve o histórico dos marcos anteriores.
 
 ## Continuidade para o Marco 3 — issues #16 e #17
 
@@ -628,4 +628,4 @@ Crispim ampliou o módulo de leitura criado no Marco 2 com funções tipadas de 
 
 A comunicação com a API foi mantida centralizada para evitar repetir requisições nas telas. O formulário recebe valores iniciais e usa uma cópia dos campos para atender cadastro e edição sem alterar o objeto recebido. Os testes foram feitos com uma cópia do banco; o histórico das issues do Marco 2 foi preservado.
 
-Esse trabalho pertence ao Marco 3 e está detalhado nas seções #16 e #17 do [diário do Marco 3](marco-3.md), com assinaturas, motivos das decisões, dificuldades e comandos para testar. A implementação está na branch `feat/issues-16-17-api-formulario`; a integração na main depende do PR. As telas e as validações das próximas issues não foram implementadas neste trabalho.
+Esse trabalho pertence ao Marco 3 e está detalhado nas seções #16 e #17 do [diário do Marco 3](../marco-3/diario.md), com assinaturas, motivos das decisões, dificuldades e comandos para testar. A implementação está na branch `feat/issues-16-17-api-formulario`; a integração na main depende do PR. As telas e as validações das próximas issues não foram implementadas neste trabalho.
