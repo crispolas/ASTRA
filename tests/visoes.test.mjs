@@ -62,3 +62,19 @@ test('as duas visões oferecem links reais e identificam qual está aberta', () 
 		assert.match(html, new RegExp(`<a[^>]*href="${href}"[^>]*aria-current="page"[^>]*>${nome}</a>`));
 	}
 });
+
+test('o quadro diferencia nenhuma tarefa cadastrada de nenhum resultado da busca', () => {
+	const vazio = render(Quadro, { props: { data: { tarefas: [] } } }).body;
+	assert(vazio.includes('Nenhuma tarefa cadastrada ainda.'));
+	assert(!vazio.includes('Nenhuma tarefa encontrada com a busca'));
+
+	filtros.buscaTexto.set('título que não existe');
+	const semResultado = render(Quadro, { props: { data: { tarefas } } }).body;
+	assert(semResultado.includes('Nenhuma tarefa encontrada com a busca e os filtros atuais.'));
+	assert(!semResultado.includes('Nenhuma tarefa cadastrada ainda.'));
+
+	filtros.buscaTexto.set('');
+	const comTarefas = render(Quadro, { props: { data: { tarefas } } }).body;
+	assert(!comTarefas.includes('Nenhuma tarefa cadastrada ainda.'));
+	assert(!comTarefas.includes('Nenhuma tarefa encontrada com a busca'));
+});
