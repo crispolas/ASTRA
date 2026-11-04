@@ -17,7 +17,7 @@ SvelteKit com TypeScript.
 
 - [Índice da documentação](docs/README.md).
 - Diários: [Marco 2](docs/marco-2/diario.md) · [Marco 3](docs/marco-3/diario.md) · [Marco 4](docs/marco-4/diario.md) · [Marco 5](docs/marco-5/diario.md).
-- [Apresentação inicial do Marco 5](docs/marco-5/slides/index.html) · [PDF](docs/marco-5/slides/apresentacao.pdf).
+- [Apresentação do Marco 5](docs/marco-5/slides/index.html) · [PDF](docs/marco-5/slides/apresentacao.pdf).
 - [Interface e abertura lunar](docs/interface.md).
 
 ## Configuração do projeto
