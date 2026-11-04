@@ -60,8 +60,10 @@
             <p class="astra-muted estado-mensagem" role="status">Carregando tarefas...</p>
         {:else if erro}
             <p class="astra-error estado-erro" role="alert">Erro: {erro}</p>
+        {:else if tarefas.length === 0}
+            <p class="astra-muted estado-mensagem" role="status">Nenhuma tarefa cadastrada ainda.</p>
         {:else if tarefasFiltradas.length === 0}
-            <p class="astra-muted estado-mensagem">Nenhuma tarefa encontrada.</p>
+            <p class="astra-muted estado-mensagem" role="status">Nenhuma tarefa encontrada com a busca e os filtros atuais.</p>
         {:else}
             <div class="astra-list lista-tarefas">
                 {#each tarefasFiltradas as tarefa (tarefa.id)}

@@ -11,6 +11,10 @@ Diário técnico de exclusão, erros e estados da tela.
 | Issue | Tarefa | Responsável | Registro |
 | --- | --- | --- | --- |
 | #31 | Excluir tarefa com confirmação | Gabriel Crispim Galvão | Integrada à main pelo PR #68 |
+| #32 | Estado de carregamento | Eurípedes Rocha Neto | PR #69: alterações na lista geral; demais telas ainda precisam de conferência |
+| #33 | Estado de erro e tentar novamente | Eurípedes Rocha Neto | PR #69: alterações na lista geral; demais telas ainda precisam de conferência |
+| #34 | Estado vazio | Felipe Borges Barros | Lista e quadro separam "nenhuma tarefa cadastrada" de "nenhum resultado"; commit 38d11c7, PR #72 |
+| #35 | Tarefa ou projeto inexistente | Felipe Borges Barros | `/tarefas/:id` e `/projetos/:id` mostram "não encontrado" no 404; commit 4c33e25, PR #72 |
 | #32 | Estado de carregamento | Eurípedes Rocha Neto | Lista geral implementada no PR #69; indicação nas demais buscas ainda precisa ser completada |
 | #33 | Estado de erro e tentar novamente | Eurípedes Rocha Neto | Mensagem na lista geral pelo PR #69; nova tentativa e consistência entre telas pendentes |
 | #34 | Estado vazio | A confirmar pela equipe | Mensagens existentes na lista, no projeto sem tarefas e nas colunas do Kanban |
@@ -87,6 +91,85 @@ Os testes de API cobrem ID codificado, DELETE sem corpo, respostas de sucesso 20
 
 **Responsável:** Eurípedes Rocha Neto. Integração pelo [PR #69](https://github.com/crispolas/ASTRA/pull/69).
 
+## Issue 34 — Mostrar o estado vazio
+
+**Responsável:** Felipe Borges Barros.
+
+### Objetivo
+
+Mostrar uma mensagem quando não há tarefas, quando o projeto não tem tarefas ou quando a busca e os filtros não encontram nada.
+
+### Como funciona
+
+A lista (`src/routes/+page.svelte`) tinha uma única mensagem, "Nenhuma tarefa encontrada.", para dois casos diferentes. Agora os blocos condicionais do Svelte testam, nesta ordem:
+
+1. `carregando` e `erro`, que já existiam pelas issues 32 e 33;
+2. `tarefas.length === 0`: a API não devolveu nenhuma tarefa, então aparece "Nenhuma tarefa cadastrada ainda.";
+3. `tarefasFiltradas.length === 0`: existem tarefas, mas nenhuma passa pela busca e pelos filtros, então aparece "Nenhuma tarefa encontrada com a busca e os filtros atuais.".
+
+A ordem importa: se o teste dos filtros viesse primeiro, uma lista vazia também mostraria a mensagem de busca. O quadro (`src/routes/quadro/+page.svelte`) usa as mesmas duas mensagens acima das colunas, comparando `data.tarefas` (o que veio do `load`) com `tarefasFiltradas`. Cada coluna vazia continua mostrando "Nenhuma tarefa nesta coluna.".
+
+A página do projeto já mostrava "Este projeto ainda não tem tarefas." e não foi alterada. As mensagens usam `role="status"`, para leitores de tela anunciarem a mudança sem tratá-la como erro.
+
+### Como conferir
+
+Com `npx --no-install json-server db.json` e `npm run dev`:
+
+1. Em `/` e em `/quadro`, digite na busca um título que não existe: aparece a mensagem de busca e filtros.
+2. Limpe a busca: as tarefas voltam e a mensagem some.
+3. Abra um projeto sem tarefas: aparece "Este projeto ainda não tem tarefas.".
+4. Para ver "Nenhuma tarefa cadastrada ainda.", use uma cópia do `db.json` com `"tarefas": []`; não apague os dados reais.
+
+`tests/visoes.test.mjs` cobre as três situações no quadro: sem tarefas, sem resultado da busca e com tarefas.
+
+### GitHub
+
+- Issue: [#34 - Mostrar o estado vazio](https://github.com/crispolas/ASTRA/issues/34).
+- Commit: `38d11c7`. Pull request: [#72](https://github.com/crispolas/ASTRA/pull/72).
+
+## Issue 35 — Tratar tarefa ou projeto inexistente
+
+**Responsável:** Felipe Borges Barros.
+
+### Objetivo
+
+Abrir `/tarefas/999` ou `/projetos/999` deve mostrar "não encontrado", em vez de carregamento infinito.
+
+### Como estava
+
+- `/tarefas/999` mostrava a página genérica "Página não encontrada / Erro 404". O `catch` do `load` transformava qualquer erro em 404, então, com a API desligada, uma tarefa existente também aparecia como "não encontrada".
+- `/projetos/999` mostrava "não foi possível carregar o projeto. Confira se a API está ligada e se o projeto existe.", a mesma mensagem da API desligada.
+
+As duas telas não diferenciavam "o registro não existe" de "a API está fora do ar".
+
+### Como funciona
+
+1. **A API informa o status.** Em `src/lib/api.ts`, as respostas sem sucesso passaram a lançar `ErroApi`, uma classe que estende `Error` e guarda `status`. A mensagem continua igual, então quem já mostrava o erro não muda.
+2. **O `load` separa os casos.** Em `src/routes/tarefas/[id]/+page.ts` e `src/routes/projetos/[id]/+page.ts`, o `try` busca o registro. No `catch`, `erro instanceof ErroApi && erro.status === 404` vira `naoEncontrada` / `naoEncontrado`. O json-server responde 404 quando o ID não existe. Falha de conexão não é `ErroApi`, então cai no aviso de API fora do ar.
+3. **A página escolhe a mensagem.** As páginas usam `{#if}`, `{:else if data.naoEncontrada}` e `{:else}`: dados da tarefa, "Tarefa não encontrada." ou "Erro: não foi possível carregar a tarefa. Confira se a API está ligada.". O projeto segue o mesmo padrão.
+
+Como o `load` termina antes de a página aparecer, nunca fica um carregamento infinito. As duas páginas mantêm o cabeçalho e o link de voltar, para a pessoa sair da tela de erro.
+
+### Como conferir
+
+Com `npx --no-install json-server db.json` e `npm run dev`:
+
+1. Abra `/tarefas/999` e `/projetos/999`: aparece "Tarefa não encontrada." e "Projeto não encontrado.".
+2. Abra `/tarefas/1` e `/projetos/1`: os dados aparecem normalmente.
+3. Desligue a API e abra `/tarefas/1`: aparece o aviso de API fora do ar, não "não encontrada".
+
+`tests/tarefa-page.test.mjs` e `tests/projeto-page.test.mjs` simulam a API respondendo 404 e a conexão falhando, e conferem a mensagem de cada caso.
+
+### Limites
+
+A tela de edição (`/tarefas/:id/editar`) não foi alterada; a issue cita apenas as páginas de detalhe.
+
+### GitHub
+
+- Issue: [#35 - Tratar tarefa ou projeto inexistente](https://github.com/crispolas/ASTRA/issues/35).
+- Commit: `4c33e25`. Pull request: [#72](https://github.com/crispolas/ASTRA/pull/72).
+
+## Apresentação inicial — Issue 38
 ### Como funciona e por quê
 
 Em `src/routes/+page.svelte`, `carregando` começa como `$state(true)`. O `onMount` do Svelte inicia a busca no navegador; `await listarTarefas()` aguarda os dados e os atribui à coleção. O `finally` muda `carregando` para `false`, tanto no sucesso quanto no erro. O template usa `{#if carregando}` para mostrar a espera, evitando apresentar uma lista vazia antes da resposta.

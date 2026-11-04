@@ -40,6 +40,12 @@
 	<AlternarVisao atual="quadro" />
 	<Filtros />
 
+	{#if data.tarefas.length === 0}
+		<p class="astra-muted" role="status">Nenhuma tarefa cadastrada ainda.</p>
+	{:else if tarefasFiltradas.length === 0}
+		<p class="astra-muted" role="status">Nenhuma tarefa encontrada com a busca e os filtros atuais.</p>
+	{/if}
+
 	<div class="quadro-container">
 		{#each colunas as coluna (coluna.id)}
 			{@const tarefasColuna = filtrarPorStatus(coluna.id)}

@@ -2,11 +2,21 @@ import type { NovaTarefa, NovoProjeto, Projeto, ProjetoComTarefas, Tarefa } from
 
 const API_URL = 'http://localhost:3000';
 
+// Guarda o status HTTP para as telas separarem "não encontrado" (404) de "API fora do ar".
+export class ErroApi extends Error {
+	status: number;
+
+	constructor(resposta: Response) {
+		super(`Erro ao acessar a API: ${resposta.status} ${resposta.statusText}`);
+		this.status = resposta.status;
+	}
+}
+
 async function buscarNaApi<T>(caminho: string, opcoes?: RequestInit): Promise<T> {
 	const resposta = await fetch(`${API_URL}${caminho}`, opcoes);
 
 	if (!resposta.ok) {
-		throw new Error(`Erro ao acessar a API: ${resposta.status} ${resposta.statusText}`);
+		throw new ErroApi(resposta);
 	}
 
 	return resposta.json() as Promise<T>;
@@ -47,7 +57,7 @@ export async function atualizarTarefa(id: string, dados: Partial<NovaTarefa>): P
 export async function excluirTarefa(id: string): Promise<void> {
 	const resposta = await fetch(`${API_URL}/tarefas/${encodeURIComponent(id)}`, { method: 'DELETE' });
 	if (!resposta.ok) {
-		throw new Error(`Erro ao acessar a API: ${resposta.status} ${resposta.statusText}`);
+		throw new ErroApi(resposta);
 	}
 	// DELETE pode responder 204, sem corpo: não há JSON para converter.
 }

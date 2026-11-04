@@ -82,7 +82,7 @@ test('/projetos/:id avisa quando o projeto não tem tarefas', async () => {
 	assert(!/<article[^>]*class="[^"]*\btarefa-card\b[^"]*"/.test(html));
 });
 
-test('/projetos/:id mostra um aviso quando a API falha ou o projeto não existe', async () => {
+test('/projetos/:id mostra "não encontrado" quando a API responde 404', async () => {
 	simularApi(() => new Response(null, { status: 404, statusText: 'Not Found' }));
 
 	const response = await fetch(`${baseUrl}/projetos/999`);
@@ -91,5 +91,16 @@ test('/projetos/:id mostra um aviso quando a API falha ou o projeto não existe'
 	assert.equal(response.status, 200);
 	assert.match(html, /<h1(?:\s[^>]*)?>Detalhes do projeto<\/h1>/);
 	assert.match(html, /role="alert"/);
+	assert.match(html, /Projeto não encontrado/);
+	assert.doesNotMatch(html, /não foi possível carregar o projeto/i);
+});
+
+test('/projetos/:id avisa que a API está fora do ar quando a conexão falha', async () => {
+	simularApi(() => { throw new TypeError('fetch failed'); });
+
+	const html = await (await fetch(`${baseUrl}/projetos/1`)).text();
+
+	assert.match(html, /role="alert"/);
 	assert.match(html, /não foi possível carregar o projeto/i);
+	assert.doesNotMatch(html, /Projeto não encontrado/);
 });
