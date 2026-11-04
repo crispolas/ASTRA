@@ -43,7 +43,7 @@
 			{#if projeto.tarefas.length === 0}
 				<p class="astra-muted">Este projeto ainda não tem tarefas.</p>
 			{:else}
-				<div class="astra-list">
+				<div class="astra-list ov-grid">
 					{#each projeto.tarefas as tarefa (tarefa.id)}
 						<TarefaCard {tarefa} />
 					{/each}

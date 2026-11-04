@@ -37,8 +37,8 @@
 		<a class="astra-btn" href="/tarefas/nova" style="text-decoration:none;">Nova tarefa</a>
 	</div>
 
-	<AlternarVisao atual="quadro" />
 	<Filtros />
+	<AlternarVisao atual="quadro" />
 
 	{#if data.tarefas.length === 0}
 		<p class="astra-muted" role="status">Nenhuma tarefa cadastrada ainda.</p>

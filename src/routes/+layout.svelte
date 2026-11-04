@@ -2,6 +2,7 @@
 
 	import favicon from '#lib/assets/favicon.svg';
     import '#lib/astra-theme.css';
+    import '#lib/orbita-viva.css';
 	import type { LayoutProps } from './$types';
 	import { page } from '$app/state';
 	import MarcaAstra from '../lib/components/MarcaAstra.svelte';
@@ -19,7 +20,7 @@
 
 <TransicaoEntrada />
 
-<div class:catalogo={page.url.pathname !== '/inicio'}>
+<div class:orbita-viva={page.url.pathname !== '/inicio'} class:ov-shell={page.url.pathname !== '/inicio'} class:catalogo={page.url.pathname !== '/inicio'}>
 {#if page.url.pathname !== '/inicio'}<CeuAscii />{/if}
 {#if page.url.pathname !== '/inicio'}
 <header class="astra-page cabecalho">
