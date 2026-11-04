@@ -50,11 +50,13 @@
         <div class="titulo-lista">
             <span class="astra-eyebrow">Página inicial</span>
             <h1>Tarefas</h1>
+            {#if !carregando && !erro}<p class="ov-count ov-count-desktop">{tarefasFiltradas.length} {tarefasFiltradas.length === 1 ? 'tarefa' : 'tarefas'} no observatório</p>{/if}
         </div>
         <a class="astra-btn" href="/tarefas/nova">Nova tarefa</a>
     </div>
-    <AlternarVisao atual="lista" />
     <Filtros />
+    <AlternarVisao atual="lista" />
+    {#if !carregando && !erro}<p class="ov-count ov-count-mobile">{tarefasFiltradas.length} {tarefasFiltradas.length === 1 ? 'tarefa' : 'tarefas'}</p>{/if}
     <section aria-label="Lista de tarefas">
         {#if carregando}
             <p class="astra-muted estado-mensagem" role="status">Carregando tarefas...</p>
@@ -65,7 +67,7 @@
         {:else if tarefasFiltradas.length === 0}
             <p class="astra-muted estado-mensagem" role="status">Nenhuma tarefa encontrada com a busca e os filtros atuais.</p>
         {:else}
-            <div class="astra-list lista-tarefas">
+            <div class="astra-list lista-tarefas ov-grid">
                 {#each tarefasFiltradas as tarefa (tarefa.id)}
                     <TarefaCard {tarefa}
                         onstatus={(nova) => tarefas = tarefas.map((t) => t.id === nova.id ? nova : t)}

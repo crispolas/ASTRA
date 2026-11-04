@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { atualizarTarefa, excluirTarefa } from '../api';
 	import { interacaoOrbital } from '../visual/interacao';
+	import SuperficieOrbital from './SuperficieOrbital.svelte';
 	import type { Status, Tarefa } from '../../tipos';
 
 	interface Props {
@@ -69,8 +70,9 @@
 </script>
 
 <div class="suporte" class:astra-orbita={variante === 'catalogo'}>
-<article class="astra-card tarefa-card" class:catalogo={variante === 'catalogo'}
+<article class="astra-card tarefa-card" class:catalogo={variante === 'catalogo'} class:ov-organic={variante === 'catalogo'}
 	use:interacaoOrbital={variante === 'catalogo'}>
+	{#if variante === 'catalogo'}<SuperficieOrbital />{/if}
 	<h3>
 		<a href={`/tarefas/${encodeURIComponent(tarefa.id)}`}>{tarefa.titulo}</a>
 	</h3>

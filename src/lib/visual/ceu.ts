@@ -45,7 +45,11 @@ function desenharTexturaLua(epoch: number){
 }
 function pintarLua(t: number,forcar: boolean){const epoch=(reduzir.matches)?(tempoPausaLua??Date.now()):Date.now(),p=posicaoLua(epoch,W,H);if(!p.visivel)return;
  if(forcar||t-ultimoDesenhoLua>80){ultimoDesenhoLua=t;desenharTexturaLua(epoch)}
- const size=p.diametro/(340/384);ctx.save();ctx.shadowColor='#e1eaff';ctx.shadowBlur=4;ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(lunar,p.x-size/2,p.y-size/2,size,size);ctx.restore();
+ // Escala visual da revisão; fase, centro, profundidade e período continuam em orbita.ts.
+ const larguraUtil=Math.max(1,Math.min(W-228,1384)-96);
+ const diametroReferencia=W<=900?Math.min(168,W*.4):larguraUtil*.22;
+ const escala=diametroReferencia*2.2/(2*Math.min(W*.34,H*.46));
+ const size=p.diametro*escala/(340/384);ctx.save();ctx.shadowColor='#e1eaff';ctx.shadowBlur=4;ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(lunar,p.x-size/2,p.y-size/2,size,size);ctx.restore();
 }
 let cadente: Cadente | null=null; let proximaCadente=performance.now()+55000+Math.random()*65000;
 function desenharCadente(t: number){
