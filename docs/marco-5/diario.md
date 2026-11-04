@@ -17,7 +17,7 @@ Diário técnico de exclusão, erros e estados da tela.
 | #35 | Tarefa ou projeto inexistente | Felipe Borges Barros | `/tarefas/:id` e `/projetos/:id` mostram "não encontrado" no 404; commit 4c33e25, PR #72 integrado |
 | #36 | Falha ao salvar e excluir | A confirmar pela equipe | Comportamento verificado em cadastro, edição e exclusão; slides e roteiro incluídos |
 | #37 | Auditoria de acessibilidade e responsividade | Brenno Milhomem Farias | Integrada pelo PR #71; slides e roteiro incluídos |
-| #38 | Apresentação do Marco 5 | Gabriel Crispim Galvão | HTML e PDF com capa e 15 slides de conteúdo: #31 a #37 e infraestrutura local |
+| #38 | Apresentação do Marco 5 | Gabriel Crispim Galvão | HTML e PDF com capa e 16 slides de conteúdo: #31 a #37 e infraestrutura local |
 
 Os responsáveis não confirmados devem ser definidos pela equipe. O registro distingue comportamento existente de pendências: a existência de um PR integrado ou de um slide não significa que todos os requisitos da issue foram atendidos. A apresentação cobre #31 a #37 e infraestrutura local; as pendências das #32 e #33 permanecem documentadas.
 
@@ -223,7 +223,7 @@ Para demonstrar no site, percorra os controles com Tab e Shift + Tab, acione bot
 
 ## Apresentação — Issue 38
 
-Abra [slides/index.html](slides/index.html) no navegador. O HTML é independente, sem API ou instalação. Letras grandes, margens curtas e contraste alto foram priorizados para projeção. Setas navegam, F ativa tela cheia e N abre o roteiro oculto. A simulação de exclusão é local à apresentação e não altera os dados do ASTRA. A apresentação contém dezesseis slides, incluindo a capa do Marco 5: exclusão, carregamento, erro na lista, estado vazio, registro inexistente, infraestrutura local e tratamento de falhas ao salvar e excluir e auditoria de acessibilidade e responsividade. Explica onMount, $state, await, try/catch/finally e os blocos condicionais do Svelte. O botão Tentar novamente ainda não está implementado e não é apresentado como concluído. A apresentação não declara #32 e #33 integralmente concluídas; as pendências ficam registradas nas seções correspondentes.
+Abra [slides/index.html](slides/index.html) no navegador. O HTML é independente, sem API ou instalação. Letras grandes, margens curtas e contraste alto foram priorizados para projeção. Setas navegam, F ativa tela cheia e N abre o roteiro oculto. A simulação de exclusão é local à apresentação e não altera os dados do ASTRA. A apresentação contém dezessete slides, incluindo a capa do Marco 5: exclusão, carregamento, erro na lista, estado vazio, registro inexistente, infraestrutura local e tratamento de falhas ao salvar e excluir e auditoria de acessibilidade e responsividade. Explica onMount, $state, await, try/catch/finally e os blocos condicionais do Svelte. O botão Tentar novamente ainda não está implementado e não é apresentado como concluído. A apresentação não declara #32 e #33 integralmente concluídas; as pendências ficam registradas nas seções correspondentes.
 
 
 Os slides usam fontes ampliadas, margens curtas e notas ocultas. **← / →** navegam, **F** solicita tela cheia e **N** abre ou fecha o roteiro. O botão das notas fica oculto na lateral esquerda, aparecendo no hover ou no foco. A [versão PDF](slides/apresentacao.pdf) serve de reserva, sem notas. O HTML pode ser baixado do GitHub e aberto diretamente no navegador.
@@ -244,8 +244,20 @@ Os slides mostram a implementação em etapas, com código curto, significado do
 | 11 | #35: ErroApi, status 404, load e mensagem de inexistência |
 | 12–13 | #36: preservação dos campos e falha de exclusão |
 | 14–15 | #37: teclado, foco, Lighthouse e responsividade do Kanban |
-| 16 | Infraestrutura local clicável: rotas, componentes, estado, requisições, json-server e dados |
+| 16 | Mapa arrastável e clicável da infraestrutura local, sem título |
+| 17 | Encerramento com a abertura real de `/inicio`, para passagem à demonstração |
 
 A infraestrutura representa a versão atual: SvelteKit em desenvolvimento e json-server são processos separados. Algumas rotas usam api.ts; outras fazem fetch diretamente. O diagrama não apresenta hospedagem ou configuração de produção, previstas no Marco 6.
 
 A capa mantém a lua ASCII e os quatro integrantes. O cartão de demonstração tem borda completa e a explicação fica abaixo. O cenário respeita movimento reduzido e pode ser ativado nas notas. As simulações do HTML não alteram dados reais; o PDF é estático e não inclui notas. Ensaiar a apresentação para respeitar o limite de cinco minutos da professora.
+
+
+### Mapa, percurso lunar e encerramento
+
+A infraestrutura ocupa um mapa sem título, com seis nós arrastáveis e conexões que acompanham o reposicionamento. Clique ou Enter seleciona a parte e exibe arquivos e função; Alt + setas reposiciona o nó focado. O mapa preserva a posição dos nós durante a apresentação.
+
+Da capa ao slide 2 a lua fica à direita. Ao entrar no slide 3, a mesma lua atravessa a tela em aproximadamente 1,8 segundo e passa a ocupar a esquerda nos slides seguintes. Movimento reduzido aplica a posição sem a travessia.
+
+O slide 17 reutiliza o renderer de `src/lib/entrada/animacao.ts`, a geometria de `constelacao.ts` e os estilos da abertura de `src/routes/inicio/+page.svelte`, compilados e incorporados ao HTML para funcionar offline. Esses arquivos da aplicação não foram alterados. O ciclo de animação da abertura é montado e limpo ao entrar e sair do último slide.
+
+Para passar à aplicação por Alt+Tab, deixe o ASTRA na rota real `/inicio`, usando o mesmo zoom, tamanho de janela e modo de tela cheia. O desenho e o enquadramento são os mesmos; as animações executam independentemente e não têm sincronização de fase entre janelas. A infraestrutura continua representando apenas o ambiente local atual, sem antecipar o Marco 6.

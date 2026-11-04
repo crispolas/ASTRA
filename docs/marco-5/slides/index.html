@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="pt-BR">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>ASTRA · Marco 5</title><meta name="description" content="Apresentação do Marco 5 do ASTRA: capa e 15 slides sobre exclusão, carregamento, erros, preservação dos dados e auditoria de acessibilidade, com exemplos em Svelte 5 e roteiro oculto.">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>ASTRA · Marco 5</title><meta name="description" content="Apresentação do Marco 5 do ASTRA: capa e 16 slides sobre exclusão, carregamento, erros, preservação dos dados e auditoria de acessibilidade, com exemplos em Svelte 5 e roteiro oculto.">
 <style>
 :root{color-scheme:dark;--white:#f2f3f5;--muted:#bbc2ce;--line:#ffffff30;--ink:#080b11;--ice:#c8dcf7}
 *{box-sizing:border-box}body{margin:0;background:var(--ink);color:var(--white);font-family:Arial,Helvetica,sans-serif;line-height:1.3}button{font:inherit;cursor:pointer}button:focus-visible,a:focus-visible{outline:3px solid #d8e9ff;outline-offset:6px}[hidden]{display:none!important}#space{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}main{position:relative;isolation:isolate;height:100svh;padding:4vh 3.8vw}.slide{outline:none;height:100%;display:flex;flex-direction:column;gap:24px;justify-content:center;animation:reveal .45s ease-out}.label{font:21px/1.4 Consolas,'Courier New',monospace;letter-spacing:.12em;color:#c1ccdc;margin:0}.label span{color:#f5f7fc}h1,h2,h3,p{margin:0}h1,h2{font-size:clamp(48px,5.1vw,82px);font-weight:500;line-height:1.04;letter-spacing:-.045em}h3{font-size:31px;font-weight:500;letter-spacing:-.02em}.lead{font-size:clamp(28px,2.6vw,42px);color:#d7dce5;line-height:1.35}.small{font-size:24px;color:#c0c8d5;line-height:1.4}.mono,code,pre{font-family:Consolas,'Courier New',monospace}.layout{display:grid;grid-template-columns:1fr 1fr;gap:5vw;align-items:center;flex:1;min-height:0}.hero .layout{grid-template-columns:1.2fr 1fr}.hero h1{font-size:clamp(65px,6.8vw,110px);max-width:900px}.hero .lead{max-width:780px;margin-top:28px}.hero .label{margin-bottom:24px}.chapter-number{font-size:20px;color:#a4b4cd;letter-spacing:.2em}.hero-art{height:100%;min-height:280px;position:relative}.hero-art .caption{position:absolute;bottom:7%;left:20%;font:23px Consolas,monospace;color:#d5e0f2}.hero-bottom{border-top:1px solid var(--line);padding-top:22px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:22px}.hero-bottom p{font-size:27px}.hero-bottom b{font:20px Consolas,monospace;color:#a7b6cc;display:block;margin-bottom:8px;font-weight:400}.title-row{display:flex;align-items:baseline;gap:24px}.title-row .label{white-space:nowrap}.body-copy{font-size:30px;line-height:1.45;color:#d8dee8}.body-copy p+p{margin-top:24px}.body-copy strong{color:white;font-weight:500}.terminal{position:relative;background:#101620f5;border:1px solid #5c6b8055;border-radius:8px;padding:30px;box-shadow:0 24px 80px #0004;min-width:0}.terminal-title{font:19px Consolas,monospace;color:#b5c3d7;border-bottom:1px solid #ffffff25;padding-bottom:18px;margin-bottom:22px;display:flex;align-items:center;gap:14px}.terminal-title::before{content:'';height:8px;width:8px;border-radius:50%;background:#dbeaff;box-shadow:0 0 13px #b5d5ff}pre{font-size:clamp(24px,2.2vw,35px);line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere;margin:0;color:#f0f4fc}.kw{color:#b8d4fa}.dim{color:#93a3b9}.light-panel{background:#e9edf3;color:#111824;padding:30px;border-radius:5px}.light-panel .small{color:#38495f}.light-panel p{font-size:30px;margin-top:18px}.light-panel .big{font-size:clamp(70px,8vw,125px);line-height:1;letter-spacing:-.06em}.action{border:1px solid #d9e6f6;background:#eef2f8;color:#131d2c;padding:17px 27px;border-radius:5px;display:inline-flex;align-items:center;gap:20px;box-shadow:0 0 0 #d5e8ff00;transition:transform .22s,box-shadow .22s,background .22s;font-size:27px}.action:hover{transform:translateY(-3px);background:white;box-shadow:0 0 35px #d5e8ff28}.action:disabled{opacity:.55;cursor:wait;transform:none}.action.subtle{background:#111925;color:#e7edf7;border-color:#8c9db566}.action.subtle:hover{background:#1b293c}.action .icon{font-size:25px;color:inherit}.actions{display:flex;gap:16px;flex-wrap:wrap}.statement{font-size:30px;line-height:1.4;padding:21px 0;border-top:1px solid var(--line);color:#dde5f2}.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid #ffffff45;border-bottom:1px solid #ffffff45}.flow button{position:relative;padding:26px 20px 26px 0;text-align:left;background:none;border:none;color:#bcc8d9;transition:color .25s}.flow button:not(:first-child){padding-left:22px;border-left:1px solid #ffffff24}.flow button::after{position:absolute;bottom:-1px;left:0;right:0;height:3px;background:#e4efff;box-shadow:0 0 18px #c6deff66;content:'';transform:scaleX(0);transform-origin:left;transition:transform .3s}.flow button[aria-pressed=true]::after{transform:scaleX(1)}.flow button[aria-pressed=true],.flow button:hover{color:#fff}.flow small{font:19px Consolas,monospace;display:block;margin-bottom:15px;color:#9cacbf}.flow strong{font-size:29px;font-weight:400}.flow-explain{font-size:30px;min-height:2.7em;line-height:1.4;max-width:1100px}.flow-detail{display:grid;grid-template-columns:.65fr 1.35fr;gap:32px;align-items:center}.flow-detail .big{font-size:120px;color:#cbdcf6;letter-spacing:-.06em;line-height:1}.status-chip{font:20px Consolas,monospace;color:#d4e1f4;padding-bottom:18px;border-bottom:1px solid #ffffff30}.task{padding:28px 0;border-top:1px solid #8d9db766;border-bottom:1px solid #8d9db766;display:flex;align-items:center;justify-content:space-between;gap:24px;background:linear-gradient(90deg,#162031aa,transparent)}.task h3{font-size:33px;margin-bottom:10px}.task p{font-size:23px;color:#bac7da}.demo-col{display:flex;flex-direction:column;gap:28px}.result{min-height:170px;display:flex;align-items:center;gap:20px;padding:30px;background:#111c2de8;border-left:3px solid #d0e3ff;font-size:32px;line-height:1.4}.dot{height:14px;width:14px;background:#e6f1ff;border-radius:50%;box-shadow:0 0 24px #b9d9ff;flex:none}.dot.loading{animation:pulse 1s ease-in-out infinite}.reading{font-size:29px;color:#cbd4e3;line-height:1.5}.reading p+p{margin-top:22px}.reading b{font-weight:400;color:white}.signal{font-size:24px;color:#d9e5f8;padding:20px 0;border-top:1px solid #ffffff30}.branches{display:flex;flex-direction:column}.branch{background:none;border:0;border-left:2px solid #ffffff22;text-align:left;padding:18px 24px;color:#8f9fb6;transition:background .25s,color .25s,border-color .25s;font:25px/1.4 Consolas,monospace}.branch[aria-pressed=true]{color:white;background:linear-gradient(90deg,#a8caff20,transparent);border-left-color:#e1edff}.branch:hover{color:white}.branch span{display:block;font:20px Arial,sans-serif;color:#aebdd2;margin-top:5px}.architecture{display:flex;gap:18px;align-items:center;flex-wrap:wrap}.architecture span{padding:16px 0;border-bottom:1px solid #8195b4;font-size:28px}.architecture i{width:36px;height:1px;background:#ffffff55}.scene-note{font-size:23px;color:#bbc7d9}.error-box{border-left-color:#d4b8b0;background:#221d23dc}.error-box .dot{background:#e5c9be;box-shadow:0 0 20px #e5c9be50}.sweep{height:2px;background:#a7c9f2;transform-origin:left;animation:sweep 1.8s linear}.orbit-note{font-size:26px;line-height:1.4;color:#d5dfed}.orbit-note code{font-size:26px;color:white}#notes-toggle{position:fixed;left:0;top:40%;width:24px;height:100px;opacity:0;z-index:5;background:#24334c;color:white;border:0;border-radius:0 8px 8px 0}#notes-toggle:hover,#notes-toggle:focus-visible{opacity:1}aside{position:fixed;inset:0 auto 0 0;width:min(580px,95vw);background:#101a2bf5;backdrop-filter:blur(20px);border-right:1px solid #a2b8d4;padding:26px;overflow:auto;z-index:10}aside h2{font-size:30px;margin:24px 0}aside p{font-size:21px;line-height:1.6;margin-top:16px}aside .action{font-size:19px;padding:12px 18px}aside .actions{margin-bottom:20px}aside .motion-info{font-size:17px;color:#bdcde3}
@@ -46,6 +46,28 @@
 @media(max-width:800px){.infra-layout{grid-template-columns:minmax(0,1fr)}.infra-pair{grid-template-columns:minmax(0,1fr)}.infra-detail p{font-size:25px}.new-code{font-size:22px}}
 @media print{.infra-layout{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px}.infra-node{padding:10px 12px}.infra-node strong{font-size:21px}.infra-node span,.infra-group{font-size:16px}.infra-detail h3{font-size:28px}.infra-detail p{font-size:22px}.infra-detail pre{font-size:21px;padding:14px 0;margin:14px 0}.infra-detail #infra-why{font-size:20px}.new-code{font-size:21px}.infra-map{gap:8px}}
 .actions .action.subtle[aria-pressed="true"],.actions .action.subtle[aria-pressed="true"]:hover{background:#e6effd;color:#13203a;border-color:#e6effd}.infra-detail{background:#080b11eb;padding:8px 16px;border-left:1px solid #ffffff24}
+
+	#final-opening .entrada { position: fixed; inset: 0; z-index: 100; overflow: hidden; background: #000; color: #e0e7e9; font-family: 'Courier New', monospace; --accent: #b0d8df; }
+	#final-opening #sky { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+	#final-opening .grain { position: absolute; inset: 0; pointer-events: none; opacity: .22; background: linear-gradient(#6c8c9c10 1px,transparent 1px),linear-gradient(90deg,#6c8c9c10 1px,transparent 1px); background-size: 20px 20px; }
+	#final-opening .shell { min-height: 100svh; position: relative; padding: 24px 16px; }
+	#final-opening main { min-height: calc(100svh - 48px); display: grid; place-items: center; }
+	#final-opening .portal { position: relative; text-align: center; width: 100%; max-width: 1200px; padding: 20px 0; transition: transform 2400ms cubic-bezier(.32,0,.55,1); transform-origin: center; }
+	#final-opening .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+	#final-opening .moon-space { width: min(760px,96vw); height: min(690px,90svh); position: relative; margin: 0 auto; display: grid; place-items: center; }
+	#final-opening #moon { position: relative; border: 0; padding: 0; background: none; width: min(600px,82vw,78svh); aspect-ratio: 1; cursor: pointer; display: block; -webkit-tap-highlight-color: transparent; outline: none; }
+	#final-opening #lunar { display: block; width: 100%; height: 100%; filter: drop-shadow(0 0 18px #f4f5f752) drop-shadow(0 0 60px #f4f5f71f); }
+	#final-opening #moon:focus-visible { outline: 1px dashed var(--accent); outline-offset: 10px; border-radius: 50%; }
+	#final-opening .entrada.entering #final-opening #moon { pointer-events: none; }
+	#final-opening .entrada.gathering #final-opening .portal, #final-opening .entrada.holding #final-opening .portal { transform: scale(0); }
+	#final-opening .erro { position: absolute; bottom: 20px; left: 10%; width: 80%; text-align: center; font: 12px 'Courier New',monospace; }
+	@media(max-width:600px) { #final-opening .shell { padding:20px 12px; } #final-opening main { min-height:calc(100svh - 40px); } #final-opening .portal { padding:0; } #final-opening .moon-space { width:100%; height:calc(100svh - 80px); } }
+	@media(prefers-reduced-motion:reduce) { #final-opening .portal { transition:none; } }
+
+section[data-scene="infrastructure"]{position:relative;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:32px;align-items:center}#orbit-map{position:relative;width:100%;height:100%;min-height:530px}#map-lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}#map-lines line{stroke:#a8c9f267;stroke-width:1.3;stroke-dasharray:4 7}.orbit-node{position:absolute;width:42%;cursor:grab;touch-action:none;user-select:none;box-shadow:0 0 30px #accfff0b}.orbit-node:active{cursor:grabbing}.orbit-node strong{font-size:25px}.orbit-node span{font-size:18px}body[data-scene="opening"]>main{padding:0;height:100svh}#final-opening{height:100svh;animation:none;gap:0}body[data-scene="opening"]>#space{visibility:hidden}#final-opening main{height:auto;padding:0;isolation:auto}#final-opening .portal{margin:0}#final-opening h1.sr-only{font-size:16px}#final-opening .shell{width:100%}
+@media(max-width:800px){section[data-scene="infrastructure"]{grid-template-columns:minmax(0,1fr)}#orbit-map{height:620px}.orbit-node strong{font-size:21px}.orbit-node span{font-size:16px}}
+@media print{section[data-scene="infrastructure"]{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr)}#orbit-map{min-height:450px;height:100%}.orbit-node strong{font-size:21px}.orbit-node span{font-size:15px}#final-opening .entrada{position:relative;height:180mm}#final-opening .shell{min-height:0}#final-opening main{min-height:170mm}}
+.orbit-node[aria-pressed="true"]{background:#1c2d46;color:#f2f6ff;border-color:#d4e5ff;box-shadow:0 0 30px #afcfff20}.orbit-node[aria-pressed="true"] span{color:#c7d9f2}
 </style></head><body>
 <canvas id="space" aria-hidden="true"></canvas>
 <main>
@@ -137,10 +159,10 @@ if (!resposta.ok) <span class="kw">throw</span> ...;
   <span class="kw">/* 1 coluna */</span>
 }</pre><p class="small" style="margin-top:22px">CSS dentro do componente Svelte: o navegador aplica a regra conforme a largura da tela.</p></div></div><p class="scene-note">No PR #71, Brenno registrou o uso do Lighthouse e adicionou meta description em src/app.html, documento base do SvelteKit. Nenhum pacote novo.</p></section>
 
-<section class="slide" tabindex="-1" hidden data-scene="infrastructure"><p class="label">INFRAESTRUTURA LOCAL / ARQUITETURA ATUAL</p><h2>Como as partes do ASTRA se conectam</h2><div class="layout infra-layout"><div class="infra-map"><div class="infra-group">NAVEGADOR + SVELTEKIT · localhost:5173</div><button class="infra-node" data-infra="routes" aria-pressed="true"><strong>Rotas e carregamento</strong><span>+page.svelte · +page.ts</span></button><div class="infra-pair"><button class="infra-node" data-infra="components" aria-pressed="false"><strong>Componentes</strong><span>Cartão · formulário · filtros</span></button><button class="infra-node" data-infra="state" aria-pressed="false"><strong>Estado reativo</strong><span>$state · $derived · stores</span></button></div><button class="infra-node" data-infra="api" aria-pressed="false"><strong>Requisições HTTP</strong><span>api.ts / fetch</span></button><div class="infra-group">API LOCAL · localhost:3000</div><div class="infra-pair"><button class="infra-node" data-infra="server" aria-pressed="false"><strong>json-server</strong><span>GET · POST · PATCH · DELETE</span></button><button class="infra-node" data-infra="db" aria-pressed="false"><strong>db.json e tipos</strong><span>Dados · contrato TypeScript</span></button></div></div><div class="infra-detail"><h3 id="infra-title">Rotas e carregamento</h3><p id="infra-copy">O SvelteKit cria as rotas pelas pastas de src/routes. +page.svelte apresenta a tela; +page.ts pode buscar os dados antes dela aparecer.</p><pre id="infra-files">src/routes/
+<section class="slide" tabindex="-1" hidden data-scene="infrastructure"><div id="orbit-map"><svg id="map-lines" aria-hidden="true"><line data-link="0,1" /><line data-link="0,2" /><line data-link="1,3" /><line data-link="2,3" /><line data-link="3,4" /><line data-link="4,5" /></svg><button class="infra-node orbit-node" style="left:29%;top:12%;" data-infra="routes" aria-pressed="true"><strong>Rotas e carregamento</strong><span>+page.svelte · +page.ts</span></button><button class="infra-node orbit-node" style="left:9%;top:38%;" data-infra="components" aria-pressed="false"><strong>Componentes</strong><span>Cartão · formulário · filtros</span></button><button class="infra-node orbit-node" style="left:52%;top:34%;" data-infra="state" aria-pressed="false"><strong>Estado reativo</strong><span>$state · $derived · stores</span></button><button class="infra-node orbit-node" style="left:29%;top:61%;" data-infra="api" aria-pressed="false"><strong>Requisições HTTP</strong><span>api.ts / fetch</span></button><button class="infra-node orbit-node" style="left:8%;top:83%;" data-infra="server" aria-pressed="false"><strong>json-server</strong><span>GET · POST · PATCH · DELETE</span></button><button class="infra-node orbit-node" style="left:54%;top:82%;" data-infra="db" aria-pressed="false"><strong>db.json e tipos</strong><span>Dados · contrato TypeScript</span></button></div><div class="infra-detail"><h3 id="infra-title">Rotas e carregamento</h3><p id="infra-copy">O SvelteKit cria as rotas pelas pastas de src/routes. +page.svelte apresenta a tela; +page.ts pode buscar os dados antes dela aparecer.</p><pre id="infra-files">src/routes/
   tarefas/[id]/+page.ts
-  tarefas/[id]/+page.svelte</pre><p id="infra-why">Na lista geral, a busca começa em onMount no navegador. Em outras telas, usamos load, que também pode executar no servidor na primeira abertura.</p></div></div><p class="scene-note">Dois processos locais: npm run dev e npx json-server db.json. Hospedagem e configuração de produção ficam no Marco 6.</p></section>
-</main>
+  tarefas/[id]/+page.svelte</pre><p id="infra-why">Na lista geral, a busca começa em onMount no navegador. Em outras telas, usamos load, que também pode executar no servidor na primeira abertura.</p></div></section>
+<section class="slide" tabindex="-1" hidden data-scene="opening" id="final-opening"><div class="entrada"><canvas id="sky" aria-hidden="true"></canvas><div class="grain" aria-hidden="true"></div><div class="shell"><main><section class="portal" aria-labelledby="entrada-title"><h1 id="entrada-title" class="sr-only">ASTRA</h1><div class="moon-space"><button id="moon" type="button" aria-label="Entrar no ASTRA"><canvas id="lunar" width="768" height="768" aria-hidden="true"></canvas></button></div></section></main></div></div></section></main>
 <button id="notes-toggle" aria-label="Abrir notas do apresentador" aria-expanded="false">≡</button>
 <aside id="notes" hidden aria-label="Notas do apresentador"><div class="actions"><button class="action subtle" id="close-notes">Fechar</button><button class="action subtle" id="toggle-motion">Pausar cenário</button></div><p class="motion-info" id="motion-info"></p><div id="script-notes"></div></aside>
 <template id="note-1"><h2>Fluxo da #31</h2><p>Esta entrega permite excluir uma tarefa depois de confirmar. O botão fica no cartão da lista. Antes de falar com a API, o navegador pede confirmação. Cancelar encerra o fluxo sem enviar nada. Confirmar faz a requisição, e a tarefa só sai da tela depois da resposta de sucesso. Isso evita apresentar uma exclusão que não foi gravada.</p><p>A implementação foi dividida entre função de API, ação do cartão e atualização da página. A apresentação reúne a exclusão e os estados de carregamento e erro disponíveis na lista.</p></template>
@@ -159,13 +181,13 @@ if (!resposta.ok) <span class="kw">throw</span> ...;
 <template id="note-9"><h2>Issue 34: estado vazio</h2><p>Felipe usou os blocos condicionais do Svelte para separar duas situações. Depois de conferir carregamento e erro, a lista verifica a coleção original: se tarefas.length for zero, a API não devolveu tarefas. Só depois confere tarefasFiltradas.length: nesse caso existem tarefas, mas nenhuma atende à busca e aos filtros. O quadro usa data.tarefas para a coleção original e também apresenta as mensagens acima das colunas. Cada coluna continua com seu próprio aviso.</p><p>O projeto sem tarefas já tinha mensagem e ela foi preservada. Os botões simulam as três situações localmente, sem acessar a API. A mudança de estado é anunciada com role status. Não foi necessário instalar biblioteca, criar endpoint ou mudar o contrato. Foram acrescentadas verificações do quadro nos testes de visões. O PR 72 integra as issues 34 e 35.</p></template>
 <template id="note-10"><h2>Issue 35: inexistência e falha</h2><p>Antes, o detalhe da tarefa convertia qualquer falha em 404, e o detalhe do projeto misturava inexistência e API indisponível. Felipe acrescentou ErroApi, uma classe que estende Error e guarda o status HTTP da resposta. Quando api.ts recebe uma resposta sem sucesso, lança esse erro com o status. O contrato de tarefas e projetos e os endpoints são preservados.</p><p>No load da rota, o catch compara o erro e o status. Apenas ErroApi com status 404 indica registro inexistente. O resultado traz tarefa ou projeto nulo e um indicador para o template. A página usa esse indicador para escolher a mensagem; falhas de conexão e HTTP 500 ou 503 ficam separadas do 404. O link de voltar permanece. Esta entrega cobre as páginas de detalhe, não a edição. Os testes simulam 404 e falha de conexão. Nenhuma dependência adicional foi instalada.</p></template>
 <template id="note-15"><h2>Infraestrutura e arquitetura atuais</h2><p>O projeto funciona com dois processos locais. npm run dev inicia o servidor de desenvolvimento do SvelteKit, por padrão na porta 5173. npx json-server db.json inicia a API na porta 3000. Não estamos apresentando hospedagem ou configuração de produção, que pertencem ao Marco 6.</p><p>As pastas de src/routes definem os endereços. Os componentes Svelte são reutilizados pelas páginas. Stores guardam busca e filtros, state mantém valores locais e derived recalcula resultados. O módulo api.ts centraliza várias requisições, embora alguns carregamentos atuais de projetos e Kanban ainda chamem fetch diretamente. Essa diferença está representada no mapa. A API responde às consultas e grava as alterações no db.json; src/tipos.ts descreve o contrato para o TypeScript, sem fazer validação automática em tempo de execução.</p><p>Clique em cada parte para mostrar seus arquivos e responsabilidade. O load do SvelteKit pode executar no servidor na primeira abertura e no cliente em navegações; a lista geral usa onMount para iniciar sua busca no navegador. A abertura lunar e o cenário estão em componentes e módulos próprios, com montagem e limpeza vinculadas ao ciclo de vida do Svelte.</p></template>
-<script>
+<template id="note-16"><h2>Encerramento e demonstração</h2><p>Esta tela reutiliza o desenho e os estilos da abertura real em /inicio. Deixe a aplicação aberta nessa rota e use Alt+Tab para passar à demonstração. Para aproximar as dimensões, use o mesmo zoom e modo de tela cheia no navegador dos slides e no navegador do ASTRA. Como as animações executam separadamente, a fase das estrelas e da rotação pode diferir na troca.</p></template><script>
 'use strict';
 const slides=[...document.querySelectorAll('.slide')],notes=document.querySelector('#notes');let current=0;let sceneRender=null;
-function show(n){current=Math.max(0,Math.min(slides.length-1,n));slides.forEach((s,i)=>s.hidden=i!==current);document.querySelector('#script-notes').replaceChildren(document.querySelector('#note-'+current).content.cloneNode(true));document.body.dataset.scene=slides[current].dataset.scene;sceneRender?.();}
+function show(n){current=Math.max(0,Math.min(slides.length-1,n));slides.forEach((s,i)=>s.hidden=i!==current);document.querySelector('#script-notes').replaceChildren(document.querySelector('#note-'+current).content.cloneNode(true));document.body.dataset.scene=slides[current].dataset.scene;sceneRender?.();window.syncOrbitMap?.();window.syncFinalOpening?.();}
 function toggleNotes(){notes.hidden=!notes.hidden;document.querySelector('#notes-toggle').setAttribute('aria-expanded',String(!notes.hidden));if(!notes.hidden)document.querySelector('#close-notes').focus();else slides[current].focus({preventScroll:true});}
 document.querySelector('#notes-toggle').onclick=toggleNotes;document.querySelector('#close-notes').onclick=toggleNotes;
-document.addEventListener('keydown',async e=>{if(e.target.matches('input,textarea'))return;if(e.key==='Escape'&&!notes.hidden){toggleNotes();return}if(e.key.toLowerCase()==='n'){toggleNotes();return}if(!notes.hidden)return;if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();show(current+1)}if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();show(current-1)}if(e.key==='Home'){e.preventDefault();show(0)}if(e.key==='End'){e.preventDefault();show(slides.length-1)}if(e.key.toLowerCase()==='f'){try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen()}catch{}}});
+document.addEventListener('keydown',async e=>{if(e.target.matches('input,textarea')||(e.altKey&&e.target.matches('.orbit-node')))return;if(e.key==='Escape'&&!notes.hidden){toggleNotes();return}if(e.key.toLowerCase()==='n'){toggleNotes();return}if(!notes.hidden)return;if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();show(current+1)}if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();show(current-1)}if(e.key==='Home'){e.preventDefault();show(0)}if(e.key==='End'){e.preventDefault();show(slides.length-1)}if(e.key.toLowerCase()==='f'){try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen()}catch{}}});
 const steps=[['TarefaCard.svelte','if (!window.confirm(...)) return;','No TarefaCard, window.confirm abre a confirmação nativa. Se a pessoa cancelar, return encerra a função antes da requisição.'],['api.ts',"await excluirTarefa(tarefa.id);",'O módulo de API envia DELETE e confere a resposta. A página só muda depois do sucesso.'],['TarefaCard.svelte','onexcluir(tarefa.id);','O callback é uma função recebida por prop. Ela permite ao cartão avisar a página sem conhecer a lista inteira.'],['+page.svelte',`tarefas = tarefas.filter(
   tarefa => tarefa.id !== id
 );`,'A coleção em $state recebe uma lista sem o ID. $derived recalcula os filtros e o Svelte atualiza os cartões.']];
@@ -194,14 +216,433 @@ show(0);
 // Tudo é local: sem imports, fontes remotas ou servidor, inclusive ao abrir por file://.
 const canvas=document.querySelector('#space'),ctx=canvas.getContext('2d'),mq=matchMedia('(prefers-reduced-motion: reduce)');let width=innerWidth,height=innerHeight,raf=0,last=0,elapsed=0,previous=0,paused=mq.matches,override=false;const pointer={x:-9999,y:-9999};
 const stars=Array.from({length:155},(_,i)=>({a:i*2.399963,r:.18+(i%43)/43*.85,velocity:.018+(i%11)*.0018,size:i%13===0?1.7:.8,seed:i*.63}));
-const texture=document.createElement('canvas');texture.width=texture.height=640;const moon=texture.getContext('2d');let moonLast=-9999;
+const texture=document.createElement('canvas');texture.width=texture.height=640;const moon=texture.getContext('2d');let moonLast=-9999;let moonPose=null,moonTravel=null;
 let seed=8147;function random(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296}const craters=Array.from({length:22},()=>{let lon=random()*Math.PI*2,lat=(random()-.5)*Math.PI;return{x:Math.sin(lon)*Math.cos(lat),y:Math.sin(lat),z:Math.cos(lon)*Math.cos(lat),radius:.06+random()*.15}});
 function moonTexture(time){moon.clearRect(0,0,640,640);moon.font='bold 9px Consolas,monospace';moon.textAlign='center';moon.textBaseline='middle';const angle=time*.12,co=Math.cos(angle),si=Math.sin(angle),glyphs='.:;+=xoOX%8#@';for(let y=8;y<632;y+=9)for(let x=8;x<632;x+=9){const nx=(x-320)/303,ny=(y-320)/303,r=nx*nx+ny*ny;if(r>=1)continue;const z=Math.sqrt(1-r),rx=nx*co+z*si,rz=-nx*si+z*co;let relief=0;for(const c of craters){const d=Math.sqrt(Math.max(0,2*(1-(rx*c.x+ny*c.y+rz*c.z))))/c.radius;if(d<1.5)relief-=.3*Math.exp(-d*d*3)-.1*Math.exp(-Math.pow((d-1)/.18,2))}const n=Math.sin(rx*47+ny*19)*Math.cos(ny*39-rz*21)*.1,mare=Math.sin(rx*8+ny*3)*Math.cos(ny*7+rz*5)*.09;const light=Math.max(.03,-nx*.45-ny*.25+z*.78),v=Math.max(0,Math.min(1,light+relief+n+mare)),tone=Math.floor(v*(glyphs.length-1));moon.fillStyle=`rgba(205,222,249,${.06+v*.09})`;moon.fillRect(x-4,y-4,8,8);moon.fillStyle=`rgba(231,238,251,${.18+v*.82})`;moon.fillText(glyphs[tone],x,y)}}
 function resize(){width=innerWidth;height=innerHeight;const dpr=Math.min(devicePixelRatio||1,2);canvas.width=width*dpr;canvas.height=height*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);draw(true)}
 function draw(force=false){ctx.clearRect(0,0,width,height);const hero=["cover","hero"].includes(slides[current].dataset.scene);const t=elapsed;for(const s of stars){const a=s.a+t*s.velocity;let x=width*.73+Math.cos(a)*width*s.r,y=height*.5+Math.sin(a)*height*s.r;const d=Math.hypot(x-pointer.x,y-pointer.y),proximity=Math.max(0,1-d/160);if(proximity){x+=(x-pointer.x)*proximity*.1;y+=(y-pointer.y)*proximity*.1}const alpha=.27+Math.sin(t*.6+s.seed)*.14+proximity*.5;ctx.fillStyle=`rgba(218,231,252,${alpha})`;ctx.beginPath();ctx.arc(x,y,s.size,0,Math.PI*2);ctx.fill();if(s.size>1.5){ctx.strokeStyle=`rgba(218,231,252,${alpha*.35})`;ctx.lineWidth=.7;ctx.beginPath();ctx.moveTo(x-5,y);ctx.lineTo(x+5,y);ctx.moveTo(x,y-5);ctx.lineTo(x,y+5);ctx.stroke()}}
-if(force||t-moonLast>.1){moonTexture(t);moonLast=t}const radius=hero?Math.min(width*.19,height*.32):Math.min(width*.23,height*.4),cx=hero?width*.78:width*1.045,cy=hero?height*.45:height*.66;ctx.save();ctx.globalAlpha=hero?.95:.35;ctx.drawImage(texture,cx-radius,cy-radius,radius*2,radius*2);ctx.restore();}
+if(force||t-moonLast>.1){moonTexture(t);moonLast=t}let target={r:hero?Math.min(width*.19,height*.32):Math.min(width*.23,height*.4),x:hero?width*.78:-width*.045,y:hero?height*.45:height*.66};if(!moonPose)moonPose={...target};if(!moonTravel||moonTravel.tx!==target.x||moonTravel.tr!==target.r||moonTravel.ty!==target.y)moonTravel={from:{...moonPose},tx:target.x,ty:target.y,tr:target.r,start:performance.now()};let progress=mq.matches?1:Math.min(1,(performance.now()-moonTravel.start)/1800);let ease=progress*progress*(3-2*progress);moonPose={x:moonTravel.from.x+(target.x-moonTravel.from.x)*ease,y:moonTravel.from.y+(target.y-moonTravel.from.y)*ease,r:moonTravel.from.r+(target.r-moonTravel.from.r)*ease};const radius=moonPose.r,cx=moonPose.x,cy=moonPose.y;ctx.save();ctx.globalAlpha=hero?.95:(.95-.6*ease);ctx.drawImage(texture,cx-radius,cy-radius,radius*2,radius*2);ctx.restore();}
 function loop(t){if(previous)elapsed+=Math.min(.08,(t-previous)/1000);previous=t;if(t-last>40){draw();last=t}if(!paused&&!document.hidden)raf=requestAnimationFrame(loop)}
 function motionLabel(){document.querySelector('#toggle-motion').textContent=paused?'Animar cenário':'Pausar cenário';document.querySelector('#motion-info').textContent=mq.matches&&!override?'O sistema pede movimento reduzido. Você pode ativar o cenário pelo botão acima.':'O cenário funciona offline. Setas mudam os slides; N abre o roteiro; F ativa tela cheia.'}
 function start(){cancelAnimationFrame(raf);previous=0;draw(true);if(!paused&&!document.hidden)raf=requestAnimationFrame(loop);motionLabel()}
 document.querySelector('#toggle-motion').onclick=()=>{paused=!paused;override=true;start()};mq.addEventListener('change',()=>{if(!override)paused=mq.matches;start()});document.addEventListener('visibilitychange',start);addEventListener('resize',resize);addEventListener('pointermove',e=>{pointer.x=e.clientX;pointer.y=e.clientY});sceneRender=()=>draw(true);resize();start();
+
+const map=document.querySelector('#orbit-map'),nodes=[...document.querySelectorAll('.orbit-node')];let drag=null,dragMoved=false;
+function drawLinks(){const box=map.getBoundingClientRect();if(!box.width)return;document.querySelectorAll('[data-link]').forEach(line=>{const [a,b]=line.dataset.link.split(',').map(Number),pa=nodes[a].getBoundingClientRect(),pb=nodes[b].getBoundingClientRect();line.setAttribute('x1',pa.x+pa.width/2-box.x);line.setAttribute('y1',pa.y+pa.height/2-box.y);line.setAttribute('x2',pb.x+pb.width/2-box.x);line.setAttribute('y2',pb.y+pb.height/2-box.y)})}
+window.syncOrbitMap=()=>{if(slides[current].dataset.scene==='infrastructure')requestAnimationFrame(drawLinks)};addEventListener('resize',drawLinks);
+nodes.forEach(node=>{node.addEventListener('pointerdown',e=>{if(e.button!==0)return;const box=map.getBoundingClientRect(),r=node.getBoundingClientRect();drag={node,x:e.clientX,y:e.clientY,left:r.x-box.x,top:r.y-box.y};dragMoved=false;node.setPointerCapture(e.pointerId)});node.addEventListener('pointermove',e=>{if(!drag||drag.node!==node)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.hypot(dx,dy)>4)dragMoved=true;if(!dragMoved)return;const box=map.getBoundingClientRect();node.style.left=Math.max(0,Math.min(box.width-node.offsetWidth,drag.left+dx))/box.width*100+'%';node.style.top=Math.max(0,Math.min(box.height-node.offsetHeight,drag.top+dy))/box.height*100+'%';drawLinks()});node.addEventListener('pointerup',()=>{drag=null});node.addEventListener('pointercancel',()=>{drag=null});node.addEventListener('click',e=>{if(dragMoved){e.stopImmediatePropagation();dragMoved=false}},true);node.addEventListener('keydown',e=>{if(!e.altKey||!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key))return;e.preventDefault();const box=map.getBoundingClientRect(),r=node.getBoundingClientRect();node.style.left=Math.max(0,Math.min(box.width-r.width,r.x-box.x+(e.key==='ArrowLeft'?-12:e.key==='ArrowRight'?12:0)))/box.width*100+'%';node.style.top=Math.max(0,Math.min(box.height-r.height,r.y-box.y+(e.key==='ArrowUp'?-12:e.key==='ArrowDown'?12:0)))/box.height*100+'%';drawLinks()})});
+
+"use strict";
+const letterPaths = [
+    [[65, 250], [97, 170], [145, 45], [198, 170], [230, 250]],
+    [[97, 170], [198, 170]],
+    [[443, 65], [402, 40], [345, 64], [318, 105], [351, 140], [407, 155], [442, 200], [411, 242], [353, 252], [313, 226]],
+    [[505, 55], [580, 45], [650, 55]], [[580, 45], [580, 125], [575, 195], [575, 252]],
+    [[722, 250], [722, 55], [785, 45], [842, 82], [849, 119], [803, 151], [722, 151]],
+    [[762, 151], [805, 197], [861, 252]],
+    [[916, 250], [956, 171], [1007, 44], [1060, 171], [1100, 250]],
+    [[956, 171], [1060, 171]]
+];
+function contexto(canvas) {
+    const resultado = canvas.getContext('2d');
+    if (!resultado)
+        throw new Error('Canvas 2D não está disponível neste navegador.');
+    return resultado;
+}
+/**
+ * Monta o céu e a lua somente dentro da tela de abertura.
+ * @param {HTMLElement} root
+ * @param {() => Promise<void>} aoConcluir
+ * @returns {() => void} Cancela frames, temporizadores e eventos ao sair da rota.
+ */
+function iniciarEntrada(root, aoConcluir) {
+    const controller = new AbortController();
+    let disposed = false, raf = 0;
+    const listen = (target, event, handler, options = {}) => target.addEventListener(event, handler, { ...options, signal: controller.signal });
+    // A animação é isolada nesta rota e devolve o controle ao SvelteKit no final.
+    const sky = root.querySelector('#sky');
+    const ctx = contexto(sky);
+    const moon = root.querySelector('#moon');
+    const lunar = root.querySelector('#lunar');
+    const lc = contexto(lunar);
+    const pathLetters = [0, 0, 1, 2, 2, 3, 3, 4, 4];
+    const constellationNodes = [];
+    const nodeLookup = new Map();
+    const connections = [];
+    letterPaths.forEach((path, pi) => {
+        const indices = path.map(([x, y]) => {
+            const key = x + ',' + y;
+            if (!nodeLookup.has(key)) {
+                nodeLookup.set(key, constellationNodes.length);
+                constellationNodes.push({ x, y, letter: pathLetters[pi] });
+            }
+            return nodeLookup.get(key);
+        });
+        for (let i = 1; i < indices.length; i++)
+            connections.push([indices[i - 1], indices[i]]);
+    });
+    const clamp = (n) => Math.max(0, Math.min(1, n));
+    const ease = (n) => n < .5 ? 4 * n * n * n : 1 - Math.pow(-2 * n + 2, 3) / 2;
+    function targetPosition(node) {
+        const w = Math.min(980, width * .9);
+        return { x: (width - w) / 2 + node.x * w / 1200, y: (height - w / 4) / 2 + node.y * w / 1200 };
+    }
+    const burstDuration = 650, returnStart = 900;
+    function burstPoint(x, y) {
+        const dx = x - orbitCenter.x, dy = y - orbitCenter.y;
+        const distance = Math.hypot(dx, dy) || 1;
+        const push = Math.min(width, height) * .38 + 40;
+        return { x: x + dx / distance * push, y: y + dy / distance * push };
+    }
+    function blastPulse(elapsed) {
+        if (reduced)
+            return 0;
+        if (elapsed < burstDuration)
+            return 1 - Math.pow(1 - clamp(elapsed / burstDuration), 3);
+        if (elapsed < returnStart)
+            return 1;
+        return Math.exp(-(elapsed - returnStart) / 650);
+    }
+    function prepareFormation() {
+        selectedStars.clear();
+        const order = [0, 0, 0, 0, 0];
+        particles = constellationNodes.map((node, i) => {
+            const dest = targetPosition(node);
+            const candidates = stars.filter(star => !selectedStars.has(star.id));
+            const point = (star) => ({ x: star.drawX ?? star.x, y: star.drawY ?? star.y });
+            const visible = candidates.filter(star => { const p = point(star); return p.x > 10 && p.x < width - 10 && p.y > 10 && p.y < height - 10 && Math.hypot(p.x - orbitCenter.x, p.y - orbitCenter.y) > moonRadius + 12; });
+            const pool = visible.length ? visible : candidates;
+            pool.sort((a, b) => Math.hypot(point(a).x - dest.x, point(a).y - dest.y) - Math.hypot(point(b).x - dest.x, point(b).y - dest.y));
+            const source = pool[0];
+            selectedStars.add(source.id);
+            const start = point(source), outward = burstPoint(start.x, start.y);
+            return { node, sx: start.x / width, sy: start.y / height, bx: outward.x / width, by: outward.y / height,
+                delay: node.letter * 540 + order[node.letter]++ * 38,
+                duration: 1350 + (i % 3) * 100, bend: (i % 2 ? 1 : -1) * (.06 + (i % 4) * .018) };
+        });
+        return returnStart + Math.max(...particles.map(p => p.delay + p.duration)) + 500;
+    }
+    function particlePosition(p, elapsed) {
+        const sx = p.sx * width, sy = p.sy * height, bx = p.bx * width, by = p.by * height;
+        if (!reduced && elapsed < returnStart) {
+            const blast = 1 - Math.pow(1 - clamp(elapsed / burstDuration), 3);
+            return { x: sx + (bx - sx) * blast, y: sy + (by - sy) * blast, progress: 0, moving: elapsed < burstDuration };
+        }
+        const progress = reduced ? 1 : clamp((elapsed - returnStart - p.delay) / p.duration);
+        const e = ease(progress), target = targetPosition(p.node);
+        const cx = (bx + target.x) / 2 + (target.y - by) * p.bend;
+        const cy = (by + target.y) / 2 - (target.x - bx) * p.bend;
+        return { x: (1 - e) * (1 - e) * bx + 2 * (1 - e) * e * cx + e * e * target.x,
+            y: (1 - e) * (1 - e) * by + 2 * (1 - e) * e * cy + e * e * target.y, progress,
+            moving: !reduced && progress > 0 && progress < 1 };
+    }
+    function drawGathering(elapsed) {
+        const positions = particles.map(p => particlePosition(p, elapsed));
+        ctx.lineWidth = 1;
+        for (const [ai, bi] of connections) {
+            const a = positions[ai], b = positions[bi];
+            const arrival = returnStart + Math.max(particles[ai].delay + particles[ai].duration, particles[bi].delay + particles[bi].duration);
+            const lineProgress = reduced ? 1 : clamp((elapsed - arrival + 80) / 380);
+            if (lineProgress <= 0)
+                continue;
+            ctx.strokeStyle = `rgba(173,211,238,${.68 * lineProgress})`;
+            ctx.beginPath();
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(a.x + (b.x - a.x) * lineProgress, a.y + (b.y - a.y) * lineProgress);
+            ctx.stroke();
+        }
+        positions.forEach((point, i) => {
+            const p = particles[i];
+            if (point.moving) {
+                const tail = particlePosition(p, elapsed - 100);
+                const gradient = ctx.createLinearGradient(tail.x, tail.y, point.x, point.y);
+                gradient.addColorStop(0, 'rgba(154,216,245,0)');
+                gradient.addColorStop(1, 'rgba(154,216,245,.45)');
+                ctx.strokeStyle = gradient;
+                ctx.beginPath();
+                ctx.moveTo(tail.x, tail.y);
+                ctx.lineTo(point.x, point.y);
+                ctx.stroke();
+            }
+            ctx.shadowColor = '#a9dfff';
+            ctx.shadowBlur = point.progress > .85 ? 14 : 7;
+            ctx.fillStyle = `rgba(230,247,255,${.55 + point.progress * .45})`;
+            const finalRadius = (i % 4 === 0 ? 4.6 : 2.8) * Math.min(980, width * .9) / 1200;
+            ctx.beginPath();
+            ctx.arc(point.x, point.y, 1.1 + point.progress * Math.max(.4, finalRadius - 1.1), 0, Math.PI * 2);
+            ctx.fill();
+            if (point.progress > .9 && i % 4 === 0) {
+                ctx.shadowBlur = 0;
+                ctx.strokeStyle = 'rgba(190,225,255,.35)';
+                ctx.beginPath();
+                ctx.moveTo(point.x - 6, point.y);
+                ctx.lineTo(point.x + 6, point.y);
+                ctx.moveTo(point.x, point.y - 6);
+                ctx.lineTo(point.x, point.y + 6);
+                ctx.stroke();
+            }
+        });
+        ctx.shadowBlur = 0;
+    }
+    const motionQuery = matchMedia('(prefers-reduced-motion: reduce)');
+    let reduced = motionQuery.matches;
+    listen(motionQuery, 'change', (e) => { reduced = e.matches; });
+    let width = 0, height = 0;
+    let stars = [];
+    const pointer = { x: -9999, y: -9999 };
+    let hovered = false, focus = false, rotation = 0, scale = 1;
+    let orbitCenter = { x: 0, y: 0 }, lastPaint = -1000;
+    let lastTime = 0, previousMoon = '', entering = false;
+    let stage = 'moon', formationStart = 0;
+    let timers = [];
+    let particles = [];
+    let selectedStars = new Set();
+    let moonRadius = 260;
+    let seed = 4817;
+    const random = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+    function resize() {
+        width = innerWidth;
+        height = innerHeight;
+        const dpr = Math.min(devicePixelRatio || 1, 2);
+        sky.width = Math.round(width * dpr);
+        sky.height = Math.round(height * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        const count = Math.min(230, Math.max(140, Math.floor(width * height / 6000)));
+        stars = Array.from({ length: count }, (_, id) => ({
+            id, offsetX: 0, offsetY: 0, velocityX: 0, velocityY: 0,
+            x: random() * width, y: random() * height, vx: (random() - .5) * 9, vy: (random() - .5) * 5,
+            size: random(), alpha: .25 + random() * .40, phase: random() * Math.PI * 2, glow: 0,
+            orbital: random() < .75, angle: random() * Math.PI * 2,
+            radius: Math.min(width, height) * (.24 + random() * .8),
+            flatten: .32 + random() * .38, speed: (.035 + random() * .065) * (random() > .15 ? 1 : -1),
+            tilt: -.35, tint: random(), character: random() > .55 ? '+' : '.'
+        }));
+    }
+    function measureMoon() {
+        const r = moon.getBoundingClientRect();
+        orbitCenter = { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+        moonRadius = Math.min(r.width, r.height) * .44;
+    }
+    listen(window, 'resize', () => { resize(); measureMoon(); });
+    listen(window, 'scroll', measureMoon, { passive: true });
+    resize();
+    measureMoon();
+    listen(window, 'pointermove', (e) => { pointer.x = e.clientX; pointer.y = e.clientY; });
+    listen(document, 'pointerleave', () => { pointer.x = -9999; pointer.y = -9999; });
+    listen(moon, 'pointerenter', () => { hovered = true; });
+    listen(moon, 'pointerleave', () => { hovered = false; });
+    listen(moon, 'focus', () => { focus = true; });
+    listen(moon, 'blur', () => { focus = false; });
+    const craters = Array.from({ length: 26 }, () => {
+        const lon = (random() - .5) * Math.PI * 1.8, lat = (random() - .5) * Math.PI * .9;
+        return { x: Math.sin(lon) * Math.cos(lat), y: Math.sin(lat), z: Math.cos(lon) * Math.cos(lat), radius: .05 + random() * .15 };
+    });
+    const glyphs = '.:;+=xoXO%8#@';
+    function drawMoon(ax, ay) {
+        const resolution = lunar.width / 384;
+        lc.setTransform(resolution, 0, 0, resolution, 0, 0);
+        lc.clearRect(0, 0, 384, 384);
+        const cell = 6, center = 192, radius = 170;
+        lc.font = "bold 7.2px \"Courier New\", monospace";
+        lc.textAlign = "center";
+        lc.textBaseline = "middle";
+        const cy = Math.cos(ay), sy = Math.sin(ay), cx = Math.cos(ax), sx = Math.sin(ax);
+        for (let gy = 3; gy < 61; gy++)
+            for (let gx = 3; gx < 61; gx++) {
+                const nx = (gx * cell + 3 - center) / radius, ny = (gy * cell + 3 - center) / radius;
+                const rr = nx * nx + ny * ny;
+                if (rr >= 1)
+                    continue;
+                const nz = Math.sqrt(1 - rr);
+                const rx = nx * cy + nz * sy, rz = -nx * sy + nz * cy;
+                const ry = ny * cx - rz * sx, tz = ny * sx + rz * cx;
+                const u = Math.floor((Math.atan2(rx, tz) + Math.PI) * 27), v = Math.floor((Math.asin(ry) + Math.PI / 2) * 27);
+                const noise = ((Math.sin(u * 127.1 + v * 311.7) * 43758.5453) % 1 + 1) % 1;
+                let terrain = 0;
+                for (const c of craters) {
+                    const dist = Math.sqrt(Math.max(0, 2 * (1 - (rx * c.x + ry * c.y + tz * c.z))));
+                    if (dist < c.radius)
+                        terrain -= .25 * (1 - dist / c.radius);
+                    else if (dist < c.radius * 1.25)
+                        terrain += .12;
+                }
+                const mare = Math.sin(rx * 7 + ry * 3) * Math.cos(ry * 6 + tz * 3) * .11;
+                const light = Math.max(.04, -nx * .52 - ny * .28 + nz * .81);
+                const value = Math.max(0, Math.min(1, light * .72 + terrain + mare + (noise - .5) * .21));
+                const tone = .20 + Math.pow(Math.max(0, Math.min(1, value * 1.3)), .72) * .8;
+                const texture = (noise - .5) * .17;
+                const char = glyphs[Math.min(glyphs.length - 1, Math.max(0, Math.floor((tone + texture) * (glyphs.length - 1))))];
+                // As células discretas dão estrutura; os caracteres claros desenham a lua.
+                const high = [244, 245, 247];
+                lc.fillStyle = `rgba(${high.join(',')},${.035 + tone * .055})`;
+                lc.fillRect(gx * cell, gy * cell, 5.3, 5.3);
+                const strength = .35 + tone * .65;
+                const [r, g, b] = high.map(channel => Math.round(channel * strength));
+                lc.fillStyle = `rgba(${r},${g},${b},${.57 + tone * .43})`;
+                lc.fillText(char, gx * cell + 3, gy * cell + 3);
+            }
+    }
+    function frame(time) {
+        if (disposed)
+            return;
+        if (time - lastPaint < 1000 / 30) {
+            raf = requestAnimationFrame(frame);
+            return;
+        }
+        const dt = Math.min((time - lastTime) / 1000 || 0, .05);
+        lastTime = time;
+        lastPaint = time;
+        ctx.clearRect(0, 0, width, height);
+        for (const s of stars) {
+            if (entering && selectedStars.has(s.id))
+                continue;
+            if (!reduced) {
+                if (s.orbital)
+                    s.angle += s.speed * dt;
+                else {
+                    s.x = (s.x + s.vx * dt + width) % width;
+                    s.y = (s.y + s.vy * dt + height) % height;
+                }
+            }
+            if (s.orbital) {
+                const ox = Math.cos(s.angle) * s.radius, oy = Math.sin(s.angle) * s.radius * s.flatten;
+                s.x = orbitCenter.x + ox * Math.cos(s.tilt) - oy * Math.sin(s.tilt);
+                s.y = orbitCenter.y + ox * Math.sin(s.tilt) + oy * Math.cos(s.tilt);
+            }
+            // Desvio elástico: o cursor afasta as estrelas sem destruir suas órbitas.
+            const dx = s.x + s.offsetX - pointer.x, dy = s.y + s.offsetY - pointer.y;
+            const separation = Math.hypot(dx, dy);
+            if (!reduced) {
+                const force = entering ? 0 : Math.pow(Math.max(0, 1 - separation / 155), 2) * 900;
+                const ux = separation > .5 ? dx / separation : Math.cos(s.phase);
+                const uy = separation > .5 ? dy / separation : Math.sin(s.phase);
+                s.velocityX += (ux * force - s.offsetX * 14 - s.velocityX * 6) * dt;
+                s.velocityY += (uy * force - s.offsetY * 14 - s.velocityY * 6) * dt;
+                s.offsetX += s.velocityX * dt;
+                s.offsetY += s.velocityY * dt;
+                const length = Math.hypot(s.offsetX, s.offsetY);
+                if (length > 65) {
+                    s.offsetX *= 65 / length;
+                    s.offsetY *= 65 / length;
+                }
+            }
+            else {
+                s.offsetX = 0;
+                s.offsetY = 0;
+                s.velocityX = 0;
+                s.velocityY = 0;
+            }
+            s.drawX = s.x + s.offsetX;
+            s.drawY = s.y + s.offsetY;
+            const distance = Math.hypot(s.drawX - pointer.x, s.drawY - pointer.y);
+            const target = Math.max(0, 1 - distance / 145);
+            s.glow += (target - s.glow) * (reduced ? 1 : .18);
+            const twinkle = reduced ? 0 : Math.sin(time * .001 + s.phase) * .055;
+            const depth = s.orbital ? .7 + .3 * (Math.sin(s.angle) + 1) / 2 : 1;
+            const alpha = Math.min(1, Math.max(.05, (s.alpha + twinkle + s.glow * .85) * depth));
+            let viewX = s.drawX, viewY = s.drawY;
+            if (entering) {
+                const blast = blastPulse(time - formationStart);
+                const pushed = burstPoint(viewX, viewY);
+                viewX += (pushed.x - viewX) * blast;
+                viewY += (pushed.y - viewY) * blast;
+            }
+            const x = Math.round(viewX), y = Math.round(viewY);
+            const rgb = s.tint > .7 ? '183,174,224' : '165,212,220';
+            ctx.font = `${s.size > .84 ? 12 : 10}px "Courier New",monospace`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillStyle = `rgba(${rgb},${alpha})`;
+            const behindMoon = !entering && Math.hypot(s.drawX - orbitCenter.x, s.drawY - orbitCenter.y) < moonRadius;
+            if (behindMoon)
+                continue;
+            if (s.size > .94) {
+                // Estrela maior formada apenas por caracteres ASCII.
+                ctx.font = '8px "Courier New",monospace';
+                ctx.fillText('|', x, y - 7);
+                ctx.fillText('-*-', x, y);
+                ctx.fillText('|', x, y + 7);
+            }
+            else
+                ctx.fillText(s.size > .7 ? '*' : s.character, x, y);
+            if (s.glow > .12) {
+                ctx.shadowColor = `rgba(${rgb},.9)`;
+                ctx.shadowBlur = s.glow * 12;
+                ctx.fillStyle = `rgba(223,245,255,${s.glow})`;
+                ctx.fillText('*', x, y);
+                ctx.shadowBlur = 0;
+            }
+        }
+        const active = hovered || focus;
+        const easing = reduced ? 1 : Math.min(1, dt * 7);
+        if (!reduced && !entering)
+            rotation = (rotation + dt * .22) % (Math.PI * 2);
+        scale += ((active ? 1.085 : 1) - scale) * easing;
+        moon.style.transform = `scale(${scale})`;
+        const key = rotation.toFixed(4);
+        if (key !== previousMoon) {
+            drawMoon(-.08, rotation);
+            previousMoon = key;
+        }
+        if (stage === 'gathering' || stage === 'holding')
+            drawGathering(time - formationStart);
+        raf = requestAnimationFrame(frame);
+    }
+    raf = requestAnimationFrame(frame);
+    function later(action, delay) { timers.push(setTimeout(action, delay)); }
+    listen(moon, 'click', () => {
+        if (entering || disposed)
+            return;
+        reduced = motionQuery.matches;
+        const duration = reduced ? 0 : prepareFormation();
+        if (reduced)
+            prepareFormation();
+        formationStart = performance.now();
+        entering = true;
+        stage = 'gathering';
+        moon.disabled = true;
+        root.classList.add('entering', 'gathering');
+        later(() => {
+            stage = 'holding';
+            root.classList.remove('gathering');
+            root.classList.add('holding');
+        }, duration);
+        later(async () => {
+            stage = 'handoff';
+            try {
+                await aoConcluir();
+            }
+            catch {
+                if (!disposed)
+                    reset();
+            }
+        }, reduced ? 80 : duration + 1400);
+    });
+    function reset() {
+        timers.forEach(clearTimeout);
+        timers = [];
+        selectedStars.clear();
+        particles = [];
+        root.classList.remove('entering', 'gathering', 'holding');
+        moon.disabled = false;
+        entering = false;
+        stage = 'moon';
+        hovered = false;
+        measureMoon();
+        moon.focus({ preventScroll: true });
+    }
+    listen(window, 'keydown', (e) => {
+        if (e.key === 'Escape' && (stage === 'gathering' || stage === 'holding'))
+            reset();
+    });
+    return () => {
+        disposed = true;
+        cancelAnimationFrame(raf);
+        timers.forEach(clearTimeout);
+        controller.abort();
+    };
+}
+
+let cleanupOpening=null;
+window.syncFinalOpening=()=>{const active=slides[current].dataset.scene==='opening';if(active&&!cleanupOpening)cleanupOpening=iniciarEntrada(document.querySelector('#final-opening .entrada'),async()=>{});else if(!active&&cleanupOpening){cleanupOpening();cleanupOpening=null;document.querySelector('#final-opening .entrada').classList.remove('entering','gathering','holding');document.querySelector('#moon').disabled=false;document.querySelector('#moon').style.transform='';}};
 </script></body></html>
