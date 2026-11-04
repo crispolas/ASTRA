@@ -11,15 +11,15 @@ Diário técnico de exclusão, erros e estados da tela.
 | Issue | Tarefa | Responsável | Registro |
 | --- | --- | --- | --- |
 | #31 | Excluir tarefa com confirmação | Gabriel Crispim Galvão | Integrada à main pelo PR #68 |
-| #32 | Estado de carregamento | Eurípedes Rocha Neto | PR #69: alterações na lista geral; demais telas ainda precisam de conferência |
-| #33 | Estado de erro e tentar novamente | Eurípedes Rocha Neto | PR #69: alterações na lista geral; demais telas ainda precisam de conferência |
-| #34 | Estado vazio | A definir | Sem implementação registrada neste documento |
-| #35 | Tarefa ou projeto inexistente | A definir | Sem implementação registrada neste documento |
+| #32 | Estado de carregamento | Eurípedes Rocha Neto | Lista geral implementada no PR #69; indicação nas demais buscas ainda precisa ser completada |
+| #33 | Estado de erro e tentar novamente | Eurípedes Rocha Neto | Mensagem na lista geral pelo PR #69; nova tentativa e consistência entre telas pendentes |
+| #34 | Estado vazio | A confirmar pela equipe | Mensagens existentes na lista, no projeto sem tarefas e nas colunas do Kanban |
+| #35 | Tarefa ou projeto inexistente | A confirmar pela equipe | Tarefa tem página não encontrada; projeto ainda mistura inexistência e falha da API |
 | #36 | Falha ao salvar e excluir | A confirmar pela equipe | Comportamento verificado em cadastro, edição e exclusão; slides e roteiro incluídos |
 | #37 | Auditoria de acessibilidade e responsividade | Brenno Milhomem Farias | Integrada pelo PR #71; slides e roteiro incluídos |
-| #38 | Apresentação do Marco 5 | Gabriel Crispim Galvão | Slides da #31 e dos estados da lista (#32 e #33) em slides/index.html |
+| #38 | Apresentação do Marco 5 | Gabriel Crispim Galvão | HTML e PDF com capa e 12 slides de conteúdo: #31, #32, #33, #36 e #37 |
 
-Os responsáveis não definidos não foram atribuídos automaticamente. Os slides são parciais: não apresentam as demais issues como concluídas. O marco só estará completo após as entregas restantes.
+Os responsáveis não confirmados devem ser definidos pela equipe. O registro distingue comportamento existente de pendências: a existência de um PR integrado ou de um slide não significa que todos os requisitos da issue foram atendidos. A apresentação cobre #31, #32, #33, #36 e #37; #34 e #35 não têm seções próprias nos slides.
 
 ## Issue 31 — Excluir tarefa com confirmação
 
@@ -83,13 +83,57 @@ Os testes de API cobrem ID codificado, DELETE sem corpo, respostas de sucesso 20
 - Branch: `feat/issue-31-excluir-tarefa`.
 - Pull request: [#68](https://github.com/crispolas/ASTRA/pull/68), integrado à main.
 
-## Registro das issues 32 e 33
+## Issue 32 — Mostrar o estado de carregando
 
-O [PR #69](https://github.com/crispolas/ASTRA/pull/69), de Eurípedes Rocha Neto, foi integrado à main e alterou `src/routes/+page.svelte` para carregamento e erro. Este registro identifica a integração; não equivale a uma auditoria do comportamento em todas as rotas. As seções técnicas detalhadas podem ser complementadas pelo responsável.
+**Responsável:** Eurípedes Rocha Neto. Integração pelo [PR #69](https://github.com/crispolas/ASTRA/pull/69).
 
-## Apresentação inicial — Issue 38
+### Como funciona e por quê
 
-Abra [slides/index.html](slides/index.html) no navegador. O HTML é independente, sem API ou instalação. Letras grandes, margens curtas e contraste alto foram priorizados para projeção. Setas navegam, F ativa tela cheia e N abre o roteiro oculto. A simulação de exclusão é local à apresentação e não altera os dados do ASTRA. A apresentação contém treze slides, incluindo a capa do Marco 5: exclusão, carregamento, erro na lista, tratamento de falhas ao salvar e excluir e auditoria de acessibilidade e responsividade. Explica onMount, $state, await, try/catch/finally e os blocos condicionais do Svelte. O botão Tentar novamente ainda não está implementado e não é apresentado como concluído. As demais issues serão acrescentadas após a implementação.
+Em `src/routes/+page.svelte`, `carregando` começa como `$state(true)`. O `onMount` do Svelte inicia a busca no navegador; `await listarTarefas()` aguarda os dados e os atribui à coleção. O `finally` muda `carregando` para `false`, tanto no sucesso quanto no erro. O template usa `{#if carregando}` para mostrar a espera, evitando apresentar uma lista vazia antes da resposta.
+
+Não foi instalada biblioteca nova. O formulário também indica o carregamento de projetos. A exigência da professora é indicação em todas as telas que buscam dados: completar as demais buscas continua pendente, sem substituir a arquitetura de carregamento existente.
+
+### Como conferir
+
+No DevTools, aplique limitação de rede e recarregue a lista. A mensagem deve aparecer durante a espera e desaparecer após a resposta ou a falha. Repita a conferência nas demais telas para completar o requisito.
+
+## Issue 33 — Mostrar o estado de erro e permitir nova tentativa
+
+**Responsável:** Eurípedes Rocha Neto. Mensagem na lista geral integrada pelo [PR #69](https://github.com/crispolas/ASTRA/pull/69).
+
+### Como funciona e por quê
+
+O módulo `api.ts` verifica `resposta.ok` e lança erro para respostas HTTP sem sucesso. Na lista, o `catch` guarda uma mensagem em `erro`, declarado com `$state`; o template a mostra com `role="alert"`. O `finally` encerra o carregamento. A mensagem aparece antes da condição de lista vazia.
+
+O tratamento HTTP é necessário porque `fetch` pode resolver uma Promise mesmo recebendo HTTP 500. Nenhuma dependência nova foi necessária.
+
+### Pendências verificadas
+
+A opção de tentar novamente ainda não existe na lista. Em projetos, uma falha pode ser apresentada como lista vazia; no Kanban e no detalhe de tarefa, falhas podem aparecer como página não encontrada. Distinguir esses estados e permitir repetir a busca faz parte do pedido da #33, não de um marco futuro.
+
+### Como conferir
+
+Simule HTTP 503 nas requisições de leitura ou pare temporariamente a API. Confira a mensagem apresentada e a possibilidade de repetir a busca. Não use uma falha de rede como evidência de banco vazio ou de registro inexistente.
+
+## Issue 34 — Mostrar o estado vazio
+
+### Comportamento existente
+
+A lista apresenta mensagem quando não há resultados; o detalhe de projeto informa quando não há tarefas vinculadas; cada coluna vazia do Kanban tem seu aviso. Busca e filtros também podem produzir a mensagem de ausência de resultados na lista.
+
+A função desses avisos é explicar uma consulta bem-sucedida sem itens. Eles não devem ocultar erros da API, pendência registrada na #33. Confirme os cenários com dados de teste ou respostas simuladas, sem apagar os dados reais da equipe.
+
+## Issue 35 — Tratar tarefa ou projeto inexistente
+
+### Comportamento existente e pendência
+
+Uma tarefa inexistente abre a página de não encontrado. Para projeto inexistente, o carregamento retorna `projeto: null` e a mensagem atual mistura indisponibilidade da API com inexistência. Falhas no detalhe da tarefa também podem ser convertidas em 404.
+
+O PDF pede uma mensagem clara de não encontrado, sem carregamento eterno. A conclusão desta issue exige distinguir inexistência de falha da API; não exige uma refatoração geral das rotas. Confira IDs inexistentes e, separadamente, respostas de erro do servidor.
+
+## Apresentação — Issue 38
+
+Abra [slides/index.html](slides/index.html) no navegador. O HTML é independente, sem API ou instalação. Letras grandes, margens curtas e contraste alto foram priorizados para projeção. Setas navegam, F ativa tela cheia e N abre o roteiro oculto. A simulação de exclusão é local à apresentação e não altera os dados do ASTRA. A apresentação contém treze slides, incluindo a capa do Marco 5: exclusão, carregamento, erro na lista, tratamento de falhas ao salvar e excluir e auditoria de acessibilidade e responsividade. Explica onMount, $state, await, try/catch/finally e os blocos condicionais do Svelte. O botão Tentar novamente ainda não está implementado e não é apresentado como concluído. A apresentação não declara #32 e #33 integralmente concluídas; as pendências ficam registradas nas seções correspondentes.
 
 
 Os slides usam fontes ampliadas, margens curtas e notas ocultas. **← / →** navegam, **F** solicita tela cheia e **N** abre ou fecha o roteiro. O botão das notas fica oculto na lateral esquerda, aparecendo no hover ou no foco. A [versão PDF](slides/apresentacao.pdf) serve de reserva, sem notas. O HTML pode ser baixado do GitHub e aberto diretamente no navegador.
@@ -111,7 +155,7 @@ Na exclusão, `onexcluir` só é chamado depois do sucesso do DELETE. Se houver 
 
 Simule HTTP 500 em POST e PATCH: os campos, a página e os dados digitados devem permanecer, com aviso e botão reabilitado. Simule HTTP 500 em DELETE: a tarefa deve continuar na lista, com aviso e nova tentativa disponível. A conferência no navegador usou respostas interceptadas, sem gravar ou excluir dados reais.
 
-Os dois últimos slides e seus roteiros mostram esses fluxos com simulações locais. Issue: [#36](https://github.com/crispolas/ASTRA/issues/36).
+Os slides 10 e 11, contando a capa como slide 1, e seus roteiros mostram esses fluxos com simulações locais. Issue: [#36](https://github.com/crispolas/ASTRA/issues/36).
 
 
 ## Issue 37 — Auditar acessibilidade e responsividade
@@ -128,3 +172,17 @@ Para demonstrar no site, percorra os controles com Tab e Shift + Tab, acione bot
 ### Metodologia da apresentação
 
 Os slides mostram a implementação em etapas, com código curto, significado dos recursos e motivo das decisões. As explicações essenciais de callback, estado reativo, ciclo de vida, tratamento de falhas e CSS ficam visíveis; o roteiro oculto complementa a fala. As interações demonstram o mecanismo explicado em cada cena.
+
+
+### Organização atual dos slides
+
+| Slides | Conteúdo |
+| --- | --- |
+| 1 | Capa do Marco 5 e equipe |
+| 2–5 | #31: divisão entre cartão, API e página; DELETE, callback, estado reativo e demonstração |
+| 6–7 | #32: onMount, await, $state, finally e indicação de espera |
+| 8–9 | #33: falha HTTP, catch e renderização condicional |
+| 10–11 | #36: preservação dos campos e tratamento da falha de exclusão |
+| 12–13 | #37: teclado, foco, Lighthouse e responsividade do Kanban |
+
+A capa mantém a lua ASCII animada e os quatro integrantes. O cartão da demonstração tem borda nos quatro lados; a explicação fica abaixo dele, sem coluna lateral. As simulações são locais ao HTML. O painel de notas permite pausar ou ativar o cenário; movimento reduzido é respeitado inicialmente. O PDF é estático e não inclui as notas. A apresentação deve ser ensaiada para respeitar o limite de cinco minutos da professora.
