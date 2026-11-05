@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { afterEach, test } from 'node:test';
 
-import { buscarProjeto, buscarTarefa, listarProjetos, listarTarefas } from '../src/lib/api.ts';
+import { buscarProjeto, buscarTarefa, listarProjetos, listarTarefas } from './helpers/api.mjs';
 
 const fetchOriginal = globalThis.fetch;
 

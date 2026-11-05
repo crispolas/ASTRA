@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { afterEach, test } from 'node:test';
-import { excluirTarefa } from '../src/lib/api.ts';
+import { excluirTarefa } from './helpers/api.mjs';
 
 const fetchOriginal = globalThis.fetch;
 afterEach(() => { globalThis.fetch = fetchOriginal; });

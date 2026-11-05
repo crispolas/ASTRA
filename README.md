@@ -28,6 +28,18 @@ Para instalar as dependências:
 npm install
 ```
 
+Copie `.env.example` para `.env` antes de iniciar a aplicação. No CMD do Windows,
+use `copy .env.example .env`; no Linux/macOS, `cp .env.example .env`.
+O arquivo define `PUBLIC_API_URL=http://localhost:3000` para a API local.
+Reinicie o servidor de desenvolvimento depois de mudar esse valor.
+
+Para produção, configure `PUBLIC_API_URL` com o endereço real da API hospedada
+no ambiente onde `npm run build` será executado. O SvelteKit incorpora esse valor
+ao build; trocar o endereço exige gerar outro build. Não há URL de hospedagem
+predefinida: ela será definida na issue #40. A variável é pública e não deve
+conter credenciais. O `.env` local não é versionado; `.env.test` configura a API
+simulada dos testes.
+
 Para iniciar o projeto:
 
 ```sh

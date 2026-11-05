@@ -1,6 +1,6 @@
 import type { NovaTarefa, NovoProjeto, Projeto, ProjetoComTarefas, Tarefa } from '../tipos';
 
-const API_URL = 'http://localhost:3000';
+import { API_URL } from './configuracao';
 
 // Guarda o status HTTP para as telas separarem "não encontrado" (404) de "API fora do ar".
 export class ErroApi extends Error {
