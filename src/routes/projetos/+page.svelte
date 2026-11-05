@@ -1,5 +1,4 @@
 <script lang="ts">
-	import SuperficieOrbital from '../../lib/components/SuperficieOrbital.svelte';
 	import { interacaoOrbital } from '../../lib/visual/interacao';
 	import type { PageData } from './$types';
 
@@ -11,6 +10,7 @@
 		<div style="display:flex; flex-direction:column; gap:8px;">
 			<span class="astra-eyebrow">Lista de projetos</span>
 			<h1>Projetos</h1>
+            <p class="ov-count">{data.projetos.length} {data.projetos.length === 1 ? 'projeto' : 'projetos'} no observatório</p>
 		</div>
 	</div>
 
@@ -19,7 +19,7 @@
 			{#each data.projetos as projeto (projeto.id)}
 				<li class="astra-orbita">
 					<article class="astra-card card-projeto ov-organic" use:interacaoOrbital>
-					<SuperficieOrbital />
+
 					<h3>{projeto.nome}</h3>
 					{#if projeto.descricao}
 						<p class="astra-muted">{projeto.descricao}</p>
