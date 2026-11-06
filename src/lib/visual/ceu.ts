@@ -49,13 +49,20 @@ function desenharTexturaLua(epoch: number){
   moonCtx.fillStyle=`rgba(244,245,247,${.035+tone*.055})`;moonCtx.fillRect(gx*6,gy*6,5.3,5.3);const strength=.35+tone*.65;moonCtx.fillStyle=`rgba(${Math.round(244*strength)},${Math.round(245*strength)},${Math.round(247*strength)},${.57+tone*.43})`;moonCtx.fillText(char,gx*6+3,gy*6+3);
  }
 }
-function pintarLua(t: number,forcar: boolean){const epoch=(reduzir.matches)?(tempoPausaLua??Date.now()):Date.now(),p=posicaoLua(epoch,W,H);if(!p.visivel||Math.abs(orientacaoAgora()+28)>25)return;
- if(forcar||t-ultimoDesenhoLua>80){ultimoDesenhoLua=t;desenharTexturaLua(epoch)}
+function pintarLua(t: number,forcar: boolean){const epoch=(reduzir.matches)?(tempoPausaLua??Date.now()):Date.now(),p=posicaoLua(epoch,W,H);if(p.diametro<=0)return;
  // Escala visual da revisão; fase, centro, profundidade e período continuam em orbita.ts.
  const larguraUtil=Math.max(1,Math.min(W,1600)-W*.09);
  const diametroReferencia=W<=900?Math.min(168,W*.4):larguraUtil*.22;
  const escala=diametroReferencia*2.2/(2*Math.min(W*.34,H*.46));
- const size=p.diametro*escala/(340/384);ctx.save();ctx.shadowColor='#e1eaff';ctx.shadowBlur=4;ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(lunar,projetarX(p.x,W,orientacaoAgora()+28,.95)-size/2,p.y-size/2,size,size);ctx.restore();
+ const size=p.diametro*escala/(340/384),giro=orientacaoAgora()+28;
+ // Visibilidade depende do corpo inteiro no campo projetado, nunca da rota
+ // ou de um corte angular que apagaria uma Lua ainda dentro da tela.
+ const angulo=Math.atan((p.x-W/2)/(W*.85))-giro*Math.PI/180*.95;
+ if(Math.abs(angulo)>=Math.PI/2)return; // atrás do observador
+ const x=projetarX(p.x,W,giro,.95),raio=size/2+8;
+ if(x+raio<0||x-raio>W||p.y+raio<0||p.y-raio>H)return;
+ if(forcar||t-ultimoDesenhoLua>80){ultimoDesenhoLua=t;desenharTexturaLua(epoch)}
+ ctx.save();ctx.shadowColor='#e1eaff';ctx.shadowBlur=4;ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(lunar,x-size/2,p.y-size/2,size,size);ctx.restore();
 }
 let cadente: Cadente | null=null; let proximaCadente=performance.now()+55000+Math.random()*65000;
 function desenharCadente(t: number){

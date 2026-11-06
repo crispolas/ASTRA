@@ -11,8 +11,8 @@ direto ao documento Figma. Mobile será uma adaptação responsiva destas vistas
 - Layout persistente: `onNavigate` do SvelteKit coordena saída/entrada em um
   wrapper com perspectiva. A ilha e a marca ficam fora do wrapper.
 - Céu: mesmo componente Canvas entre rotas internas; estrelas pequenas mantidas,
-  estrelas luminosas adicionais, projeção por profundidade e Lua apenas no setor
-  de tarefas, sem reiniciar fase ou trajetória.
+  estrelas luminosas adicionais, projeção por profundidade e uma única Lua
+  ancorada ao setor de tarefas, sem reiniciar fase ou trajetória.
 - Cartões: preservar ações/dados e os wrappers independentes de flutuação e tilt;
   retirar a superfície orgânica de tarefas/projetos em favor de bordas simples.
 - Estilos: substituir a composição lateral pela ilha superior, grade regular
@@ -48,8 +48,9 @@ duplicado para animar. A câmera interpola a orientação enquanto o Canvas mant
 as órbitas locais. Os controles da rota ficam inertes durante o giro; o título
 recebe foco ao terminar, após `tick` remover a inércia.
 
-A Lua só pertence ao setor de tarefas; os objetos repetidos nas imagens não foram
-interpretados como Luas distintas. A referência de tempo, trajetória e textura
+A Lua é ancorada ao setor de tarefas; os objetos repetidos nas imagens não foram
+interpretados como Luas distintas. Ela pode permanecer visível nas vistas vizinhas
+enquanto estiver no campo projetado da câmera, sem cortes por rota ou ângulo fixo. A referência de tempo, trajetória e textura
 ASCII/crateras existentes foram preservadas. Há cinco estrelas luminosas com
 posições angulares, profundidades e oscilações próprias, além das 90 pequenas
 estrelas originais com velocidades, interação e cintilação independentes.
@@ -90,5 +91,18 @@ adaptação das imagens desktop, sujeita à revisão do usuário.
 
 Capturas e vídeos ficam fora do código-fonte, em
 `/workspace/artifacts/planetario/`. A apresentação visual foi comparada com as
-imagens anexadas, mantendo como diferenças deliberadas a Lua apenas em tarefas,
-os dados reais do banco e os controles funcionais já existentes em cada tela.
+imagens anexadas, mantendo uma única Lua contínua, os dados reais do banco e os
+controles funcionais já existentes em cada tela.
+
+## Correção da saída lunar durante o giro
+
+Removido o corte artificial a 25°: ele apagava a Lua ainda visível antes de a
+câmera estabilizar em Projetos (28° de deslocamento). A visibilidade agora usa
+a posição projetada e o raio inteiro, incluindo o brilho, e verifica se o corpo
+está à frente do observador. Também não usa a visibilidade da câmera original
+como condição de descarte: um corpo fora daquela vista pode entrar na vista girada.
+
+Validação: zero erros/avisos no check; teste real do Canvas em duas fases da órbita
+(0,25 e 0,05), nas larguras 1600 e 390 px, confirmando desenhos recentes e dentro
+da tela após concluir o giro para Projetos. Fase, textura, escala, opacidade e
+trajetória orbital não foram alteradas.
