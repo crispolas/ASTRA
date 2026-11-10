@@ -117,6 +117,8 @@ Com a URL em mãos, a equipe segue para a issue #42 (build com
 _Pendente: preencher após o deploy no Render._
 
 ## Issue 42 — Publicar a aplicação
+**Responsável:** Felipe Borges Barros
+
 
 ### O que foi feito e por quê
 
