@@ -2,7 +2,7 @@
 
 ## Issue 39 — Tirar a URL da API do código
 
-**Responsável:** Felipe Borges e Gabriel Crispim Galvão
+**Responsável:** Gabriel Crispim Galvão
 
 ### Objetivo
 
@@ -50,7 +50,7 @@ adaptação de deploy e slides não fazem parte desta alteração.
 
 ## Issue 40 — Migrar a API para um serviço hospedado
 
-**Responsável pela publicação no Render:** Gabriel Crispim Galvão
+**Responsável pela publicação no Render:** Felipe Borges e Gabriel Crispim Galvão
 
 ### O que já está pronto no repositório
 
