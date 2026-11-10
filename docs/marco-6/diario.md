@@ -2,7 +2,7 @@
 
 ## Issue 39 — Tirar a URL da API do código
 
-**Responsável:** Gabriel Crispim Galvão
+**Responsável:** Felipe Borges e Gabriel Crispim Galvão
 
 ### Objetivo
 
