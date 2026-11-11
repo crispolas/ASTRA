@@ -54,7 +54,26 @@ npx json-server db.json
 
 A aplicação estará disponível em `http://localhost:5173` e a API em `http://localhost:3000`.
 
-## Build
+## Testes
+
+Depois de instalar as dependências, instale o navegador de testes uma vez:
+
+```sh
+npx playwright install chromium
+```
+
+Execute a suíte completa com `npm test` (no PowerShell, `npm.cmd test`).
+Em Linux, se faltarem bibliotecas do navegador, use
+`npx playwright install --with-deps chromium`.
+
+Os testes das páginas usam Chromium para executar o Svelte, pois a aplicação
+está configurada com `ssr = false`. Cada teste tem um contexto isolado e respostas
+da API simuladas, incluindo 404 e falha de conexão; não precisa iniciar a API
+local nem acessar os dados de produção. Os testes de API, componentes e lógica
+continuam na mesma suíte. Feche o servidor de desenvolvimento antes de testar
+para evitar colisões nos arquivos gerados pelo SvelteKit.
+
+## Build de produção
 
 Para gerar a versão de produção:
 

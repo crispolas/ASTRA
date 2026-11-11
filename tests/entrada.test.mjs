@@ -1,33 +1,23 @@
 import assert from 'node:assert/strict';
-import { after, before, test } from 'node:test';
-import { createServer } from 'vite';
-
-let server;
-let baseUrl;
-before(async () => {
-	server = await createServer({ logLevel: 'silent', server: { host: '127.0.0.1', port: 0 } });
-	await server.listen();
-	baseUrl = `http://127.0.0.1:${server.httpServer.address().port}`;
-});
-after(async () => { await server?.close(); });
+import { test } from 'node:test';
+import { prepararNavegador } from './helpers/navegador.mjs';
+const app = prepararNavegador();
 
 test('/inicio oferece a lua como entrada sem mostrar o menu do gerenciador', async () => {
-	const resposta = await fetch(`${baseUrl}/inicio`);
-	const html = await resposta.text();
-	assert.equal(resposta.status, 200);
-	assert(html.includes('aria-label="Entrar no ASTRA"'));
-	assert(html.includes('id="lunar"'));
-	assert(!/<nav[^>]*class="[^"]*\bastra-nav\b/.test(html));
-	assert(!html.includes('Prévia do gerenciador'));
+	const resposta = await app.abrir('/inicio');
+	await app.page.getByRole('button', { name: 'Entrar no ASTRA' }).waitFor();
+	assert.equal(resposta.status(), 200);
+	assert.equal(await app.page.locator('#lunar').count(), 1);
+	assert.equal(await app.page.locator('.astra-nav').count(), 0);
+	assert.equal(await app.page.getByText('Prévia do gerenciador').count(), 0);
 });
 
 test('o gerenciador continua em / e oferece a marca para retornar à abertura', async () => {
-	const resposta = await fetch(`${baseUrl}/`);
-	const html = await resposta.text();
-	assert.equal(resposta.status, 200);
-	assert(html.includes('data-astra-brand'));
-	assert(html.includes('href="/inicio"'));
-	assert(/<nav[^>]*class="[^"]*\bastra-nav\b/.test(html));
-	assert(html.includes('Lista de tarefas'));
-	assert(!html.includes('id="lunar"'));
+	const resposta = await app.abrir('/');
+	await app.page.getByRole('heading', { name: 'Tarefas', exact: true }).waitFor();
+	assert.equal(resposta.status(), 200);
+	assert.equal(await app.page.locator('[data-astra-brand]').getAttribute('href'), '/inicio');
+	assert.equal(await app.page.getByRole('navigation', { name: 'Navegação principal', exact: true }).count(), 1);
+	assert.equal(await app.page.getByRole('region', { name: 'Lista de tarefas' }).count(), 1);
+	assert.equal(await app.page.locator('#lunar').count(), 0);
 });

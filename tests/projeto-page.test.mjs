@@ -1,36 +1,7 @@
 import assert from 'node:assert/strict';
-import { after, afterEach, before, test } from 'node:test';
-import { createServer } from 'vite';
-
-const fetchOriginal = globalThis.fetch;
-let server;
-let baseUrl;
-
-before(async () => {
-	server = await createServer({
-		logLevel: 'silent',
-		server: { host: '127.0.0.1', port: 0 }
-	});
-	await server.listen();
-
-	const address = server.httpServer?.address();
-	assert(address && typeof address !== 'string');
-	baseUrl = `http://127.0.0.1:${address.port}`;
-});
-
-after(async () => {
-	await server.close();
-});
-
-afterEach(() => {
-	globalThis.fetch = fetchOriginal;
-});
-
-// A renderização no servidor roda neste processo: as chamadas à API simulada passam por aqui.
-function simularApi(responder) {
-	globalThis.fetch = async (url, init) =>
-		String(url).startsWith('http://localhost:3000') ? responder(String(url)) : fetchOriginal(url, init);
-}
+import { test } from 'node:test';
+import { prepararNavegador } from './helpers/navegador.mjs';
+const app = prepararNavegador();
 
 const projeto = {
 	id: '1',
@@ -52,55 +23,38 @@ const tarefa = {
 };
 
 test('/projetos/:id mostra os dados do projeto e um cartão por tarefa', async () => {
-	let urlConsultada;
-	simularApi((url) => {
-		urlConsultada = url;
-		return Response.json({ ...projeto, tarefas: [tarefa, { ...tarefa, id: '8', titulo: 'Segunda tarefa' }] });
-	});
-
-	const response = await fetch(`${baseUrl}/projetos/1`);
-	const html = await response.text();
-
-	assert.equal(response.status, 200);
-	assert.equal(urlConsultada, 'http://localhost:3000/projetos/1?_embed=tarefas');
-	assert.match(html, /<h1(?:\s[^>]*)?>Detalhes do projeto<\/h1>/);
-	for (const valor of [projeto.nome, projeto.descricao, projeto.disciplina, '01/10/2026']) {
-		assert(html.includes(valor), `A página deve mostrar ${valor}`);
-	}
-	assert.equal(html.match(/<article[^>]*class="[^"]*\btarefa-card\b[^"]*"/g)?.length, 2);
-	assert(html.includes('href="/tarefas/7"'));
-	assert(html.includes('Segunda tarefa'));
-	assert(html.includes('href="/projetos"'));
+	app.simularApi(() => Response.json({ ...projeto, tarefas: [tarefa, { ...tarefa, id: '8', titulo: 'Segunda tarefa' }] }));
+	const resposta = await app.abrir('/projetos/1');
+	await app.page.getByRole('heading', { level: 1, name: 'Detalhes do projeto', exact: true }).waitFor();
+	assert.equal(resposta.status(), 200);
+	assert(app.requisicoes.some(url => new URL(url).pathname === '/projetos/1' && new URL(url).search === '?_embed=tarefas'));
+	const texto = await app.page.locator('main').innerText();
+	for (const valor of [projeto.nome, projeto.descricao, projeto.disciplina, '01/10/2026']) assert(texto.includes(valor), `A página deve mostrar ${valor}`);
+	assert.equal(await app.page.locator('article.tarefa-card').count(), 2);
+	assert.equal(await app.page.locator('a[href="/tarefas/7"]').count(), 1);
+	assert(texto.includes('Segunda tarefa'));
+	assert.equal(await app.page.locator('main a[href="/projetos"]').count(), 1);
 });
 
 test('/projetos/:id avisa quando o projeto não tem tarefas', async () => {
-	simularApi(() => Response.json({ ...projeto, tarefas: [] }));
-
-	const html = await (await fetch(`${baseUrl}/projetos/1`)).text();
-
-	assert(html.includes('Este projeto ainda não tem tarefas.'));
-	assert(!/<article[^>]*class="[^"]*\btarefa-card\b[^"]*"/.test(html));
+	app.simularApi(() => Response.json({ ...projeto, tarefas: [] }));
+	await app.abrir('/projetos/1');
+	await app.page.getByText('Este projeto ainda não tem tarefas.', { exact: true }).waitFor();
+	assert.equal(await app.page.locator('article.tarefa-card').count(), 0);
 });
 
 test('/projetos/:id mostra "não encontrado" quando a API responde 404', async () => {
-	simularApi(() => new Response(null, { status: 404, statusText: 'Not Found' }));
-
-	const response = await fetch(`${baseUrl}/projetos/999`);
-	const html = await response.text();
-
-	assert.equal(response.status, 200);
-	assert.match(html, /<h1(?:\s[^>]*)?>Detalhes do projeto<\/h1>/);
-	assert.match(html, /role="alert"/);
-	assert.match(html, /Projeto não encontrado/);
-	assert.doesNotMatch(html, /não foi possível carregar o projeto/i);
+	app.simularApi(() => new Response(null, { status: 404, statusText: 'Not Found' }));
+	const resposta = await app.abrir('/projetos/999');
+	await app.page.getByRole('alert').filter({ hasText: 'Projeto não encontrado' }).waitFor();
+	assert.equal(resposta.status(), 200);
+	assert.equal(await app.page.getByRole('heading', { level: 1, name: 'Detalhes do projeto', exact: true }).count(), 1);
+	assert.doesNotMatch(await app.page.locator('body').innerText(), /não foi possível carregar o projeto/i);
 });
 
 test('/projetos/:id avisa que a API está fora do ar quando a conexão falha', async () => {
-	simularApi(() => { throw new TypeError('fetch failed'); });
-
-	const html = await (await fetch(`${baseUrl}/projetos/1`)).text();
-
-	assert.match(html, /role="alert"/);
-	assert.match(html, /não foi possível carregar o projeto/i);
-	assert.doesNotMatch(html, /Projeto não encontrado/);
+	app.simularApi(() => { throw new TypeError('fetch failed'); });
+	await app.abrir('/projetos/1');
+	await app.page.getByRole('alert').filter({ hasText: /não foi possível carregar o projeto/i }).waitFor();
+	assert.doesNotMatch(await app.page.locator('body').innerText(), /Projeto não encontrado/);
 });
