@@ -17,7 +17,16 @@ export function interacaoOrbital(node: HTMLElement, ativo = true) {
 		node.style.setProperty('--rx', `${(.5 - y) * 2.2}deg`);
 		node.style.setProperty('--ry', `${(x - .5) * 1.7}deg`);
 	}
-	function configurar() { node.toggleAttribute('data-orbital', ativo); limpar(); }
+	function configurar() {
+        node.toggleAttribute('data-orbital', ativo); limpar();
+        const suporte = node.closest<HTMLElement>('.astra-orbita');
+        if (suporte) {
+            const estilo = getComputedStyle(suporte);
+            const periodo = parseFloat(estilo.animationDuration) || 10;
+            const fase = [...(node.querySelector('h3')?.textContent ?? '')].reduce((a,c) => a + c.charCodeAt(0), 0) % 11;
+            suporte.style.animationDelay = `-${(Date.now() / 1000 + fase) % periodo}s`;
+        }
+    }
 	node.addEventListener('pointermove', mover, { passive: true });
 	node.addEventListener('pointerleave', limpar);
 	reduzido.addEventListener('change', limpar);

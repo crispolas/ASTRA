@@ -182,8 +182,29 @@ done
 
 ### Observações
 
-- Os testes de `routes`, `projeto-page`, `tarefa-page` e `entrada` esperam HTML
-  renderizado no servidor. Com `ssr = false` (issue #43), eles falham. O teste
-  de `routes` também falha na `main` sem as mudanças deste marco.
+- Na publicação inicial, os testes de `routes`, `projeto-page`, `tarefa-page` e
+  `entrada` esperavam HTML renderizado no servidor e falhavam com `ssr = false`.
+  Na integração do Planetário, essas 12 verificações foram adaptadas para
+  Chromium com Playwright, mantendo as asserções e simulando a API no navegador.
 - Os testes que sobem o Vite precisam de um `.env` com `PUBLIC_API_URL`; sem
   ele, falham com `env_invalid`.
+
+### Integração da interface e testes
+
+**Responsável:** Gabriel Crispim Galvão
+
+O build estático documentado acima foi alinhado ao código usando
+`@sveltejs/adapter-static` 4, compatível com SvelteKit 3, e
+`fallback: 'index.html'`. O adapter-auto 3 presente na main exigia SvelteKit 2.
+Foram conferidos os arquivos `build/index.html` e `build/_redirects`, gerados
+com `PUBLIC_API_URL=https://astra-api-4upe.onrender.com`.
+
+Para os testes das telas, executar uma vez `npx playwright install chromium`
+e depois `npm test`. Os testes da API, componentes e lógica continuam na suíte.
+Os testes de páginas usam contextos isolados e API simulada, sem acessar a
+API de produção. As instruções completas estão no README.
+
+O redesign não muda a URL nem a configuração do serviço Render. Como a publicação
+do frontend foi realizada pelo CLI, atualizar o GitHub não publica automaticamente
+o site: após integrar as alterações, executar novamente o deploy no projeto
+Netlify existente, mantendo a variável `PUBLIC_API_URL` já cadastrada.

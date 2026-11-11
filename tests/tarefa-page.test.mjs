@@ -1,50 +1,19 @@
 import assert from 'node:assert/strict';
-import { after, afterEach, before, test } from 'node:test';
-import { createServer } from 'vite';
-
-const fetchOriginal = globalThis.fetch;
-let server;
-let baseUrl;
-
-before(async () => {
-	server = await createServer({ logLevel: 'silent', server: { host: '127.0.0.1', port: 0 } });
-	await server.listen();
-	const address = server.httpServer?.address();
-	assert(address && typeof address !== 'string');
-	baseUrl = `http://127.0.0.1:${address.port}`;
-});
-
-after(async () => {
-	await server.close();
-});
-
-afterEach(() => {
-	globalThis.fetch = fetchOriginal;
-});
-
-// A renderização no servidor roda neste processo: as chamadas à API simulada passam por aqui.
-function simularApi(responder) {
-	globalThis.fetch = async (url, init) =>
-		String(url).startsWith('http://localhost:3000') ? responder(String(url)) : fetchOriginal(url, init);
-}
+import { test } from 'node:test';
+import { prepararNavegador } from './helpers/navegador.mjs';
+const app = prepararNavegador();
 
 test('/tarefas/:id mostra "não encontrada" quando a API responde 404', async () => {
-	simularApi(() => new Response(null, { status: 404, statusText: 'Not Found' }));
-
-	const html = await (await fetch(`${baseUrl}/tarefas/999`)).text();
-
-	assert.match(html, /Voltar/);
-	assert.match(html, /role="alert"/);
-	assert.match(html, /Tarefa não encontrada/);
-	assert.doesNotMatch(html, /não foi possível carregar a tarefa/i);
+	app.simularApi(() => new Response(null, { status: 404, statusText: 'Not Found' }));
+	await app.abrir('/tarefas/999');
+	await app.page.getByRole('alert').filter({ hasText: 'Tarefa não encontrada' }).waitFor();
+	assert.equal(await app.page.getByRole('link', { name: /Voltar/ }).count(), 1);
+	assert.doesNotMatch(await app.page.locator('body').innerText(), /não foi possível carregar a tarefa/i);
 });
 
 test('/tarefas/:id avisa que a API está fora do ar quando a conexão falha', async () => {
-	simularApi(() => { throw new TypeError('fetch failed'); });
-
-	const html = await (await fetch(`${baseUrl}/tarefas/1`)).text();
-
-	assert.match(html, /role="alert"/);
-	assert.match(html, /não foi possível carregar a tarefa/i);
-	assert.doesNotMatch(html, /Tarefa não encontrada/);
+	app.simularApi(() => { throw new TypeError('fetch failed'); });
+	await app.abrir('/tarefas/1');
+	await app.page.getByRole('alert').filter({ hasText: /não foi possível carregar a tarefa/i }).waitFor();
+	assert.doesNotMatch(await app.page.locator('body').innerText(), /Tarefa não encontrada/);
 });
