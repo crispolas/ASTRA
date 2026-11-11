@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { onDestroy, onMount, tick } from 'svelte';
+	import { flip } from 'svelte/animate';
 	import { invalidateAll } from '$app/navigation';
 	import { atualizarTarefa } from '../../lib/api';
 	import TarefaCard from '../../lib/components/TarefaCard.svelte';
@@ -24,36 +26,76 @@
 		{ id: 'concluida', titulo: 'Concluída' }
 	];
 
-	let idTarefaArrastada = $state<number | string | null>(null);
+	let idTarefaArrastada = $state<string | null>(null);
+	let destino = $state<Tarefa['status'] | null>(null);
+	let salvandoArraste = $state<string | null>(null);
+	let chegou = $state<string | null>(null);
+	let erroArraste = $state('');
+	let reduzido = $state(true);
+	let imagem: HTMLElement | null = null;
+	let limparImagem: ReturnType<typeof setTimeout> | undefined;
+	let limparChegada: ReturnType<typeof setTimeout> | undefined;
+	onMount(() => {
+		const media = matchMedia('(prefers-reduced-motion: reduce)');
+		const atualizar = () => { reduzido = media.matches; };
+		atualizar(); media.addEventListener('change', atualizar);
+		return () => media.removeEventListener('change', atualizar);
+	});
+	function removerImagem() { clearTimeout(limparImagem); imagem?.remove(); imagem = null; }
+	onDestroy(() => { removerImagem(); clearTimeout(limparChegada); });
+	function encerrarArraste() { idTarefaArrastada = null; destino = null; removerImagem(); }
 
-	function handleDragStart(event: DragEvent, id: number | string) {
-		idTarefaArrastada = id;
-		if (event.dataTransfer) {
-			event.dataTransfer.effectAllowed = 'move';
-			event.dataTransfer.setData('text/plain', String(id));
-		}
+	function handleDragStart(event: DragEvent, id: string) {
+		if (salvandoArraste || !event.dataTransfer) { event.preventDefault(); return; }
+		const alca = event.currentTarget as HTMLElement;
+		const cartao = alca.closest<HTMLElement>('.cartao-wrapper');
+		if (!cartao) { event.preventDefault(); return; }
+		idTarefaArrastada = id; erroArraste = '';
+		event.dataTransfer.effectAllowed = 'move';
+		event.dataTransfer.setData('text/plain', id);
+		// A imagem nativa copia o cartão inteiro, mesmo começando o gesto pela alça.
+		removerImagem();
+		const box = cartao.getBoundingClientRect();
+		imagem = cartao.cloneNode(true) as HTMLElement;
+		imagem.setAttribute('aria-hidden', 'true');
+		imagem.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+		imagem.style.cssText = `position:fixed;left:-10000px;top:0;width:${box.width}px;pointer-events:none;`;
+		imagem.classList.add('imagem-arraste');
+		cartao.parentElement?.append(imagem);
+		event.dataTransfer.setDragImage(imagem, Math.min(box.width - 8, Math.max(8, event.clientX - box.left)), 20);
+		limparImagem = setTimeout(removerImagem, 0);
 	}
 
-	function handleDragOver(event: DragEvent) {
-		event.preventDefault();
-		if (event.dataTransfer) {
-			event.dataTransfer.dropEffect = 'move';
-		}
+	function handleDragOver(event: DragEvent, status: Tarefa['status']) {
+		if (!idTarefaArrastada || salvandoArraste) return;
+		event.preventDefault(); destino = status;
+		if (event.dataTransfer) event.dataTransfer.dropEffect = 'move';
 	}
-
+	function handleDragLeave(event: DragEvent, status: Tarefa['status']) {
+		if (event.relatedTarget instanceof Node && (event.currentTarget as HTMLElement).contains(event.relatedTarget)) return;
+		if (destino === status) destino = null;
+	}
 	async function handleDrop(event: DragEvent, novoStatus: Tarefa['status']) {
 		event.preventDefault();
-		if (!idTarefaArrastada) return;
-
 		const id = idTarefaArrastada;
-		idTarefaArrastada = null;
-
+		encerrarArraste();
+		if (!id || salvandoArraste) return;
+		if (data.tarefas.find(t => String(t.id) === id)?.status === novoStatus) return;
+		salvandoArraste = id; erroArraste = '';
+		let salvo = false;
 		try {
-			await atualizarTarefa(String(id), { status: novoStatus });
+			await atualizarTarefa(id, { status: novoStatus });
+			salvo = true; chegou = id;
 			await invalidateAll();
-		} catch (erro) {
-			console.error('Erro ao atualizar status:', erro);
-		}
+			await tick();
+			clearTimeout(limparChegada);
+			limparChegada = setTimeout(() => { chegou = null; }, 450);
+		} catch {
+			chegou = null;
+			erroArraste = salvo
+				? 'O status foi salvo, mas não foi possível atualizar o quadro. Recarregue a página.'
+				: 'Não foi possível mover a tarefa. Ela permanece na coluna original. Tente novamente.';
+		} finally { salvandoArraste = null; }
 	}
 
 	function filtrarPorStatus(status: Tarefa['status']): Tarefa[] {
@@ -80,15 +122,19 @@
 		<p class="astra-muted" role="status">Nenhuma tarefa encontrada com a busca e os filtros atuais.</p>
 	{/if}
 
-	<div class="quadro-container">
+	{#if erroArraste}<p class="astra-error" role="alert">{erroArraste}</p>{/if}
+	{#if salvandoArraste}<p class="aviso-arraste" role="status">Salvando mudança de coluna...</p>{/if}
+	<div class="quadro-container" class:arraste-ativo={idTarefaArrastada !== null || salvandoArraste !== null}>
 		{#each colunas as coluna (coluna.id)}
 			{@const tarefasColuna = filtrarPorStatus(coluna.id)}
 
 			<section
 				class="coluna"
+                class:destino-arraste={destino === coluna.id}
 				data-status={coluna.id}
 				aria-label={coluna.titulo}
-				ondragover={handleDragOver}
+				ondragover={(e) => handleDragOver(e, coluna.id)}
+                ondragleave={(e) => handleDragLeave(e, coluna.id)}
 				ondrop={(e) => handleDrop(e, coluna.id)}
 			>
 				<header class="coluna-cabecalho">
@@ -100,12 +146,22 @@
 					{#each tarefasColuna as tarefa (tarefa.id)}
 						<div
 							class="cartao-wrapper"
+                            data-tarefa-id={tarefa.id}
+                            class:arrastando={idTarefaArrastada === String(tarefa.id)}
+                            class:salvando-arraste={salvandoArraste === String(tarefa.id)}
+                            class:chegada-arraste={chegou === String(tarefa.id)}
+                            inert={salvandoArraste === String(tarefa.id)}
+                            aria-busy={salvandoArraste === String(tarefa.id)}
+                            animate:flip={{ duration: reduzido ? 0 : 200 }}
 							role="group"
 							aria-label={tarefa.titulo}
-							draggable="true"
-							ondragstart={(e) => handleDragStart(e, tarefa.id)}
+
 						>
-							<div class="drag-handle" title="Puxar cartão">
+							<div class="drag-handle" role="img" aria-label="Arrastar tarefa. Para usar o teclado, altere o seletor de status do cartão."
+                                title="Arraste para outra coluna; pelo teclado, use o seletor de status."
+                                draggable={salvandoArraste === null}
+                                ondragstart={(e) => handleDragStart(e, String(tarefa.id))}
+                                ondragend={encerrarArraste}>
 								⠿ Arrastar cartão
 							</div>
 							<TarefaCard {tarefa} onstatus={() => invalidateAll()} />
@@ -216,20 +272,20 @@
 		color: #ffffff;
 	}
 
-	/* Blindagem CSS contra seleção de texto e captura de links */
-	.cartao-wrapper :global(*) {
-		user-select: none !important;
-		-webkit-user-select: none !important;
-	}
-
-	.cartao-wrapper :global(a) {
-		pointer-events: none !important;
-	}
-
-	.cartao-wrapper :global(select),
-	.cartao-wrapper :global(button) {
-		pointer-events: auto !important;
-	}
+	.drag-handle { cursor:grab; touch-action:pan-y; }
+	.drag-handle:active { cursor:grabbing; }
+	.cartao-wrapper { cursor:default; }
+	.cartao-wrapper.arrastando { opacity:.35; outline:1px dashed #ccd8ed; outline-offset:4px; border-radius:10px; }
+	.cartao-wrapper.salvando-arraste { opacity:.6; cursor:progress; }
+	.cartao-wrapper.chegada-arraste { animation:acomodar 280ms ease-out; }
+	.cartao-wrapper:global(.imagem-arraste) { background:#151515; border:1px solid #e7edf7; border-radius:10px; box-shadow:0 8px 28px #dceaff40; }
+	.cartao-wrapper:global(.imagem-arraste) :global(.astra-orbita),
+	.arraste-ativo :global(.astra-orbita) { animation-play-state:paused; }
+	.arraste-ativo :global(.astra-card[data-orbital]) { transform:none; }
+	.coluna.destino-arraste { outline:1px solid #dceaff; outline-offset:2px; box-shadow:0 0 30px #dceaff20,inset 0 0 25px #ffffff06; }
+	.aviso-arraste { margin:0; color:var(--astra-muted); font-size:14px; }
+	@keyframes acomodar { from { opacity:.65; transform:translateY(-8px) scale(.985); } to { opacity:1; transform:none; } }
+	@media(prefers-reduced-motion:reduce) { .cartao-wrapper.chegada-arraste { animation:none; } }
 	/* ------------------------------------- */
 
 	/* cartão compacto de kanban */
