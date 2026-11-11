@@ -17,21 +17,11 @@
   ],
   "tarefas": [
     {
-      "id": "1",
-      "projetoId": "1",
-      "titulo": "Criar o repositório",
-      "descricao": "Repositório da equipe no GitHub, com todos os integrantes",
-      "status": "em-andamento",
-      "prioridade": "alta",
-      "responsavel": "Ana",
-      "prazo": "2026-10-06"
-    },
-    {
       "id": "2",
       "projetoId": "1",
       "titulo": "Subir o json-server",
       "descricao": "API local a partir do db.json",
-      "status": "em-andamento",
+      "status": "a-fazer",
       "prioridade": "alta",
       "responsavel": "Bruno",
       "prazo": "2026-10-06"
@@ -41,7 +31,7 @@
       "projetoId": "1",
       "titulo": "Montar o quadro no GitHub Projects",
       "descricao": "Colunas por status e uma tarefa por marco",
-      "status": "em-revisao",
+      "status": "em-andamento",
       "prioridade": "media",
       "responsavel": "Carla",
       "prazo": "2026-10-07"
@@ -51,7 +41,7 @@
       "projetoId": "1",
       "titulo": "Listar as tarefas na tela",
       "descricao": "Primeira entrega do Marco 2",
-      "status": "a-fazer",
+      "status": "concluida",
       "prioridade": "media",
       "responsavel": "Diego",
       "prazo": "2026-10-14"
@@ -61,7 +51,7 @@
       "projetoId": "2",
       "titulo": "Desenhar o diagrama ER",
       "descricao": "Entidades livro, leitor e empréstimo",
-      "status": "a-fazer",
+      "status": "em-revisao",
       "prioridade": "baixa",
       "responsavel": "Ana",
       "prazo": "2026-10-20"
@@ -80,7 +70,7 @@
       "projetoId": "2",
       "titulo": "Bla",
       "descricao": "",
-      "status": "a-fazer",
+      "status": "em-andamento",
       "prioridade": "media",
       "responsavel": "",
       "prazo": "",

@@ -23,6 +23,42 @@
 		{ id: 'concluida', titulo: 'Concluída' }
 	];
 
+	let idTarefaArrastada = $state<number | string | null>(null);
+
+	function handleDragStart(event: DragEvent, id: number | string) {
+		idTarefaArrastada = id;
+		if (event.dataTransfer) {
+			event.dataTransfer.effectAllowed = 'move';
+			event.dataTransfer.setData('text/plain', String(id));
+		}
+	}
+
+	function handleDragOver(event: DragEvent) {
+		event.preventDefault();
+		if (event.dataTransfer) {
+			event.dataTransfer.dropEffect = 'move';
+		}
+	}
+
+	async function handleDrop(event: DragEvent, novoStatus: Tarefa['status']) {
+		event.preventDefault();
+		if (!idTarefaArrastada) return;
+
+		const id = idTarefaArrastada;
+		idTarefaArrastada = null;
+
+		try {
+			await fetch(`http://localhost:3000/tarefas/${id}`, {
+				method: 'PATCH',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ status: novoStatus })
+			});
+			await invalidateAll();
+		} catch (erro) {
+			console.error('Erro ao atualizar status:', erro);
+		}
+	}
+
 	function filtrarPorStatus(status: Tarefa['status']): Tarefa[] {
 		return tarefasFiltradas.filter((t: Tarefa) => t.status === status);
 	}
@@ -51,7 +87,13 @@
 		{#each colunas as coluna (coluna.id)}
 			{@const tarefasColuna = filtrarPorStatus(coluna.id)}
 
-			<section class="coluna" data-status={coluna.id} aria-label={coluna.titulo}>
+			<section
+				class="coluna"
+				data-status={coluna.id}
+				aria-label={coluna.titulo}
+				ondragover={handleDragOver}
+				ondrop={(e) => handleDrop(e, coluna.id)}
+			>
 				<header class="coluna-cabecalho">
 					<h2>{coluna.titulo}</h2>
 					<span class="contador" aria-label="{tarefasColuna.length} tarefas">{tarefasColuna.length}</span>
@@ -59,7 +101,16 @@
 
 				<div class="lista-cards">
 					{#each tarefasColuna as tarefa (tarefa.id)}
-						<TarefaCard {tarefa} onstatus={() => invalidateAll()} />
+						<div
+							class="cartao-wrapper"
+							draggable="true"
+							ondragstart={(e) => handleDragStart(e, tarefa.id)}
+						>
+							<div class="drag-handle" title="Puxar cartão">
+								⠿ Arrastar cartão
+							</div>
+							<TarefaCard {tarefa} onstatus={() => invalidateAll()} />
+						</div>
 					{:else}
 						<p class="vazio">Nenhuma tarefa nesta coluna.</p>
 					{/each}
@@ -70,12 +121,10 @@
 </main>
 
 <style>
-	/* o quadro precisa de mais largura que as outras páginas */
 	.quadro-pagina {
 		max-width: 1500px;
 	}
 
-	/* 4 faixas lado a lado, mesma largura e mesma altura */
 	.quadro-container {
 		display: grid;
 		grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -96,6 +145,7 @@
 		border-radius: 3px;
 		-webkit-backdrop-filter: blur(12px);
 		backdrop-filter: blur(12px);
+		min-height: 500px; /* Garante que colunas vazias aceitem o drop em toda a sua extensão */
 	}
 
 	.coluna[data-status='em-andamento'] { --cor-status: var(--astra-accent-2); }
@@ -130,10 +180,58 @@
 	.lista-cards {
 		display: flex;
 		flex-direction: column;
-		gap: 28px;
+		gap: 16px;
 		flex: 1;
 		min-height: 140px;
 	}
+
+	/* --- ESTRUTURA E REGRAS DE ARRASTE --- */
+	.cartao-wrapper {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		cursor: grab;
+	}
+
+	.cartao-wrapper:active {
+		cursor: grabbing;
+	}
+
+	.drag-handle {
+		background: #1c2029;
+		color: var(--astra-muted, #a1a1aa);
+		border: 1px dashed var(--astra-glass-border, #27272a);
+		font-size: 0.75rem;
+		text-align: center;
+		padding: 6px;
+		border-radius: 3px;
+		user-select: none;
+		-webkit-user-select: none;
+		font-weight: 600;
+		letter-spacing: 0.5px;
+		transition: background 0.15s ease, color 0.15s ease;
+	}
+
+	.drag-handle:hover {
+		background: #252a36;
+		color: #ffffff;
+	}
+
+	/* Blindagem CSS contra seleção de texto e captura de links */
+	.cartao-wrapper :global(*) {
+		user-select: none !important;
+		-webkit-user-select: none !important;
+	}
+
+	.cartao-wrapper :global(a) {
+		pointer-events: none !important;
+	}
+
+	.cartao-wrapper :global(select),
+	.cartao-wrapper :global(button) {
+		pointer-events: auto !important;
+	}
+	/* ------------------------------------- */
 
 	/* cartão compacto de kanban */
 	.lista-cards :global(.tarefa-card) {
