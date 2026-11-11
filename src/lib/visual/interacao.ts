@@ -1,5 +1,7 @@
+import { registrarSuperficie } from './iluminacao';
 /** Ação Svelte compartilhada por cartões de tarefa e projeto. Não modifica dados. */
 export function interacaoOrbital(node: HTMLElement, ativo = true) {
+	const removerLuz = registrarSuperficie(node);
 	const reduzido = matchMedia('(prefers-reduced-motion: reduce)');
 	const preciso = matchMedia('(hover: hover) and (pointer: fine)');
 	const limpar = () => {
@@ -37,7 +39,7 @@ export function interacaoOrbital(node: HTMLElement, ativo = true) {
 			node.removeEventListener('pointermove', mover);
 			node.removeEventListener('pointerleave', limpar);
 			reduzido.removeEventListener('change', limpar);
-			node.removeAttribute('data-orbital'); limpar();
+			node.removeAttribute('data-orbital'); limpar(); removerLuz();
 		}
 	};
 }

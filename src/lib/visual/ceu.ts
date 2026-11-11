@@ -1,3 +1,4 @@
+import { iluminarSuperficies, type FonteLuz } from './iluminacao';
 import { orientacaoAgora, projetarX } from './observatorio';
 import { EPOCA_ORBITA, posicaoLua } from './orbita';
 type Estrela = { x:number; y:number; vx:number; vy:number; angulo:number; vel:number; fase:number; brilho:number };
@@ -72,21 +73,56 @@ function desenharCadente(t: number){
  const c=cadente,x=c.x+Math.cos(c.ang)*c.dist*p,y=c.y+Math.sin(c.ang)*c.dist*p,len=55+Math.sin(p*Math.PI)*55,tx=x-Math.cos(c.ang)*len,ty=y-Math.sin(c.ang)*len,alpha=Math.sin(p*Math.PI)*.65;
  const g=fc.createLinearGradient(tx,ty,x,y);g.addColorStop(0,'rgba(215,229,255,0)');g.addColorStop(1,`rgba(238,245,255,${alpha})`);fc.save();fc.lineCap='round';fc.strokeStyle=g;fc.lineWidth=1.2;fc.beginPath();fc.moveTo(tx,ty);fc.lineTo(x,y);fc.stroke();fc.fillStyle=`rgba(246,250,255,${alpha})`;fc.shadowColor='#dceaff';fc.shadowBlur=5;fc.beginPath();fc.arc(x,y,1.2,0,Math.PI*2);fc.fill();fc.restore();
 }
+// Sol emissivo em caracteres, ancorado no mesmo espaço da câmera.
+const solar=document.createElement('canvas');solar.width=solar.height=512;const solCtx=contexto(solar);
+let ultimoSol=-Infinity;
+function pintarSol(t:number,parar:boolean,fontes:FonteLuz[]){
+ const tempo=parar?0:(Date.now()-EPOCA_ORBITA)/1000;
+ const x=projetarX(W*(.55+Math.sin(tempo*.002)*.018),W,orientacaoAgora(),.65);
+ const y=H*((W<700?.27:.20)+Math.cos(tempo*.003)*.012)-(parar?0:Math.min(scrollY,1600)*.018);
+ const r=Math.min(W*.13,110);
+ if(x+r*2<0||x-r*2>W)return;
+ if(ultimoSol===-Infinity||(!parar&&t-ultimoSol>120)){ultimoSol=t;solCtx.clearRect(0,0,512,512);solCtx.font='bold 7px "Courier New",monospace';solCtx.textAlign='center';
+  const a=tempo*.012,co=Math.cos(a),si=Math.sin(a),glifos='.:;+=oxO%8#@';
+  for(let gy=2;gy<62;gy++)for(let gx=2;gx<62;gx++){
+   const nx=(gx-32)/29,ny=(gy-32)/29,rr=nx*nx+ny*ny;if(rr>=1)continue;
+   const z=Math.sqrt(1-rr),rx=nx*co+z*si,rz=z*co-nx*si;
+   const granulo=.5+Math.sin(rx*61+ny*19+rz*7)*Math.cos(ny*47-rz*31)*.28+Math.sin(rx*29-ny*43)*.12;
+   const valor=Math.max(0,Math.min(1,.25+z*.5+granulo*.3));
+   solCtx.fillStyle=`rgba(255,${Math.round(130+valor*112)},${Math.round(45+valor*150)},${.45+valor*.5})`;
+   solCtx.fillText(glifos[Math.min(glifos.length-1,Math.floor(valor*glifos.length))],gx*8,gy*8);
+  }
+ }
+ const halo=ctx.createRadialGradient(x,y,r*.6,x,y,r*1.8);
+ halo.addColorStop(0,'rgba(255,175,80,.13)');halo.addColorStop(.6,'rgba(255,137,55,.045)');halo.addColorStop(1,'rgba(255,137,55,0)');
+ ctx.fillStyle=halo;ctx.fillRect(x-r*1.8,y-r*1.8,r*3.6,r*3.6);ctx.drawImage(solar,x-r,y-r,r*2,r*2);
+ fontes.push({x,y,cor:'255 181 102',alcance:400,intensidade:.42});
+}
 // Camada luminosa adicional: órbitas próprias + projeção da mesma câmera.
 const luminosas=[
  {x:.69,y:.16,c:'255,181,102',r:2.5,d:.72,f:1},
  {x:.91,y:.24,c:'128,235,222',r:3,d:.9,f:3},
  {x:1.24,y:.27,c:'143,209,255',r:3.7,d:1.05,f:5},
  {x:.19,y:.65,c:'245,226,195',r:1.7,d:.5,f:7},
- {x:1.62,y:.12,c:'167,210,255',r:2.5,d:.68,f:9}
-];
-function pintarLuminosas(t:number,parar:boolean){
+ {x:1.62,y:.12,c:'167,210,255',r:2.5,d:.68,f:9},
+ {x:.27,y:.80,c:'121,208,255',r:3,d:.48,f:11},
+ {x:.82,y:.88,c:'255,185,121',r:2.8,d:.7,f:14},
+ {x:1.47,y:.69,c:'141,236,222',r:3.2,d:.8,f:17}
+].map(e=>({...e,ox:0,oy:0,vx:0,vy:0}));
+function pintarLuminosas(t:number,parar:boolean,dt:number,fontes:FonteLuz[]){
  const tempo=parar?0:t/1000;
  for(const e of luminosas){
-  const x=projetarX(W*(e.x+Math.sin(tempo*.027+e.f)*.014),W,orientacaoAgora()+28,e.d);
-  const y=H*(e.y+Math.cos(tempo*.033+e.f)*.012)-Math.min(scrollY,1800)*e.d*.025;
+  const bx=projetarX(W*(e.x+Math.sin(tempo*.027+e.f)*.014),W,orientacaoAgora()+28,e.d);
+  const by=H*(e.y+Math.cos(tempo*.033+e.f)*.012)-(parar?0:Math.min(scrollY,1800)*e.d*.025);
+  const dx=bx+e.ox-mouse.x,dy=by+e.oy-mouse.y,dist=Math.hypot(dx,dy),perto=Math.max(0,1-dist/160);
+  if(!parar){const alvoX=dx/(dist||1)*perto*28,alvoY=dy/(dist||1)*perto*28;
+   e.vx=(e.vx+(alvoX-e.ox)*dt*12)*Math.exp(-dt*6);e.vy=(e.vy+(alvoY-e.oy)*dt*12)*Math.exp(-dt*6);
+   e.ox+=e.vx*dt;e.oy+=e.vy*dt;
+  }
+  const x=bx+e.ox,y=by+e.oy;
   if(x< -70||x>W+70)continue;
-  const r=e.r*(W<700?.8:1),halo=r*10,brilho=parar?1:.88+Math.sin(tempo*.43+e.f)*.12;
+  const r=e.r*(W<700?.8:1),halo=r*(10+perto*5),brilho=(parar?1:.88+Math.sin(tempo*.43+e.f)*.12)+perto*.25;
+  fontes.push({x,y,cor:e.c.replaceAll(',', ' '),alcance:280,intensidade:.38+perto*.15});
   const g=ctx.createRadialGradient(x,y,0,x,y,halo);
   g.addColorStop(0,`rgba(${e.c},${.5*brilho})`);g.addColorStop(.22,`rgba(${e.c},${.22*brilho})`);g.addColorStop(1,`rgba(${e.c},0)`);
   ctx.fillStyle=g;ctx.fillRect(x-halo,y-halo,halo*2,halo*2);
@@ -96,7 +132,10 @@ function pintarLuminosas(t:number,parar:boolean){
 function pintar(t: number,forcar=false){if(!ctx||!fc)return;const parar=reduzir.matches,tempo=parar?0:t*.0001;
  if(forcar||t-ultimo>32){const dt=Math.min(.06,Math.max(0,(t-ultimo)/1000));ultimo=t;ctx.clearRect(0,0,W,H);if(!parar)atualizarEstrelas(dt,t);
  for(let i=0;i<estrelas.length;i++){const e=estrelas[i],v=aparente(e,i),d=Math.hypot(v.x-mouse.x,v.y-mouse.y),perto=Math.max(0,1-d/110);ctx.font=(e.brilho>.36?11:9)+'px Consolas,monospace';ctx.fillStyle=`rgba(215,228,248,${e.brilho+perto*.25+Math.sin((parar?0:t)*.0005+e.fase)*.035})`;ctx.fillText(e.brilho>.36?'+':'.',v.x,v.y)}
- pintarLuminosas(t,parar);
+ const fontes:FonteLuz[]=[];
+ pintarSol(t,parar,fontes);
+ pintarLuminosas(t,parar,dt,fontes);
+ iluminarSuperficies(fontes,t,forcar);
 
   pintarLua(t,forcar);
  }
@@ -126,5 +165,5 @@ function pintar(t: number,forcar=false){if(!ctx||!fc)return;const parar=reduzir.
  document.addEventListener('visibilitychange',()=>{document.body.classList.toggle('planetario-pausado',document.hidden);if(!document.hidden){cadente=null;proximaCadente=performance.now()+55000+Math.random()*65000;}reiniciar();},options);
  reduzir.addEventListener('change',reiniciar,options);
  ajustar();reiniciar();
- return ()=>{cancelAnimationFrame(frame);eventos.abort();document.body.classList.remove('planetario-pausado');};
+ return ()=>{cancelAnimationFrame(frame);eventos.abort();iluminarSuperficies([],performance.now(),true);document.body.classList.remove('planetario-pausado');};
 }
