@@ -8,6 +8,7 @@
 | 3 — Cadastro e edição | [Diário](marco-3/diario.md) | Não há arquivo versionado nesta pasta |
 | 4 — Busca, filtros e quadro | [Diário](marco-4/diario.md) | Não há arquivo versionado nesta pasta |
 | 5 — Exclusão, erros e estados | [Diário](marco-5/diario.md) | [HTML](marco-5/slides/index.html) · [PDF](marco-5/slides/apresentacao.pdf) |
+| 6 — Publicação | [Diário](marco-6/diario.md) | — |
 
 A explicação da issue #28 está no diário do Marco 4. A documentação da abertura lunar e do tema compartilhado está em [Interface](interface.md). A seção original da issue #9 permanece integralmente no diário do Marco 2.
 

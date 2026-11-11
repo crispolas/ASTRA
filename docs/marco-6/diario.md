@@ -114,7 +114,20 @@ Com a URL em mãos, a equipe segue para a issue #42 (build com
 
 ### Validação realizada
 
-_Pendente: preencher após o deploy no Render._
+- URL: <https://astra-api-4upe.onrender.com>
+- Deploy no Render (plano Free, runtime Docker, branch `main`) feito por Gabriel Crispim Galvão; validado em 10/11/2026.
+- Saída dos testes:
+
+  ```text
+  $ curl -s $API/tarefas | jq length
+  5
+  $ curl -s $API/projetos | jq length
+  2
+  $ curl -si -H "Origin: https://exemplo.netlify.app" $API/tarefas | grep -i access-control
+  access-control-allow-headers: content-type
+  access-control-allow-methods: GET, HEAD, PUT, PATCH, POST, DELETE
+  access-control-allow-origin: *
+  ```
 
 ## Issue 42 — Publicar a aplicação
 **Responsável:** Felipe Borges Barros
@@ -128,13 +141,49 @@ aplicação já roda só no navegador (`ssr = false`), então o fallback atende
 todas as rotas internas junto com o `static/_redirects` da issue #43.
 O `netlify.toml` define o comando de build e a pasta publicada (`build`).
 
+### Como foi publicado
+
+A publicação foi feita pelo Netlify CLI, a partir da raiz do projeto:
+
+```sh
+npx netlify-cli login
+npx netlify-cli env:set PUBLIC_API_URL https://astra-api-4upe.onrender.com
+npx netlify-cli deploy --prod
+```
+
+O `deploy` executa o build definido no `netlify.toml`. Por isso a variável
+`PUBLIC_API_URL` precisa estar cadastrada no Netlify (`env:set`): sem ela, o
+build usa o `.env` local, se existir, e o site passa a chamar
+`http://localhost:3000`. Foi o que aconteceu no primeiro deploy, corrigido
+com o `env:set` e um novo deploy.
+
+O projeto foi criado como privado. Para a aplicação abrir sem login no
+Netlify, foi preciso clicar em **Make public** na página do projeto.
+
+Esse deploy não é automático: depois de mudar o código, rode
+`npx netlify-cli deploy --prod` de novo.
+
 ### Validação realizada
 
-- `npm run build` com `PUBLIC_API_URL` de teste gera `build/` com
-  `index.html` e `_redirects`.
+- URL: <https://astratarefas.netlify.app>, publicada em 10/11/2026.
+- `npm run build` gera `build/` com `index.html` e `_redirects`.
 - `npm run check`: zero erros e avisos.
+- `/`, `/tarefas/1`, `/projetos` e `/quadro` respondem `200` ao abrir direto
+  pela URL.
+- O JavaScript publicado contém `https://astra-api-4upe.onrender.com` e não
+  contém `http://localhost:3000`.
 
-### Pendente
+```sh
+S=https://astratarefas.netlify.app
+for p in / /tarefas/1 /projetos /quadro; do
+  echo "$p $(curl -s -o /dev/null -w '%{http_code}' $S$p)"
+done
+```
 
-Depois da issue #40: gerar o build com a URL real da API, publicar no Netlify
-e preencher `<URL_DO_SITE>` no `README.md`.
+### Observações
+
+- Os testes de `routes`, `projeto-page`, `tarefa-page` e `entrada` esperam HTML
+  renderizado no servidor. Com `ssr = false` (issue #43), eles falham. O teste
+  de `routes` também falha na `main` sem as mudanças deste marco.
+- Os testes que sobem o Vite precisam de um `.env` com `PUBLIC_API_URL`; sem
+  ele, falham com `env_invalid`.

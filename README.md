@@ -16,7 +16,7 @@ SvelteKit com TypeScript.
 ## Documentação técnica
 
 - [Índice da documentação](docs/README.md).
-- Diários: [Marco 2](docs/marco-2/diario.md) · [Marco 3](docs/marco-3/diario.md) · [Marco 4](docs/marco-4/diario.md) · [Marco 5](docs/marco-5/diario.md).
+- Diários: [Marco 2](docs/marco-2/diario.md) · [Marco 3](docs/marco-3/diario.md) · [Marco 4](docs/marco-4/diario.md) · [Marco 5](docs/marco-5/diario.md) · [Marco 6](docs/marco-6/diario.md).
 - [Apresentação do Marco 5](docs/marco-5/slides/index.html) · [PDF](docs/marco-5/slides/apresentacao.pdf).
 - [Interface e abertura lunar](docs/interface.md).
 
@@ -67,8 +67,8 @@ fallback para as rotas internas).
 
 ## Publicação
 
-- Aplicação: <URL_DO_SITE>
-- API: <URL_DA_API>
+- Aplicação: https://astratarefas.netlify.app
+- API: https://astra-api-4upe.onrender.com
 
 A API roda o mesmo `json-server` com os dados de `db.seed.json`, empacotado no
 `Dockerfile` da raiz. A aplicação é publicada como site estático (`netlify.toml`),
