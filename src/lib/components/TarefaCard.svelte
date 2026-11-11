@@ -74,7 +74,7 @@
 	use:interacaoOrbital={variante === 'catalogo'}>
 	{#if variante === 'catalogo'}<SuperficieOrbital />{/if}
 	<h3>
-		<a href={`/tarefas/${encodeURIComponent(tarefa.id)}`}>{tarefa.titulo}</a>
+		<a href={`/tarefas/${encodeURIComponent(tarefa.id)}`} draggable="false">{tarefa.titulo}</a>
 	</h3>
 	<p class="astra-muted">{tarefa.descricao}</p>
 	<dl class="astra-meta">
@@ -147,4 +147,14 @@
 	.catalogo .astra-tag--todo { color:#bbc0ca; }
 	@media(max-width:600px) { .catalogo { padding:22px 18px; } .catalogo h3 { font-size:19px; } .catalogo dl { grid-template-columns:repeat(2,minmax(0,1fr)); row-gap:20px; } }
 	@media(prefers-reduced-motion:reduce) { .astra-orbita { animation:none; } .catalogo { transform:none; transition:none; } .catalogo::after { transition:none; } }
+	
+:global(.tarefa-card) {
+	cursor: grab !important;
+	user-select: none !important;
+	-webkit-user-select: none !important;
+}
+
+:global(.tarefa-card:active) {
+	cursor: grabbing !important;
+}
 </style>
