@@ -62,3 +62,8 @@ body.planetario-pausado .planetario .astra-orbita{animation-play-state:paused}
 /* A Lua pode atravessar qualquer região da órbita sem encobrir o texto do título. */
 .ov-shell.orbita-viva.planetario .astra-page>.astra-head>div{background:#080808;width:fit-content}
 .planetario .astra-head::before{background:#080808}
+/* Reflexo local das fontes celestes; o hover radial continua em outra camada. */
+.planetario .astra-card[data-orbital]::before{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;border-radius:inherit;opacity:var(--luz-intensidade,0);background:radial-gradient(circle var(--luz-alcance,280px) at var(--luz-x,50%) var(--luz-y,50%),rgb(var(--luz-cor,255 255 255) / .6),transparent 100%);box-shadow:inset 0 0 22px rgb(var(--luz-cor,255 255 255) / .25);transition:opacity 160ms}
+@media(max-width:1100px){.ov-shell.orbita-viva.planetario .cabecalho.astra-page{height:230px}.ov-shell.orbita-viva.planetario .astra-nav{left:50%;right:auto;top:106px;transform:translateX(-50%);width:min(560px,calc(100% - 48px))}}
+@media(prefers-reduced-motion:reduce){.planetario .astra-card[data-orbital]::before{transition:none}}
+.planetario .astra-filters{position:relative;z-index:6}
