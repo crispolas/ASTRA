@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { invalidateAll } from '$app/navigation';
+	import { atualizarTarefa } from '../../lib/api';
 	import TarefaCard from '../../lib/components/TarefaCard.svelte';
 	import Filtros from '../../lib/components/Filtros.svelte';
 	import AlternarVisao from '../../lib/components/AlternarVisao.svelte';
@@ -48,11 +49,7 @@
 		idTarefaArrastada = null;
 
 		try {
-			await fetch(`http://localhost:3000/tarefas/${id}`, {
-				method: 'PATCH',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ status: novoStatus })
-			});
+			await atualizarTarefa(String(id), { status: novoStatus });
 			await invalidateAll();
 		} catch (erro) {
 			console.error('Erro ao atualizar status:', erro);
@@ -103,6 +100,8 @@
 					{#each tarefasColuna as tarefa (tarefa.id)}
 						<div
 							class="cartao-wrapper"
+							role="group"
+							aria-label={tarefa.titulo}
 							draggable="true"
 							ondragstart={(e) => handleDragStart(e, tarefa.id)}
 						>
