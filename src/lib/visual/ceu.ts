@@ -1,3 +1,4 @@
+import { desenharFotosfera } from './sol';
 import { iluminarSuperficies, type FonteLuz } from './iluminacao';
 import { orientacaoAgora, projetarX } from './observatorio';
 import { EPOCA_ORBITA, posicaoLua } from './orbita';
@@ -81,19 +82,11 @@ function pintarSol(t:number,parar:boolean,fontes:FonteLuz[]){
  const y=H*((W<700?.27:.20)+Math.cos(tempo*.003)*.012)-(parar?0:Math.min(scrollY,1600)*.018);
  const r=Math.min(W*.13,110);
  if(x+r*2<0||x-r*2>W)return;
- if(ultimoSol===-Infinity||(!parar&&t-ultimoSol>120)){ultimoSol=t;solCtx.clearRect(0,0,512,512);solCtx.font='bold 7px "Courier New",monospace';solCtx.textAlign='center';
-  const a=tempo*.012,co=Math.cos(a),si=Math.sin(a),glifos='.:;+=oxO%8#@';
-  for(let gy=2;gy<62;gy++)for(let gx=2;gx<62;gx++){
-   const nx=(gx-32)/29,ny=(gy-32)/29,rr=nx*nx+ny*ny;if(rr>=1)continue;
-   const z=Math.sqrt(1-rr),rx=nx*co+z*si,rz=z*co-nx*si;
-   const granulo=.5+Math.sin(rx*61+ny*19+rz*7)*Math.cos(ny*47-rz*31)*.28+Math.sin(rx*29-ny*43)*.12;
-   const valor=Math.max(0,Math.min(1,.25+z*.5+granulo*.3));
-   solCtx.fillStyle=`rgba(255,${Math.round(130+valor*112)},${Math.round(45+valor*150)},${.45+valor*.5})`;
-   solCtx.fillText(glifos[Math.min(glifos.length-1,Math.floor(valor*glifos.length))],gx*8,gy*8);
-  }
+ if(ultimoSol===-Infinity||(!parar&&t-ultimoSol>120)){
+  ultimoSol=t;desenharFotosfera(solCtx,tempo);
  }
  const halo=ctx.createRadialGradient(x,y,r*.6,x,y,r*1.8);
- halo.addColorStop(0,'rgba(255,175,80,.13)');halo.addColorStop(.6,'rgba(255,137,55,.045)');halo.addColorStop(1,'rgba(255,137,55,0)');
+ halo.addColorStop(0,'rgba(255,175,80,.07)');halo.addColorStop(.6,'rgba(255,137,55,.022)');halo.addColorStop(1,'rgba(255,137,55,0)');
  ctx.fillStyle=halo;ctx.fillRect(x-r*1.8,y-r*1.8,r*3.6,r*3.6);ctx.drawImage(solar,x-r,y-r,r*2,r*2);
  fontes.push({x,y,cor:'255 181 102',alcance:400,intensidade:.42});
 }

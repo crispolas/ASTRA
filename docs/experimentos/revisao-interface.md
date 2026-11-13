@@ -48,3 +48,13 @@ só muda após publicar o build com essas regras no projeto Netlify existente.
 - Capturas: `/workspace/artifacts/revisao-interface/`.
 
 API, contratos, dados e configuração do Render não foram alterados.
+
+## Sol da referência fornecida
+
+O usuário forneceu a prancha “Sol / Fotosfera ASCII”. A textura foi substituída
+por um disco denso de caracteres mistos (pontuação, x/X, o/O, 0, 8, %, #, @),
+âmbar/laranja com granulação, iluminação mais forte à esquerda/acima, manchas
+solares escuras e borda que se desfaz em pontuação. Não há preenchimento de células
+ou esfera sólida. O renderizador fica em `src/lib/visual/sol.ts`; mantém a rotação,
+posição no cenário e reflexo local existentes. A referência foi uma imagem
+anexada nesta conversa, sem alegação de acesso direto ao Figma.
