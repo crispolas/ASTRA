@@ -6,11 +6,11 @@ const manchas = [
  {lon:-2.3,lat:-.26,r:.12}, {lon:-2.9,lat:.42,r:.07}
 ].map(m=>({...m,x:Math.sin(m.lon)*Math.cos(m.lat),y:Math.sin(m.lat),z:Math.cos(m.lon)*Math.cos(m.lat)}));
 const clamp=(n:number)=>Math.max(0,Math.min(1,n));
-export function desenharFotosfera(ctx:CanvasRenderingContext2D,tempo:number){
+export function desenharFotosfera(ctx:CanvasRenderingContext2D,tempo:number,passo=1){
  ctx.clearRect(0,0,512,512);
- ctx.font='7.6px "Courier New",monospace';ctx.textAlign='center';ctx.textBaseline='middle';
+ ctx.font=(passo>1?'11px':'7.6px')+' "Courier New",monospace';ctx.textAlign='center';ctx.textBaseline='middle';
  const a=tempo*.012,co=Math.cos(a),si=Math.sin(a);
- for(let linha=2;linha<84;linha++)for(let coluna=2;coluna<84;coluna++){
+ for(let linha=2;linha<84;linha+=passo)for(let coluna=2;coluna<84;coluna+=passo){
   const px=coluna*6+1,py=linha*6+1,nx=(px-256)/238,ny=(py-256)/238,rr=nx*nx+ny*ny;
   if(rr>=1)continue;
   const nz=Math.sqrt(1-rr),rx=nx*co+nz*si,rz=nz*co-nx*si;
