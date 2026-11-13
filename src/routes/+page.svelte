@@ -1,5 +1,7 @@
 <script lang="ts">
-    import { onMount } from "svelte";
+    import { criarColecao } from '../lib/colecao.svelte';
+    import Carregamento from '../lib/components/Carregamento.svelte';
+    import ErroCarregamento from '../lib/components/ErroCarregamento.svelte';
     import TarefaCard from "#lib/components/TarefaCard.svelte";
     import Filtros from "#lib/components/Filtros.svelte";
     import AlternarVisao from "#lib/components/AlternarVisao.svelte";
@@ -11,26 +13,9 @@
     import { listarTarefas } from "../lib/api";
     import type { Tarefa } from "../tipos";
 
-    let tarefas = $state<Tarefa[]>([]);
-
-    let carregando = $state(true);
-    let erro = $state<string | null>(null);
-
-    onMount(async () => {
-        try {
-            carregando = true;
-            erro = null;
-            tarefas = await listarTarefas();
-        } catch (e) {
-            erro =
-                "Não foi possível carregar as tarefas. Confira se a API está ligada.";
-        } finally {
-            carregando = false;
-        }
-    });
-
+    const colecao = criarColecao<Tarefa>([], listarTarefas, 'as tarefas');
     let tarefasFiltradas = $derived(
-        tarefas.filter((t) => {
+        colecao.itens.filter((t) => {
             const bateTexto = t.titulo
                 .toLowerCase()
                 .includes($buscaTexto.toLowerCase());
@@ -50,19 +35,19 @@
         <div class="titulo-lista">
             <span class="astra-eyebrow">Página inicial</span>
             <h1>Tarefas</h1>
-            {#if !carregando && !erro}<p class="ov-count ov-count-desktop">{tarefasFiltradas.length} {tarefasFiltradas.length === 1 ? 'tarefa' : 'tarefas'}</p>{/if}
+            {#if !colecao.carregando && !colecao.erro}<p class="ov-count ov-count-desktop">{tarefasFiltradas.length} {tarefasFiltradas.length === 1 ? 'tarefa' : 'tarefas'}</p>{/if}
         </div>
         <a class="astra-btn" href="/tarefas/nova">Nova tarefa</a>
     </div>
     <Filtros />
     <AlternarVisao atual="lista" />
-    {#if !carregando && !erro}<p class="ov-count ov-count-mobile">{tarefasFiltradas.length} {tarefasFiltradas.length === 1 ? 'tarefa' : 'tarefas'}</p>{/if}
+    {#if !colecao.carregando && !colecao.erro}<p class="ov-count ov-count-mobile">{tarefasFiltradas.length} {tarefasFiltradas.length === 1 ? 'tarefa' : 'tarefas'}</p>{/if}
     <section aria-label="Lista de tarefas">
-        {#if carregando}
-            <p class="astra-muted estado-mensagem" role="status">Carregando tarefas...</p>
-        {:else if erro}
-            <p class="astra-error estado-erro" role="alert">Erro: {erro}</p>
-        {:else if tarefas.length === 0}
+        {#if colecao.carregando}
+            <Carregamento />
+        {:else if colecao.erro}
+            <ErroCarregamento mensagem={colecao.erro} tentar={() => colecao.carregar()} />
+        {:else if colecao.itens.length === 0}
             <p class="astra-muted estado-mensagem" role="status">Nenhuma tarefa cadastrada ainda.</p>
         {:else if tarefasFiltradas.length === 0}
             <p class="astra-muted estado-mensagem" role="status">Nenhuma tarefa encontrada com a busca e os filtros atuais.</p>
@@ -70,8 +55,8 @@
             <div class="astra-list lista-tarefas ov-grid">
                 {#each tarefasFiltradas as tarefa (tarefa.id)}
                     <TarefaCard {tarefa}
-                        onstatus={(nova) => tarefas = tarefas.map((t) => t.id === nova.id ? nova : t)}
-                        onexcluir={(id) => tarefas = tarefas.filter((t) => t.id !== id)} />
+                        onstatus={(nova) => colecao.itens = colecao.itens.map((t) => t.id === nova.id ? nova : t)}
+                        onexcluir={(id) => colecao.itens = colecao.itens.filter((t) => t.id !== id)} />
                 {/each}
             </div>
         {/if}

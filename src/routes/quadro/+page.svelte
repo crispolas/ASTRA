@@ -1,8 +1,10 @@
 <script lang="ts">
-	import { onDestroy, onMount, tick } from 'svelte';
+	import { onDestroy, onMount, tick, untrack } from 'svelte';
 	import { flip } from 'svelte/animate';
-	import { invalidateAll } from '$app/navigation';
-	import { atualizarTarefa } from '../../lib/api';
+	import {criarColecao} from '../../lib/colecao.svelte';
+ import Carregamento from '../../lib/components/Carregamento.svelte';
+ import ErroCarregamento from '../../lib/components/ErroCarregamento.svelte';
+	import { atualizarTarefa, listarTarefas } from '../../lib/api';
 	import TarefaCard from '../../lib/components/TarefaCard.svelte';
 	import Filtros from '../../lib/components/Filtros.svelte';
 	import AlternarVisao from '../../lib/components/AlternarVisao.svelte';
@@ -15,8 +17,9 @@
 	}
 
 	let { data }: Props = $props();
+	const colecao=criarColecao<Tarefa>(untrack(()=>data.tarefas),listarTarefas,'as tarefas');
 	let tarefasFiltradas = $derived(
-		aplicarFiltros(data.tarefas, $buscaTexto, $filtroStatus, $filtroPrioridade)
+		aplicarFiltros(colecao.itens, $buscaTexto, $filtroStatus, $filtroPrioridade)
 	);
 
 	const colunas: { id: Tarefa['status']; titulo: string }[] = [
@@ -80,13 +83,13 @@
 		const id = idTarefaArrastada;
 		encerrarArraste();
 		if (!id || salvandoArraste) return;
-		if (data.tarefas.find(t => String(t.id) === id)?.status === novoStatus) return;
+		if (colecao.itens.find(t => String(t.id) === id)?.status === novoStatus) return;
 		salvandoArraste = id; erroArraste = '';
 		let salvo = false;
 		try {
 			await atualizarTarefa(id, { status: novoStatus });
 			salvo = true; chegou = id;
-			await invalidateAll();
+			await colecao.carregar(false);
 			await tick();
 			clearTimeout(limparChegada);
 			limparChegada = setTimeout(() => { chegou = null; }, 450);
@@ -108,7 +111,7 @@
 		<div style="display:flex; flex-direction:column; gap:8px;">
 			<span class="astra-eyebrow">Tarefas · Quadro kanban</span>
 			<h1>Quadro de Tarefas</h1>
-			<p class="ov-count">{tarefasFiltradas.length} {tarefasFiltradas.length === 1 ? 'tarefa' : 'tarefas'}</p>
+			{#if !colecao.carregando && !colecao.erro}<p class="ov-count">{tarefasFiltradas.length} {tarefasFiltradas.length === 1 ? 'tarefa' : 'tarefas'}</p>{/if}
 		</div>
 		<a class="astra-btn" href="/tarefas/nova" style="text-decoration:none;">Nova tarefa</a>
 	</div>
@@ -116,7 +119,10 @@
 	<Filtros />
 	<AlternarVisao atual="quadro" />
 
-	{#if data.tarefas.length === 0}
+	{#if colecao.carregando}<Carregamento modo="quadro" />
+    {:else if colecao.erro}<ErroCarregamento mensagem={colecao.erro} tentar={()=>colecao.carregar()} />
+    {:else}
+    {#if colecao.itens.length === 0}
 		<p class="astra-muted" role="status">Nenhuma tarefa cadastrada ainda.</p>
 	{:else if tarefasFiltradas.length === 0}
 		<p class="astra-muted" role="status">Nenhuma tarefa encontrada com a busca e os filtros atuais.</p>
@@ -164,7 +170,7 @@
                                 ondragend={encerrarArraste}>
 								⠿ Arrastar cartão
 							</div>
-							<TarefaCard {tarefa} onstatus={() => invalidateAll()} />
+							<TarefaCard {tarefa} onstatus={() => colecao.carregar(false)} />
 						</div>
 					{:else}
 						<p class="vazio">Nenhuma tarefa nesta coluna.</p>
@@ -173,6 +179,7 @@
 			</section>
 		{/each}
 	</div>
+    {/if}
 </main>
 
 <style>

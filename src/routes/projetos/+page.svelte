@@ -1,8 +1,15 @@
 <script lang="ts">
+ import {untrack} from 'svelte';
+ import {criarColecao} from '../../lib/colecao.svelte';
+ import {listarProjetos} from '../../lib/api';
+ import type {Projeto} from '../../tipos';
+ import Carregamento from '../../lib/components/Carregamento.svelte';
+ import ErroCarregamento from '../../lib/components/ErroCarregamento.svelte';
 	import { interacaoOrbital } from '../../lib/visual/interacao';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
+ const colecao=criarColecao<Projeto>(untrack(()=>data.projetos),listarProjetos,'os projetos');
 </script>
 
 <main class="astra-page">
@@ -10,13 +17,17 @@
 		<div style="display:flex; flex-direction:column; gap:8px;">
 			<span class="astra-eyebrow">Lista de projetos</span>
 			<h1>Projetos</h1>
-            <p class="ov-count">{data.projetos.length} {data.projetos.length === 1 ? 'projeto' : 'projetos'}</p>
+            {#if !colecao.carregando && !colecao.erro}<p class="ov-count">{colecao.itens.length} {colecao.itens.length === 1 ? 'projeto' : 'projetos'}</p>{/if}
 		</div>
 	</div>
 
-	{#if data.projetos && data.projetos.length > 0}
+	{#if colecao.carregando}
+        <Carregamento nome="projetos" />
+    {:else if colecao.erro}
+        <ErroCarregamento mensagem={colecao.erro} tentar={()=>colecao.carregar()} />
+    {:else if colecao.itens && colecao.itens.length > 0}
 		<ul class="astra-list lista-projetos ov-grid">
-			{#each data.projetos as projeto (projeto.id)}
+			{#each colecao.itens as projeto (projeto.id)}
 				<li class="astra-orbita">
 					<article class="astra-card card-projeto ov-organic" use:interacaoOrbital>
 
