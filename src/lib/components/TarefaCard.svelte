@@ -62,7 +62,7 @@
 </script>
 
 <div class="suporte" class:astra-orbita={variante === 'catalogo'}>
-<article class="astra-card tarefa-card" class:catalogo={variante === 'catalogo'} class:ov-organic={variante === 'catalogo'}
+<article data-prioridade={tarefa.prioridade} class="astra-card tarefa-card" class:catalogo={variante === 'catalogo'} class:ov-organic={variante === 'catalogo'}
 	use:interacaoOrbital={variante === 'catalogo'}>
 
 	<h3>
@@ -80,7 +80,7 @@
 		</div>
 		<div>
 			<dt>Prioridade</dt>
-			<dd>{nomesPrioridade[tarefa.prioridade]}</dd>
+			<dd><span class="selo-prioridade prioridade--{tarefa.prioridade}">{nomesPrioridade[tarefa.prioridade]}</span></dd>
 		</div>
 		<div>
 			<dt>Responsável</dt>
