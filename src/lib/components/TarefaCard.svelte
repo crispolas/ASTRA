@@ -1,4 +1,6 @@
 <script lang="ts">
+	import type {Snippet} from 'svelte';
+ import {nomesStatus,nomesPrioridade,opcoesStatus} from '../opcoes';
 	import SeletorArredondado from './SeletorArredondado.svelte';
 	import { atualizarTarefa, excluirTarefa } from '../api';
 	import { interacaoOrbital } from '../visual/interacao';
@@ -7,11 +9,12 @@
 	interface Props {
 		tarefa: Readonly<Tarefa>;
 		variante?: 'padrao' | 'catalogo';
+        alca?:Snippet;
 		onstatus?: (tarefa: Tarefa) => void;
 		onexcluir?: (id: string) => void;
 	}
 
-	let { tarefa, variante = 'catalogo', onstatus, onexcluir }: Props = $props();
+	let { tarefa, variante = 'catalogo', onstatus, onexcluir, alca }: Props = $props();
 
 	const idControle = $props.id();
 	let salvando = $state(false);
@@ -28,7 +31,7 @@
 			await excluirTarefa(tarefa.id);
 			onexcluir(tarefa.id);
 		} catch {
-			erroExclusao = 'Não foi possível excluir a tarefa. Confira se a API está ligada e tente novamente.';
+			erroExclusao = 'Não foi possível excluir a tarefa. Tente novamente em instantes.';
 		} finally {
 			excluindo = false;
 		}
@@ -40,24 +43,11 @@
 		try {
 			onstatus?.(await atualizarTarefa(tarefa.id, { status: valor as Status }));
 		} catch {
-			erroStatus = 'Não foi possível salvar o status. Confira se a API está ligada.';
+			erroStatus = 'Não foi possível salvar o status. Tente novamente em instantes.';
 		} finally {
 			salvando = false;
 		}
 	}
-
-	const nomesStatus = {
-		'a-fazer': 'A fazer',
-		'em-andamento': 'Em andamento',
-		'em-revisao': 'Em revisão',
-		concluida: 'Concluída'
-	} satisfies Record<Tarefa['status'], string>;
-
-	const nomesPrioridade = {
-		baixa: 'Baixa',
-		media: 'Média',
-		alta: 'Alta'
-	} satisfies Record<Tarefa['prioridade'], string>;
 
 </script>
 
@@ -65,6 +55,7 @@
 <article data-prioridade={tarefa.prioridade} class="astra-card tarefa-card" class:catalogo={variante === 'catalogo'} class:ov-organic={variante === 'catalogo'}
 	use:interacaoOrbital={variante === 'catalogo'}>
 
+    {#if alca}<div class="alca-interna">{@render alca()}</div>{/if}
 	<h3>
 		<a href={`/tarefas/${encodeURIComponent(tarefa.id)}`} draggable="false">{tarefa.titulo}</a>
 	</h3>
@@ -75,7 +66,7 @@
 			<dd>
 				<SeletorArredondado id={`status-${idControle}`} rotulo={`Status de ${tarefa.titulo}`}
                     valor={tarefa.status} compacto labelVisivel={false} desabilitado={salvando || excluindo}
-                    opcoes={Object.entries(nomesStatus).map(([valor, nome]) => ({ valor, nome }))} aoAlterar={mudarStatus} />
+                    opcoes={opcoesStatus} aoAlterar={mudarStatus} />
 			</dd>
 		</div>
 		<div>

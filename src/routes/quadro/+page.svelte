@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onDestroy, onMount, tick, untrack } from 'svelte';
+	import {opcoesStatus} from '../../lib/opcoes';
 	import { flip } from 'svelte/animate';
  import {crossfade} from 'svelte/transition';
  import {entradaCartao,duracaoMovimento} from '../../lib/visual/movimento';
@@ -25,12 +26,7 @@
 		aplicarFiltros(colecao.itens, $buscaTexto, $filtroStatus, $filtroPrioridade)
 	);
 
-	const colunas: { id: Tarefa['status']; titulo: string }[] = [
-		{ id: 'a-fazer', titulo: 'A fazer' },
-		{ id: 'em-andamento', titulo: 'Em andamento' },
-		{ id: 'em-revisao', titulo: 'Em revisão' },
-		{ id: 'concluida', titulo: 'Concluída' }
-	];
+	const colunas=opcoesStatus.map(o=>({id:o.valor,titulo:o.nome}));
 
 	let idTarefaArrastada = $state<string | null>(null);
 	let destino = $state<Tarefa['status'] | null>(null);
@@ -167,14 +163,13 @@
 							aria-label={tarefa.titulo}
 
 						>
-							<div class="drag-handle" role="img" aria-label="Arrastar tarefa. Para usar o teclado, altere o seletor de status do cartão."
-                                title="Arraste para outra coluna; pelo teclado, use o seletor de status."
-                                draggable={salvandoArraste === null}
-                                ondragstart={(e) => handleDragStart(e, String(tarefa.id))}
-                                ondragend={encerrarArraste}>
-								⠿ Arrastar cartão
-							</div>
-							<TarefaCard {tarefa} onstatus={() => colecao.carregar(false)} />
+							<TarefaCard {tarefa} onstatus={() => colecao.carregar(false)}>
+                                {#snippet alca()}
+                                <div class="drag-handle" role="img" aria-label="Arrastar tarefa. Pelo teclado, use o status."
+                                    title="Arraste para outra coluna; pelo teclado, use o status." draggable={salvandoArraste === null}
+                                    ondragstart={e=>handleDragStart(e,String(tarefa.id))} ondragend={encerrarArraste}>⠿</div>
+                                {/snippet}
+                            </TarefaCard>
 						</div>
 					{:else}
 						<p class="vazio">Nenhuma tarefa nesta coluna.</p>
@@ -263,29 +258,10 @@
 		cursor: grabbing;
 	}
 
-	.drag-handle {
-		background: #1c2029;
-		color: var(--astra-muted, #a1a1aa);
-		border: 1px dashed var(--astra-glass-border, #27272a);
-		font-size: 0.75rem;
-		text-align: center;
-		padding: 6px;
-		border-radius: 3px;
-		user-select: none;
-		-webkit-user-select: none;
-		font-weight: 600;
-		letter-spacing: 0.5px;
-		transition: background 0.15s ease, color 0.15s ease;
-	}
-
-	.drag-handle:hover {
-		background: #252a36;
-		color: #ffffff;
-	}
-
-	.drag-handle { cursor:grab; touch-action:pan-y; }
-	.drag-handle:active { cursor:grabbing; }
-	.cartao-wrapper { cursor:default; }
+	.drag-handle { display:grid;place-items:center;width:44px;height:44px;font-size:22px;color:#bdc5d3;cursor:grab;touch-action:pan-y;user-select:none;border-radius:50%; }
+    .drag-handle:hover {background:#ffffff0c;color:#fff}
+    .drag-handle:active {cursor:grabbing}
+    .cartao-wrapper {cursor:default}
 	.cartao-wrapper.arrastando { opacity:.35; outline:1px dashed #ccd8ed; outline-offset:4px; border-radius:10px; }
 	.cartao-wrapper.salvando-arraste { opacity:.6; cursor:progress; }
 	.cartao-wrapper.chegada-arraste { opacity:1; }

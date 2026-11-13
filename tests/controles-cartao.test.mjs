@@ -11,7 +11,7 @@ test('o cartão oferece quatro status e indica o atual no menu arredondado', asy
 		return Response.json([tarefa]);
 	});
 	await app.abrir('/');
-	const controle=app.page.getByRole('button',{name:'Status de Documentar o componente',exact:true});
+	const controle=app.page.getByRole('combobox',{name:'Status de Documentar o componente',exact:true});
 	assert.match(await controle.innerText(),/Em revisão/);
 	await controle.click();
 	const menu=app.page.getByRole('listbox',{name:'Status de Documentar o componente'});
@@ -26,7 +26,7 @@ test('o cartão oferece quatro status e indica o atual no menu arredondado', asy
 test('falha ao mudar status mantém o valor anterior e libera o controle', async () => {
 	app.simularApi((url,req)=>req.method()==='PATCH'?Response.json({}, {status:503}):Response.json([{...base}]));
 	await app.abrir('/');
-	const controle=app.page.getByRole('button',{name:'Status de Documentar o componente',exact:true});
+	const controle=app.page.getByRole('combobox',{name:'Status de Documentar o componente',exact:true});
 	await controle.click();await app.page.getByRole('option',{name:'Concluída',exact:true}).click();
 	await app.page.getByRole('alert').filter({hasText:'Não foi possível salvar o status'}).waitFor();
 	assert.match(await controle.innerText(),/Em revisão/);assert.equal(await controle.isEnabled(),true);

@@ -1,4 +1,6 @@
 <script lang="ts">
+ import SeletorArredondado from './SeletorArredondado.svelte';
+ import {opcoesStatus,opcoesPrioridade} from '../opcoes';
 	import { onMount, untrack } from 'svelte';
 	import { listarProjetos } from '../api';
 	import type { NovaTarefa, Projeto } from '../../tipos';
@@ -49,7 +51,7 @@
 		try {
 			projetos = await listarProjetos();
 		} catch {
-			erroProjetos = 'Não foi possível carregar os projetos. Confira se a API está ligada.';
+			erroProjetos = 'Não foi possível carregar os projetos. Tente novamente em instantes.';
 		} finally {
 			carregandoProjetos = false;
 		}
@@ -94,20 +96,9 @@
 	</div>
 
 	<div class="astra-field">
-		<label class="astra-label" for={`${id}-projeto`}>Projeto</label>
-		<select
-			class="astra-select"
-			id={`${id}-projeto`}
-			name="projetoId"
-			bind:value={campos.projetoId}
-			aria-invalid={erros.projetoId ? 'true' : 'false'}
-			aria-describedby={erros.projetoId ? `${id}-erro-projeto` : undefined}
-		>
-			<option value="">Selecione um projeto</option>
-			{#each projetos as projeto (projeto.id)}
-				<option value={projeto.id}>{projeto.nome}</option>
-			{/each}
-		</select>
+		<SeletorArredondado id={`${id}-projeto`} rotulo="Projeto" nome="projetoId" bind:valor={campos.projetoId}
+            invalido={!!erros.projetoId} descricao={erros.projetoId ? `${id}-erro-projeto` : undefined}
+            desabilitado={enviando} opcoes={[{valor:'',nome:'Selecione um projeto'},...projetos.map(p=>({valor:p.id,nome:p.nome}))]} />
 		{#if erros.projetoId}
 			<p id={`${id}-erro-projeto`} class="astra-error" role="alert">
 				<span aria-hidden="true">⚠️</span> {erros.projetoId}
@@ -126,22 +117,13 @@
 	</div>
 
 	<div class="astra-field">
-		<label class="astra-label" for={`${id}-status`}>Status</label>
-		<select class="astra-select" id={`${id}-status`} name="status" bind:value={campos.status}>
-			<option value="a-fazer">A fazer</option>
-			<option value="em-andamento">Em andamento</option>
-			<option value="em-revisao">Em revisão</option>
-			<option value="concluida">Concluída</option>
-		</select>
+		<SeletorArredondado id={`${id}-status`} rotulo="Status" nome="status" valor={campos.status}
+            aoAlterar={v=>{campos.status=v as NovaTarefa['status']}} desabilitado={enviando} opcoes={opcoesStatus} />
 	</div>
 
 	<div class="astra-field">
-		<label class="astra-label" for={`${id}-prioridade`}>Prioridade</label>
-		<select class="astra-select" id={`${id}-prioridade`} name="prioridade" bind:value={campos.prioridade}>
-			<option value="baixa">Baixa</option>
-			<option value="media">Média</option>
-			<option value="alta">Alta</option>
-		</select>
+		<SeletorArredondado id={`${id}-prioridade`} rotulo="Prioridade" nome="prioridade" valor={campos.prioridade}
+            aoAlterar={v=>{campos.prioridade=v as NovaTarefa['prioridade']}} desabilitado={enviando} opcoes={opcoesPrioridade} />
 	</div>
 
 	<div class="astra-field">

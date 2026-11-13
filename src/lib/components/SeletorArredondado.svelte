@@ -1,8 +1,8 @@
 <script lang="ts">
     import { tick } from 'svelte';
     type Opcao = { valor: string; nome: string };
-    let { id, rotulo, valor = $bindable(''), opcoes, desabilitado = false, compacto = false, labelVisivel = true, aoAlterar }: {
-        id: string; rotulo: string; valor?: string; opcoes: Opcao[]; desabilitado?: boolean; compacto?: boolean; labelVisivel?: boolean; aoAlterar?: (valor: string) => void | Promise<void>;
+    let { id, rotulo, valor = $bindable(''), opcoes, desabilitado = false, compacto = false, labelVisivel = true, aoAlterar, nome, invalido = false, descricao }: {
+        id: string; rotulo: string; valor?: string; opcoes: Opcao[]; desabilitado?: boolean; compacto?: boolean; labelVisivel?: boolean; nome?:string; invalido?:boolean; descricao?:string; aoAlterar?: (valor: string) => void | Promise<void>;
     } = $props();
     let raiz = $state<HTMLDivElement>();
     let botao = $state<HTMLButtonElement>();
@@ -59,10 +59,11 @@
 
 <svelte:document onpointerdown={(e) => { if (aberto && e.target instanceof Node && !raiz?.contains(e.target)) void fechar(); }} />
 <div class="seletor" class:compacto bind:this={raiz} onfocusout={(e) => { if (e.relatedTarget instanceof Node && !raiz?.contains(e.relatedTarget)) void fechar(); }}>
+    {#if nome}<input type="hidden" name={nome} value={valor} />{/if}
     <label class:oculto={!labelVisivel} id={`${id}-rotulo`} for={id}>{rotulo}</label>
-    <button type="button" {id} class="gatilho" disabled={desabilitado} bind:this={botao} aria-haspopup="listbox" aria-expanded={aberto}
-        aria-label={!labelVisivel ? rotulo : undefined} aria-describedby={!labelVisivel ? `${id}-valor` : undefined}
-        aria-controls={aberto ? `${id}-lista` : undefined} aria-labelledby={labelVisivel ? `${id}-rotulo ${id}-valor` : undefined}
+    <button type="button" role="combobox" {id} class="gatilho" disabled={desabilitado} bind:this={botao} aria-haspopup="listbox" aria-expanded={aberto}
+        aria-invalid={invalido ? true : undefined} aria-label={!labelVisivel ? rotulo : undefined} aria-describedby={[!labelVisivel ? `${id}-valor` : '', descricao ?? ''].filter(Boolean).join(' ') || undefined}
+        aria-controls={`${id}-lista`} aria-labelledby={labelVisivel ? `${id}-rotulo ${id}-valor` : undefined}
         onclick={() => aberto ? fechar(true) : abrir()}
         onkeydown={(e) => { if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); void abrir(e.key === 'ArrowDown' ? 1 : -1); } }}>
         <span id={`${id}-valor`}>{selecionado.nome}</span><span class="seta" aria-hidden="true">⌄</span>
