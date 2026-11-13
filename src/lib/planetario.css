@@ -23,9 +23,6 @@
 .ov-shell.orbita-viva.planetario .astra-page>.astra-head>div{background:transparent;max-width:100%}
 .ov-shell.orbita-viva.planetario .astra-page>.astra-head .astra-eyebrow{position:static;clip-path:none;width:auto;height:auto;margin:0;overflow:visible;white-space:normal;font:11px/1.5 ui-monospace,monospace;color:#aaa}
 /* Preserva os textos originais para semântica/testes; a vista é uma legenda adicional. */
-.planetario .astra-head::before{content:'OBSERVATÓRIO / VISTA 01';position:absolute;top:-16px;left:0;font:10px ui-monospace,monospace;color:#a7a7a7}
-.planetario[data-setor=projetos] .astra-head::before{content:'OBSERVATÓRIO / VISTA 02'}
-.planetario[data-setor=quadro] .astra-head::before{content:'OBSERVATÓRIO / VISTA 03'}
 .ov-shell.orbita-viva.planetario .astra-page>.astra-head .astra-eyebrow{position:absolute;clip-path:inset(50%);width:1px;height:1px;overflow:hidden}
 .ov-shell.orbita-viva.planetario h1{font-size:56px;font-weight:300;letter-spacing:-.025em;line-height:1.15}
 .ov-shell.orbita-viva.planetario .ov-count{background:transparent;color:#aaa}
@@ -59,11 +56,25 @@ body.planetario-pausado .planetario .astra-orbita{animation-play-state:paused}
 @media(max-width:1100px){.ov-shell.orbita-viva.planetario .quadro-container{grid-template-columns:repeat(2,minmax(0,1fr))}.ov-shell.orbita-viva.planetario .cabecalho .marca-entrada{width:150px}.ov-shell.orbita-viva.planetario .astra-nav{left:auto;right:4.5vw;transform:none;width:530px}.ov-shell.orbita-viva.planetario .ov-organic dl{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:760px){.ov-shell.orbita-viva.planetario .cabecalho.astra-page{height:230px;padding:24px}.ov-shell.orbita-viva.planetario .cabecalho .marca-entrada{width:155px;margin-top:0}.ov-shell.orbita-viva.planetario .astra-nav{left:24px;right:24px;top:106px;width:auto;transform:none;padding-inline:8px}.ov-shell.orbita-viva.planetario .astra-nav a{font-size:12px;padding-inline:6px}.ov-shell.orbita-viva.planetario .astra-page{padding-inline:24px}.ov-shell.orbita-viva.planetario main.astra-page{padding-top:24px;gap:22px}.ov-shell.orbita-viva.planetario h1{font-size:42px}.ov-shell.orbita-viva.planetario .astra-page>.astra-head{min-height:170px;flex-wrap:wrap;gap:16px;align-items:flex-start;padding-top:12px;padding-bottom:10px}.ov-shell.orbita-viva.planetario .astra-filters{grid-template-columns:minmax(0,1fr)}.ov-shell.orbita-viva.planetario .ov-grid>*{flex-basis:100%;max-width:100%;translate:none}.ov-shell.orbita-viva.planetario .astra-card.ov-organic{padding:26px 24px}.ov-shell.orbita-viva.planetario .quadro-container{grid-template-columns:1fr}.ov-shell.orbita-viva.planetario .lista-projetos{padding-top:10px}.ov-shell.orbita-viva.planetario .card-projeto h3{font-size:24px}}
 @media(prefers-reduced-motion:reduce){.planetario .plano-rota{transform:none!important}.planetario .astra-nav ul::before,.planetario .astra-nav ul::after{transition:none}}
-/* A Lua pode atravessar qualquer região da órbita sem encobrir o texto do título. */
-.ov-shell.orbita-viva.planetario .astra-page>.astra-head>div{background:#080808;width:fit-content}
-.planetario .astra-head::before{background:#080808}
 /* Reflexo local das fontes celestes; o hover radial continua em outra camada. */
 .planetario .astra-card[data-orbital]::before{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;border-radius:inherit;opacity:var(--luz-intensidade,0);background:radial-gradient(circle var(--luz-alcance,280px) at var(--luz-x,50%) var(--luz-y,50%),rgb(var(--luz-cor,255 255 255) / .6),transparent 100%);box-shadow:inset 0 0 22px rgb(var(--luz-cor,255 255 255) / .25);transition:opacity 160ms}
 @media(max-width:1100px){.ov-shell.orbita-viva.planetario .cabecalho.astra-page{height:230px}.ov-shell.orbita-viva.planetario .astra-nav{left:50%;right:auto;top:106px;transform:translateX(-50%);width:min(560px,calc(100% - 48px))}}
 @media(prefers-reduced-motion:reduce){.planetario .astra-card[data-orbital]::before{transition:none}}
 .planetario .astra-filters{position:relative;z-index:6}
+/* Revisão: sem placas pretas sobre a Lua e sem legenda de observatório. */
+.ov-shell.orbita-viva.planetario .astra-page>.astra-head>div{background:transparent}
+.ov-shell.orbita-viva.planetario .astra-head::before{display:none;content:none}
+.planetario .astra-head h1,.planetario .ov-count{text-shadow:0 2px 8px #000,0 0 18px #000a}
+/* O cabeçalho ocupa o viewport, não a largura máxima de 1600px do conteúdo. */
+.ov-shell.orbita-viva.planetario .cabecalho.astra-page{max-width:none;width:100%}
+.ov-shell.orbita-viva.planetario .astra-nav{padding:8px 10px;background:#111111a6;backdrop-filter:blur(16px);box-shadow:0 8px 30px #0005,inset 0 1px #ffffff0a}
+.ov-shell.orbita-viva.planetario .astra-nav::after,.ov-shell.orbita-viva.planetario .astra-nav ul::after{display:none;content:none}
+.ov-shell.orbita-viva.planetario .astra-nav ul::before{box-sizing:border-box;background:linear-gradient(135deg,#ffffff1f,#ffffff08);border:1px solid #ffffff38;box-shadow:inset 0 1px 12px #ffffff18,0 0 18px #d8e5ff12}
+.ov-shell.orbita-viva.planetario .astra-nav a[aria-current=page],.ov-shell.orbita-viva.planetario .astra-nav a[aria-current=page]:hover{color:#f5f7fa;text-shadow:0 0 12px #ffffff45}
+.ov-shell.orbita-viva.planetario .astra-card .acoes-tarefa{position:absolute;top:10px;right:10px;padding:0;margin:0}
+.ov-shell.orbita-viva.planetario .ov-organic .excluir-tarefa{display:grid;place-items:center;width:44px;min-height:44px;padding:0;border:1px solid transparent;border-radius:50%;background:transparent;color:#b7bbc4;box-shadow:none}
+.ov-shell.orbita-viva.planetario .ov-organic .excluir-tarefa:hover{color:#ffd1d1;background:#ff808014;border-color:#ffb7b730}
+.ov-shell.orbita-viva.planetario .ov-organic:has(.excluir-tarefa) h3{padding-right:32px}
+.planetario .tarefa-card .seletor{width:fit-content;min-width:0;max-width:100%}
+.planetario .tarefa-card:focus-within{z-index:10}
+.planetario .ov-grid> .astra-orbita:focus-within,.planetario .cartao-wrapper:focus-within{z-index:12}

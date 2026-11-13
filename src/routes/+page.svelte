@@ -50,7 +50,7 @@
         <div class="titulo-lista">
             <span class="astra-eyebrow">Página inicial</span>
             <h1>Tarefas</h1>
-            {#if !carregando && !erro}<p class="ov-count ov-count-desktop">{tarefasFiltradas.length} {tarefasFiltradas.length === 1 ? 'tarefa' : 'tarefas'} no observatório</p>{/if}
+            {#if !carregando && !erro}<p class="ov-count ov-count-desktop">{tarefasFiltradas.length} {tarefasFiltradas.length === 1 ? 'tarefa' : 'tarefas'}</p>{/if}
         </div>
         <a class="astra-btn" href="/tarefas/nova">Nova tarefa</a>
     </div>

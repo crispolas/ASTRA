@@ -108,7 +108,7 @@
 		<div style="display:flex; flex-direction:column; gap:8px;">
 			<span class="astra-eyebrow">Tarefas · Quadro kanban</span>
 			<h1>Quadro de Tarefas</h1>
-			<p class="ov-count">{tarefasFiltradas.length} {tarefasFiltradas.length === 1 ? 'tarefa' : 'tarefas'} no observatório</p>
+			<p class="ov-count">{tarefasFiltradas.length} {tarefasFiltradas.length === 1 ? 'tarefa' : 'tarefas'}</p>
 		</div>
 		<a class="astra-btn" href="/tarefas/nova" style="text-decoration:none;">Nova tarefa</a>
 	</div>

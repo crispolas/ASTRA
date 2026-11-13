@@ -1,4 +1,5 @@
 <script lang="ts">
+	import SeletorArredondado from './SeletorArredondado.svelte';
 	import { atualizarTarefa, excluirTarefa } from '../api';
 	import { interacaoOrbital } from '../visual/interacao';
 	import type { Status, Tarefa } from '../../tipos';
@@ -12,6 +13,7 @@
 
 	let { tarefa, variante = 'catalogo', onstatus, onexcluir }: Props = $props();
 
+	const idControle = $props.id();
 	let salvando = $state(false);
 	let erroStatus = $state('');
 	let excluindo = $state(false);
@@ -32,14 +34,12 @@
 		}
 	}
 
-	async function mudarStatus(event: Event) {
-		const select = event.currentTarget as HTMLSelectElement;
+	async function mudarStatus(valor: string) {
 		salvando = true;
 		erroStatus = '';
 		try {
-			onstatus?.(await atualizarTarefa(tarefa.id, { status: select.value as Status }));
+			onstatus?.(await atualizarTarefa(tarefa.id, { status: valor as Status }));
 		} catch {
-			select.value = tarefa.status;
 			erroStatus = 'Não foi possível salvar o status. Confira se a API está ligada.';
 		} finally {
 			salvando = false;
@@ -59,13 +59,6 @@
 		alta: 'Alta'
 	} satisfies Record<Tarefa['prioridade'], string>;
 
-	// Classe visual de cada status (o texto continua dizendo o status, não só a cor).
-	const classesStatus = {
-		'a-fazer': 'astra-tag--todo',
-		'em-andamento': 'astra-tag--doing',
-		'em-revisao': 'astra-tag--doing',
-		concluida: 'astra-tag--done'
-	} satisfies Record<Tarefa['status'], string>;
 </script>
 
 <div class="suporte" class:astra-orbita={variante === 'catalogo'}>
@@ -80,12 +73,9 @@
 		<div>
 			<dt>Status</dt>
 			<dd>
-				<select class="astra-tag status-select {classesStatus[tarefa.status]}" value={tarefa.status}
-					aria-label={`Status de ${tarefa.titulo}`} disabled={salvando || excluindo} onchange={mudarStatus}>
-					{#each Object.entries(nomesStatus) as [valor, nome] (valor)}
-						<option value={valor}>{nome}</option>
-					{/each}
-				</select>
+				<SeletorArredondado id={`status-${idControle}`} rotulo={`Status de ${tarefa.titulo}`}
+                    valor={tarefa.status} compacto labelVisivel={false} desabilitado={salvando || excluindo}
+                    opcoes={Object.entries(nomesStatus).map(([valor, nome]) => ({ valor, nome }))} aoAlterar={mudarStatus} />
 			</dd>
 		</div>
 		<div>
@@ -105,8 +95,10 @@
 	{#if onexcluir}
 		<div class="acoes-tarefa">
 			<button type="button" class="astra-pill excluir-tarefa" onclick={confirmarExclusao}
-				aria-label={`Excluir tarefa ${tarefa.titulo}`} disabled={excluindo || salvando}>
-				{excluindo ? 'Excluindo...' : 'Excluir'}
+				aria-label={`Excluir tarefa ${tarefa.titulo}`} title={excluindo ? 'Excluindo...' : 'Excluir tarefa'} disabled={excluindo || salvando}>
+				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                    <path d="M3 6h18M9 6V4h6v2M5 6l1 14h12l1-14M10 10v6M14 10v6" />
+                </svg>
 			</button>
 		</div>
 	{/if}
@@ -121,8 +113,6 @@
 		gap: 16px;
 		overflow-wrap: anywhere;
 	}
-	.status-select { max-width:100%; font:inherit; cursor:pointer; color-scheme:dark; }
-	.status-select:disabled { cursor:progress; opacity:.6; }
 	.acoes-tarefa { display:flex; justify-content:flex-end; padding-top:8px; }
 	.excluir-tarefa { cursor:pointer; font-size:12px; }
 	.excluir-tarefa:disabled { opacity:.55; cursor:progress; }
@@ -140,10 +130,6 @@
 	.catalogo dt { color:#a9adb8; font:10px ui-monospace,'Courier New',monospace; text-transform:uppercase; letter-spacing:.1em; }
 	.catalogo dd { margin-top:8px; color:#e3e5eb; font-size:14px; font-weight:400; }
 	.catalogo time { font:13px ui-monospace,'Courier New',monospace; }
-	.catalogo .astra-tag { padding:2px 7px; font-size:12px; border-radius:2px; }
-	.catalogo .astra-tag--done { color:#edf0f5; background:#33373f; }
-	.catalogo .astra-tag--doing { color:#e1e4eb; border-color:#767e8d; }
-	.catalogo .astra-tag--todo { color:#bbc0ca; }
 	@media(max-width:600px) { .catalogo { padding:22px 18px; } .catalogo h3 { font-size:19px; } .catalogo dl { grid-template-columns:repeat(2,minmax(0,1fr)); row-gap:20px; } }
 	@media(prefers-reduced-motion:reduce) { .astra-orbita { animation:none; } .catalogo { transform:none; transition:none; } .catalogo::after { transition:none; } }
 	

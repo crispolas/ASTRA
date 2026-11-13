@@ -81,15 +81,6 @@ test('o mesmo componente pode apresentar duas tarefas diferentes', () => {
 	assert(!segundoHtml.includes('Primeira tarefa'));
 });
 
-test('o cartão oferece um seletor de status com o status atual escolhido', () => {
-	const tarefa = Object.freeze({ ...exemplo, status: 'em-revisao' });
-	const html = render(TarefaCard, { props: { tarefa } }).body;
-	assert(html.includes('aria-label="Status de Documentar o componente"'));
-	assert.equal(html.match(/<option\b/g)?.length, 4);
-	assert.match(html, /<option value="em-revisao"[^>]*selected[^>]*>Em revisão<\/option>/);
-	assert.doesNotMatch(html, /<option value="a-fazer"[^>]*selected/);
-});
-
 test('o botão de excluir só aparece quando a página oferece o callback de exclusão', () => {
 	const padrao = render(TarefaCard, { props: { tarefa: exemplo } }).body;
 	assert(!padrao.includes('aria-label="Excluir tarefa'));

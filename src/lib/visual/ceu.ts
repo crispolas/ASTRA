@@ -14,6 +14,7 @@ export function iniciarCeu(fundo: HTMLCanvasElement, efeitos: HTMLCanvasElement)
  const eventos=new AbortController(),mouse={x:-9999,y:-9999};
  let W=innerWidth,H=innerHeight,frame=0,ultimo=-9999,ultimoDesenhoLua=-9999;
  let tempoPausaLua: number | null=null;
+ let mascaraLua: {x:number;y:number;r:number}|null=null;
  const lunar=document.createElement('canvas');lunar.width=lunar.height=768;const moonCtx=contexto(lunar);
  let sementeLua=4817;const randomLua=()=>{sementeLua=(sementeLua*1664525+1013904223)>>>0;return sementeLua/4294967296};
  const crateras=Array.from({length:26},()=>{const lon=(randomLua()-.5)*Math.PI*1.8,lat=(randomLua()-.5)*Math.PI*.9;return{x:Math.sin(lon)*Math.cos(lat),y:Math.sin(lat),z:Math.cos(lon)*Math.cos(lat),radius:.05+randomLua()*.15}});
@@ -50,18 +51,16 @@ function desenharTexturaLua(epoch: number){
   moonCtx.fillStyle=`rgba(244,245,247,${.035+tone*.055})`;moonCtx.fillRect(gx*6,gy*6,5.3,5.3);const strength=.35+tone*.65;moonCtx.fillStyle=`rgba(${Math.round(244*strength)},${Math.round(245*strength)},${Math.round(247*strength)},${.57+tone*.43})`;moonCtx.fillText(char,gx*6+3,gy*6+3);
  }
 }
-function pintarLua(t: number,forcar: boolean){const epoch=(reduzir.matches)?(tempoPausaLua??Date.now()):Date.now(),p=posicaoLua(epoch,W,H);if(p.diametro<=0)return;
+function pintarLua(t: number,forcar: boolean){const epoch=(reduzir.matches)?(tempoPausaLua??Date.now()):Date.now(),p=posicaoLua(epoch,W,H,orientacaoAgora()+28);if(p.diametro<=0)return;
  // Escala visual da revisão; fase, centro, profundidade e período continuam em orbita.ts.
  const larguraUtil=Math.max(1,Math.min(W,1600)-W*.09);
  const diametroReferencia=W<=900?Math.min(168,W*.4):larguraUtil*.22;
  const escala=diametroReferencia*2.2/(2*Math.min(W*.34,H*.46));
- const size=p.diametro*escala/(340/384),giro=orientacaoAgora()+28;
- // Visibilidade depende do corpo inteiro no campo projetado, nunca da rota
- // ou de um corte angular que apagaria uma Lua ainda dentro da tela.
- const angulo=Math.atan((p.x-W/2)/(W*.85))-giro*Math.PI/180*.95;
- if(Math.abs(angulo)>=Math.PI/2)return; // atrás do observador
- const x=projetarX(p.x,W,giro,.95),raio=size/2+8;
+ const size=p.diametro*escala/(340/384),x=p.x,raio=size/2+8;
  if(x+raio<0||x-raio>W||p.y+raio<0||p.y-raio>H)return;
+ // A esfera opaca cobre as estrelas antes de desenhar os caracteres luminosos.
+ mascaraLua={x,y:p.y,r:size*(170/384)};
+ ctx.save();ctx.fillStyle='#101114';ctx.beginPath();ctx.arc(x,p.y,size*(170/384),0,Math.PI*2);ctx.fill();ctx.restore();
  if(forcar||t-ultimoDesenhoLua>80){ultimoDesenhoLua=t;desenharTexturaLua(epoch)}
  ctx.save();ctx.shadowColor='#e1eaff';ctx.shadowBlur=4;ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(lunar,x-size/2,p.y-size/2,size,size);ctx.restore();
 }
@@ -130,7 +129,7 @@ function pintarLuminosas(t:number,parar:boolean,dt:number,fontes:FonteLuz[]){
  }
 }
 function pintar(t: number,forcar=false){if(!ctx||!fc)return;const parar=reduzir.matches,tempo=parar?0:t*.0001;
- if(forcar||t-ultimo>32){const dt=Math.min(.06,Math.max(0,(t-ultimo)/1000));ultimo=t;ctx.clearRect(0,0,W,H);if(!parar)atualizarEstrelas(dt,t);
+ if(forcar||t-ultimo>32){const dt=Math.min(.06,Math.max(0,(t-ultimo)/1000));ultimo=t;mascaraLua=null;ctx.clearRect(0,0,W,H);if(!parar)atualizarEstrelas(dt,t);
  for(let i=0;i<estrelas.length;i++){const e=estrelas[i],v=aparente(e,i),d=Math.hypot(v.x-mouse.x,v.y-mouse.y),perto=Math.max(0,1-d/110);ctx.font=(e.brilho>.36?11:9)+'px Consolas,monospace';ctx.fillStyle=`rgba(215,228,248,${e.brilho+perto*.25+Math.sin((parar?0:t)*.0005+e.fase)*.035})`;ctx.fillText(e.brilho>.36?'+':'.',v.x,v.y)}
  const fontes:FonteLuz[]=[];
  pintarSol(t,parar,fontes);
@@ -140,6 +139,7 @@ function pintar(t: number,forcar=false){if(!ctx||!fc)return;const parar=reduzir.
   pintarLua(t,forcar);
  }
  fc.clearRect(0,0,W,H);if(!parar)desenharCadente(t);
+ if(mascaraLua){fc.save();fc.globalCompositeOperation='destination-out';fc.beginPath();fc.arc(mascaraLua.x,mascaraLua.y,mascaraLua.r,0,Math.PI*2);fc.fill();fc.restore();}
 }
 
  function ajustar() {

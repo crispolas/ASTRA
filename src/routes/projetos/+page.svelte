@@ -10,7 +10,7 @@
 		<div style="display:flex; flex-direction:column; gap:8px;">
 			<span class="astra-eyebrow">Lista de projetos</span>
 			<h1>Projetos</h1>
-            <p class="ov-count">{data.projetos.length} {data.projetos.length === 1 ? 'projeto' : 'projetos'} no observatório</p>
+            <p class="ov-count">{data.projetos.length} {data.projetos.length === 1 ? 'projeto' : 'projetos'}</p>
 		</div>
 	</div>
 
