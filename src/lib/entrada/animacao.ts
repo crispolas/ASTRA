@@ -144,7 +144,7 @@ export function iniciarEntrada(root: HTMLElement, aoConcluir: () => Promise<void
     let seed = 4817;
     const random = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
     function resize() {
-      width = innerWidth; height = innerHeight;
+      width = innerWidth; height = innerHeight; previousMoon = '';
       const dpr = Math.min(devicePixelRatio || 1, 2);
       sky.width = Math.round(width*dpr); sky.height = Math.round(height*dpr);
       ctx.setTransform(dpr,0,0,dpr,0,0);
@@ -316,7 +316,7 @@ export function iniciarEntrada(root: HTMLElement, aoConcluir: () => Promise<void
       timers.forEach(clearTimeout);timers=[];selectedStars.clear();particles=[];
       root.classList.remove('entering','gathering','holding');
       moon.disabled=false;entering=false;stage='moon';hovered=false;
-      measureMoon();moon.focus({preventScroll:true});
+      measureMoon();moon.focus({preventScroll:true});if(reduced)retomar();
     }
     listen(window,'keydown',(e: KeyboardEvent)=>{
       if(e.key==='Escape'&&(stage==='gathering'||stage==='holding'))reset();

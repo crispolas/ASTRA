@@ -144,7 +144,7 @@ function pintar(t: number,forcar=false){if(!ctx||!fc)return;const parar=reduzir.
   for(const canvas of [fundo,efeitos]){canvas.width=W*dpr;canvas.height=H*dpr;contexto(canvas).setTransform(dpr,0,0,dpr,0,0);}
   ultimoDesenhoLua=-9999;pintar(performance.now(),true);
  }
- function loop(t:number){if(document.hidden||!visivel)return;pintar(t);frame=requestAnimationFrame(loop);}
+ function loop(t:number){if(document.hidden||!visivel)return;if(reduzir.matches){pintar(t,true);return;}pintar(t);frame=requestAnimationFrame(loop);}
  function reiniciar(){
   cancelAnimationFrame(frame);ultimo=performance.now();
   tempoPausaLua=reduzir.matches?Date.now():null;
