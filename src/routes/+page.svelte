@@ -1,4 +1,7 @@
 <script lang="ts">
+    import {flip} from 'svelte/animate';
+    import {fade} from 'svelte/transition';
+    import {entradaCartao,duracaoMovimento} from '../lib/visual/movimento';
     import { criarColecao } from '../lib/colecao.svelte';
     import Carregamento from '../lib/components/Carregamento.svelte';
     import ErroCarregamento from '../lib/components/ErroCarregamento.svelte';
@@ -53,10 +56,12 @@
             <p class="astra-muted estado-mensagem" role="status">Nenhuma tarefa encontrada com a busca e os filtros atuais.</p>
         {:else}
             <div class="astra-list lista-tarefas ov-grid">
-                {#each tarefasFiltradas as tarefa (tarefa.id)}
+                {#each tarefasFiltradas as tarefa,i (tarefa.id)}
+                    <div class="item-movimento" animate:flip={{duration:duracaoMovimento(220)}} in:entradaCartao={{indice:i}} out:fade={{duration:duracaoMovimento(160)}}>
                     <TarefaCard {tarefa}
                         onstatus={(nova) => colecao.itens = colecao.itens.map((t) => t.id === nova.id ? nova : t)}
                         onexcluir={(id) => colecao.itens = colecao.itens.filter((t) => t.id !== id)} />
+                    </div>
                 {/each}
             </div>
         {/if}

@@ -78,3 +78,9 @@ body.planetario-pausado .planetario .astra-orbita{animation-play-state:paused}
 .planetario .tarefa-card .seletor{width:fit-content;min-width:0;max-width:100%}
 .planetario .tarefa-card:focus-within{z-index:10}
 .planetario .ov-grid> .astra-orbita:focus-within,.planetario .cartao-wrapper:focus-within{z-index:12}
+/* Flutuação permanece no wrapper interno; entrada e FLIP usam o externo. */
+.planetario .item-movimento{min-width:0}
+.planetario .item-movimento>.astra-orbita{height:100%}
+.planetario .item-movimento:focus-within{z-index:15}
+.planetario .astra-orbita:hover .astra-card[data-orbital],.planetario .astra-orbita:focus-within .astra-card[data-orbital]{transform:perspective(1100px) translate3d(var(--tx,0px),calc(var(--ty,0px) - 3px),0) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg))}
+@media(prefers-reduced-motion:reduce){.planetario .astra-orbita:hover .astra-card[data-orbital],.planetario .astra-orbita:focus-within .astra-card[data-orbital]{transform:none}}

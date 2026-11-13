@@ -23,23 +23,35 @@ export function interacaoOrbital(node: HTMLElement, ativo = true) {
         node.toggleAttribute('data-orbital', ativo); limpar();
         const suporte = node.closest<HTMLElement>('.astra-orbita');
         if (suporte) {
-            const estilo = getComputedStyle(suporte);
-            const periodo = parseFloat(estilo.animationDuration) || 10;
-            const fase = [...(node.querySelector('h3')?.textContent ?? '')].reduce((a,c) => a + c.charCodeAt(0), 0) % 11;
-            suporte.style.animationDelay = `-${(Date.now() / 1000 + fase) % periodo}s`;
+            const item = node.closest<HTMLElement>('.ov-grid > *, .lista-cards > *');
+            const grupo = item?.parentElement;
+            let linha=0;
+            if(item&&grupo){
+                if(grupo.classList.contains('ov-grid')){
+                    const alturas=[...new Set(Array.from(grupo.children,e=>(e as HTMLElement).offsetTop))].sort((a,b)=>a-b);
+                    linha=alturas.indexOf(item.offsetTop);
+                }else linha=Array.from(grupo.children).indexOf(item);
+            }
+            suporte.style.animationDuration = '12s';
+            suporte.style.animationDirection = 'normal';
+            suporte.style.animationDelay = `-${(Date.now()/1000+Math.max(0,linha)*1.8)%12}s`;
+
         }
     }
 	node.addEventListener('pointermove', mover, { passive: true });
 	node.addEventListener('pointerleave', limpar);
 	reduzido.addEventListener('change', limpar);
 	configurar();
+    const grupo=node.closest('.ov-grid, .lista-cards');
+    const observador=new ResizeObserver(configurar);
+    if(grupo)observador.observe(grupo);
 	return {
 		update(valor: boolean) { ativo = valor; configurar(); },
 		destroy() {
 			node.removeEventListener('pointermove', mover);
 			node.removeEventListener('pointerleave', limpar);
 			reduzido.removeEventListener('change', limpar);
-			node.removeAttribute('data-orbital'); limpar(); removerLuz();
+			node.removeAttribute('data-orbital'); limpar(); removerLuz(); observador.disconnect();
 		}
 	};
 }

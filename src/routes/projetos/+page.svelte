@@ -1,4 +1,7 @@
 <script lang="ts">
+ import {flip} from 'svelte/animate';
+ import {fade} from 'svelte/transition';
+ import {entradaCartao,duracaoMovimento} from '../../lib/visual/movimento';
  import {untrack} from 'svelte';
  import {criarColecao} from '../../lib/colecao.svelte';
  import {listarProjetos} from '../../lib/api';
@@ -27,8 +30,9 @@
         <ErroCarregamento mensagem={colecao.erro} tentar={()=>colecao.carregar()} />
     {:else if colecao.itens && colecao.itens.length > 0}
 		<ul class="astra-list lista-projetos ov-grid">
-			{#each colecao.itens as projeto (projeto.id)}
-				<li class="astra-orbita">
+			{#each colecao.itens as projeto,i (projeto.id)}
+				<li class="item-movimento" animate:flip={{duration:duracaoMovimento(220)}} in:entradaCartao={{indice:i}} out:fade={{duration:duracaoMovimento(160)}}>
+                  <div class="astra-orbita">
 					<article class="astra-card card-projeto ov-organic" use:interacaoOrbital>
 
 					<h3>{projeto.nome}</h3>
@@ -37,6 +41,7 @@
 					{/if}
 					<a class="astra-pill" href="/projetos/{projeto.id}">Ver detalhes do projeto</a>
 					</article>
+                  </div>
 				</li>
 			{/each}
 		</ul>

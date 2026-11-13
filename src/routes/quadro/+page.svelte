@@ -1,6 +1,9 @@
 <script lang="ts">
 	import { onDestroy, onMount, tick, untrack } from 'svelte';
 	import { flip } from 'svelte/animate';
+ import {crossfade} from 'svelte/transition';
+ import {entradaCartao,duracaoMovimento} from '../../lib/visual/movimento';
+ const [enviar,receber]=crossfade({duration:()=>duracaoMovimento(240),fallback:(node)=>entradaCartao(node)});
 	import {criarColecao} from '../../lib/colecao.svelte';
  import Carregamento from '../../lib/components/Carregamento.svelte';
  import ErroCarregamento from '../../lib/components/ErroCarregamento.svelte';
@@ -159,6 +162,7 @@
                             inert={salvandoArraste === String(tarefa.id)}
                             aria-busy={salvandoArraste === String(tarefa.id)}
                             animate:flip={{ duration: reduzido ? 0 : 200 }}
+                            in:receber={{key:tarefa.id}} out:enviar={{key:tarefa.id}}
 							role="group"
 							aria-label={tarefa.titulo}
 
@@ -284,14 +288,14 @@
 	.cartao-wrapper { cursor:default; }
 	.cartao-wrapper.arrastando { opacity:.35; outline:1px dashed #ccd8ed; outline-offset:4px; border-radius:10px; }
 	.cartao-wrapper.salvando-arraste { opacity:.6; cursor:progress; }
-	.cartao-wrapper.chegada-arraste { animation:acomodar 280ms ease-out; }
+	.cartao-wrapper.chegada-arraste { opacity:1; }
 	.cartao-wrapper:global(.imagem-arraste) { background:#151515; border:1px solid #e7edf7; border-radius:10px; box-shadow:0 8px 28px #dceaff40; }
 	.cartao-wrapper:global(.imagem-arraste) :global(.astra-orbita),
 	.arraste-ativo :global(.astra-orbita) { animation-play-state:paused; }
 	.arraste-ativo :global(.astra-card[data-orbital]) { transform:none; }
 	.coluna.destino-arraste { outline:1px solid #dceaff; outline-offset:2px; box-shadow:0 0 30px #dceaff20,inset 0 0 25px #ffffff06; }
 	.aviso-arraste { margin:0; color:var(--astra-muted); font-size:14px; }
-	@keyframes acomodar { from { opacity:.65; transform:translateY(-8px) scale(.985); } to { opacity:1; transform:none; } }
+
 	@media(prefers-reduced-motion:reduce) { .cartao-wrapper.chegada-arraste { animation:none; } }
 	/* ------------------------------------- */
 
