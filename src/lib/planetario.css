@@ -99,3 +99,6 @@ body.planetario-pausado .planetario .astra-orbita{animation-play-state:paused}
 .planetario .alca-interna{position:absolute;right:8px;top:8px;z-index:2}
 .planetario .tarefa-card:has(.alca-interna) h3{padding-right:36px}
 @media(prefers-reduced-motion:reduce){.ov-shell.orbita-viva.planetario .astra-nav ul::before,.ov-shell.orbita-viva.planetario .astra-card[data-orbital]{transition:none}}
+/* Mobile: título do quadro cresce sem formar blocos gigantes. */
+.ov-shell.orbita-viva.planetario .quadro-pagina h1{font-size:clamp(28px,4vw,56px);text-wrap:balance}
+@media(max-width:760px){.ov-shell.orbita-viva.planetario .quadro-pagina>.astra-head{min-height:170px}.planetario .opcoes{max-width:calc(100vw - 32px)}.planetario .alca-interna{top:8px;right:8px}}
