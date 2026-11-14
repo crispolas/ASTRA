@@ -49,6 +49,6 @@ export function prepararNavegador() {
 		get page() { return page; },
 		get requisicoes() { return requisicoes; },
 		simularApi(responder) { responderApi = responder; },
-		async abrir(path) { return page.goto(`${baseUrl}${path}`, { waitUntil: 'networkidle' }); }
+		async abrir(path,waitUntil='networkidle') { return page.goto(`${baseUrl}${path}`, { waitUntil }); }
 	};
 }

@@ -105,6 +105,8 @@
 	}
 </script>
 
+<svelte:head><title>Quadro · ASTRA</title></svelte:head>
+
 <main class="astra-page quadro-pagina">
 	<div class="astra-head">
 		<div style="display:flex; flex-direction:column; gap:8px;">

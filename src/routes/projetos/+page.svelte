@@ -15,6 +15,8 @@
  const colecao=criarColecao<Projeto>(untrack(()=>data.projetos),listarProjetos,'os projetos');
 </script>
 
+<svelte:head><title>Projetos · ASTRA</title></svelte:head>
+
 <main class="astra-page">
 	<div class="astra-head">
 		<div style="display:flex; flex-direction:column; gap:8px;">

@@ -13,6 +13,8 @@
 	}
 </script>
 
+<svelte:head><title>Nova tarefa · ASTRA</title></svelte:head>
+
 <main class="astra-page">
 	<div class="astra-head">
 		<div style="display:flex; flex-direction:column; gap:8px;">

@@ -33,6 +33,8 @@
     );
 </script>
 
+<svelte:head><title>Tarefas · ASTRA</title></svelte:head>
+
 <main class="astra-page">
     <div class="astra-head">
         <div class="titulo-lista">

@@ -7,7 +7,7 @@ const app=prepararNavegador();
 test('entrada do domínio vai para /inicio e o clique na Lua abre a lista sem redirecionar em loop',async()=>{
  const regras=readFileSync(new URL('../static/_redirects',import.meta.url),'utf8').trim().split('\n').map(l=>l.trim().split(/\s+/));
  assert.deepEqual(regras[0],['/','/inicio','302!']);
- assert.deepEqual(regras[1],['/*','/index.html','200']);
+ assert.deepEqual(regras[1],['/*','/200.html','200']);
  // Simula a regra de hosting; o roteamento interno continua sendo do SvelteKit.
  await app.page.route('**/*',route=>{
   const req=route.request();
