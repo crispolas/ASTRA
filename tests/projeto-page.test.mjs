@@ -25,7 +25,8 @@ const tarefa = {
 test('/projetos/:id mostra os dados do projeto e um cartão por tarefa', async () => {
 	app.simularApi(() => Response.json({ ...projeto, tarefas: [tarefa, { ...tarefa, id: '8', titulo: 'Segunda tarefa' }] }));
 	const resposta = await app.abrir('/projetos/1');
-	await app.page.getByRole('heading', { level: 1, name: 'Detalhes do projeto', exact: true }).waitFor();
+	// O nome do projeto é o título da página.
+	await app.page.getByRole('heading', { level: 1, name: projeto.nome, exact: true }).waitFor();
 	assert.equal(resposta.status(), 200);
 	assert(app.requisicoes.some(url => new URL(url).pathname === '/projetos/1' && new URL(url).search === '?_embed=tarefas'));
 	const texto = await app.page.locator('main').innerText();
