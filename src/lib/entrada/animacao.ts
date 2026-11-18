@@ -2,7 +2,7 @@ import { caminhosConstelacao as letterPaths } from './constelacao';
 
 type Ponto = { x: number; y: number };
 type NoConstelacao = Ponto & { letter: number };
-type Particula = { node: NoConstelacao; sx: number; sy: number; bx: number; by: number; delay: number; duration: number; bend: number };
+type Particula = { node: NoConstelacao; sx: number; sy: number; bx: number; by: number; delay: number; duration: number; bend: number; saida: number };
 type Estrela = Ponto & {
   id: number; drawX?: number; drawY?: number; offsetX: number; offsetY: number;
   velocityX: number; velocityY: number; vx: number; vy: number; size: number;
@@ -47,7 +47,6 @@ export function iniciarEntrada(root: HTMLElement, aoConcluir: () => Promise<void
       for(let i=1;i<indices.length;i++)connections.push([indices[i-1],indices[i]]);
     });
     const clamp=(n: number)=>Math.max(0,Math.min(1,n));
-    const ease=(n: number)=>n<.5?4*n*n*n:1-Math.pow(-2*n+2,3)/2;
     function targetPosition(node: Ponto){
       const w=Math.min(980,width*.9);
       return {x:(width-w)/2+node.x*w/1200,y:(height-w/4)/2+node.y*w/1200};
@@ -59,6 +58,35 @@ export function iniciarEntrada(root: HTMLElement, aoConcluir: () => Promise<void
       const push=Math.min(width,height)*.38+40;
       return {x:x+dx/distance*push,y:y+dy/distance*push};
     }
+    /** Empurrão das estrelas do nome: direção desviada e distância própria para cada uma. */
+    function empurrao(x: number,y: number){
+      const dx=x-orbitCenter.x,dy=y-orbitCenter.y;
+      const ang=Math.atan2(dy,dx)+(Math.random()-.5)*1.5;
+      const alcance=(Math.min(width,height)*.38+40)*(.35+Math.random()*.9);
+      return {x:x+Math.cos(ang)*alcance,y:y+Math.sin(ang)*alcance};
+    }
+    /** Chegada como mola amortecida: passa um pouco do ponto e assenta. */
+    const fimDaMola=1-Math.exp(-5.5)*Math.cos(6.2);
+    const mola=(o: number)=>o<=0?0:o>=1?1:1-Math.exp(-5.5*o)*Math.cos(6.2*o)+o*(1-fimDaMola);
+    /** Estrelas do fundo no clique: cada uma se afasta com distância, direção, giro e ritmo próprios
+     * e volta com uma leve sobra antes de assentar. Valores fixos por estrela (dependem só do id). */
+    function acaso(id: number,k: number){const v=Math.sin((id+1)*(12.9898+k*7.233))*43758.5453;return v-Math.floor(v);}
+    function dispersar(s: Estrela,x: number,y: number,ms: number){
+      const r=(k: number)=>acaso(s.id,k);
+      const dx=x-orbitCenter.x,dy=y-orbitCenter.y;
+      const alcance=(Math.min(width,height)*.38+40)*(.08+r(1)*.3);
+      const direcao=Math.atan2(dy,dx)+(r(2)-.5)*1.3,giro=(r(3)-.5)*1.8;
+      const atraso=r(4)*280,ida=480+r(5)*820,pausa=250+r(6)*900,volta=1100+r(7)*1700;
+      const t=ms-atraso;
+      if(t<=0)return {x,y};
+      let a: number;
+      if(t<ida)a=1-Math.pow(1-t/ida,4);
+      else if(t<ida+pausa)a=1;
+      else {const u=Math.min(1,(t-ida-pausa)/volta);a=Math.exp(-u*3.6)*Math.cos(u*Math.PI*1.35)*(1-u);}
+      const ang=direcao+giro*Math.min(1,t/(ida+pausa))*.6;
+      const tremor=Math.sin(ms/(220+r(8)*160)+r(9)*6.28)*7*Math.abs(a);
+      return {x:x+Math.cos(ang)*alcance*a-Math.sin(ang)*tremor,y:y+Math.sin(ang)*alcance*a+Math.cos(ang)*tremor};
+    }
     function blastPulse(elapsed: number){
       if(reduced)return 0;
       if(elapsed<burstDuration)return 1-Math.pow(1-clamp(elapsed/burstDuration),3);
@@ -67,7 +95,6 @@ export function iniciarEntrada(root: HTMLElement, aoConcluir: () => Promise<void
     }
     function prepareFormation(){
       selectedStars.clear();
-      const order=[0,0,0,0,0];
       particles=constellationNodes.map((node,i)=>{
         const dest=targetPosition(node);
         const candidates=stars.filter(star=>!selectedStars.has(star.id));
@@ -76,21 +103,26 @@ export function iniciarEntrada(root: HTMLElement, aoConcluir: () => Promise<void
         const pool=visible.length?visible:candidates;
         pool.sort((a,b)=>Math.hypot(point(a).x-dest.x,point(a).y-dest.y)-Math.hypot(point(b).x-dest.x,point(b).y-dest.y));
         const source=pool[0];selectedStars.add(source.id);
-        const start=point(source),outward=burstPoint(start.x,start.y);
+        // A lua é feita de estrelas: as do nome saem de um ponto qualquer do disco dela.
+        const ang=Math.random()*Math.PI*2,dist=moonRadius*.85*Math.sqrt(Math.random());
+        const start={x:orbitCenter.x+Math.cos(ang)*dist,y:orbitCenter.y+Math.sin(ang)*dist};
+        const outward=empurrao(start.x,start.y);
+        // Sem fila por letra: cada estrela parte quando quer (só uma leve tendência da esquerda para a direita).
         return {node,sx:start.x/width,sy:start.y/height,bx:outward.x/width,by:outward.y/height,
-          delay:node.letter*540+order[node.letter]++*38,
-          duration:1350+(i%3)*100,bend:(i%2?1:-1)*(.06+(i%4)*.018)};
+          delay:node.letter*110+Math.random()*1500,
+          duration:1300+Math.random()*1100,bend:(Math.random()-.5)*.7,
+          saida:520+Math.random()*330};
       });
       return returnStart+Math.max(...particles.map(p=>p.delay+p.duration))+500;
     }
     function particlePosition(p: Particula,elapsed: number){
       const sx=p.sx*width,sy=p.sy*height,bx=p.bx*width,by=p.by*height;
       if(!reduced&&elapsed<returnStart){
-        const blast=1-Math.pow(1-clamp(elapsed/burstDuration),3);
-        return {x:sx+(bx-sx)*blast,y:sy+(by-sy)*blast,progress:0,moving:elapsed<burstDuration};
+        const blast=1-Math.pow(1-clamp(elapsed/p.saida),3);
+        return {x:sx+(bx-sx)*blast,y:sy+(by-sy)*blast,progress:0,moving:blast>0&&blast<1};
       }
       const progress=reduced?1:clamp((elapsed-returnStart-p.delay)/p.duration);
-      const e=ease(progress),target=targetPosition(p.node);
+      const e=reduced?1:mola(progress),target=targetPosition(p.node);
       const cx=(bx+target.x)/2+(target.y-by)*p.bend;
       const cy=(by+target.y)/2-(target.x-bx)*p.bend;
       return {x:(1-e)*(1-e)*bx+2*(1-e)*e*cx+e*e*target.x,
@@ -116,10 +148,10 @@ export function iniciarEntrada(root: HTMLElement, aoConcluir: () => Promise<void
           gradient.addColorStop(0,'rgba(154,216,245,0)');gradient.addColorStop(1,'rgba(154,216,245,.45)');
           ctx.strokeStyle=gradient;ctx.beginPath();ctx.moveTo(tail.x,tail.y);ctx.lineTo(point.x,point.y);ctx.stroke();
         }
-        ctx.shadowColor='#a9dfff';ctx.shadowBlur=point.progress>.85?14:7;
-        ctx.fillStyle=`rgba(230,247,255,${.55+point.progress*.45})`;
+        ctx.shadowColor='#a9dfff';ctx.shadowBlur=point.progress>.85?14:12;
+        ctx.fillStyle=`rgba(236,250,255,${.92+point.progress*.08})`;
         const finalRadius=(i%4===0?4.6:2.8)*Math.min(980,width*.9)/1200;
-        ctx.beginPath();ctx.arc(point.x,point.y,1.1+point.progress*Math.max(.4,finalRadius-1.1),0,Math.PI*2);ctx.fill();
+        ctx.beginPath();ctx.arc(point.x,point.y,2+point.progress*Math.max(.3,finalRadius-2),0,Math.PI*2);ctx.fill();
         if(point.progress>.9&&i%4===0){
           ctx.shadowBlur=0;ctx.strokeStyle='rgba(190,225,255,.35)';
           ctx.beginPath();ctx.moveTo(point.x-6,point.y);ctx.lineTo(point.x+6,point.y);ctx.moveTo(point.x,point.y-6);ctx.lineTo(point.x,point.y+6);ctx.stroke();
@@ -134,6 +166,8 @@ export function iniciarEntrada(root: HTMLElement, aoConcluir: () => Promise<void
     let stars: Estrela[] = [];
     const pointer = { x:-9999, y:-9999 };
     let hovered = false, focus = false, rotation = 0, scale = 1;
+    // A lua gira um pouco na direção do mouse (giro horizontal e inclinação vertical, suavizados).
+    const olhar = { giro: 0, inclinacao: 0 };
     let orbitCenter = { x:0, y:0 }, lastPaint = -1000;
     let lastTime = 0, previousMoon = '', entering = false;
     let stage = 'moon', formationStart = 0;
@@ -256,9 +290,10 @@ export function iniciarEntrada(root: HTMLElement, aoConcluir: () => Promise<void
         const alpha=Math.min(1,Math.max(.05,(s.alpha+twinkle+s.glow*.85)*depth));
                 let viewX=s.drawX,viewY=s.drawY;
         if(entering){
-          const blast=blastPulse(time-formationStart);
-          const pushed=burstPoint(viewX,viewY);
-          viewX+=(pushed.x-viewX)*blast;viewY+=(pushed.y-viewY)*blast;
+          if(reduced){
+            const blast=blastPulse(time-formationStart),pushed=burstPoint(viewX,viewY);
+            viewX+=(pushed.x-viewX)*blast;viewY+=(pushed.y-viewY)*blast;
+          } else ({x:viewX,y:viewY}=dispersar(s,viewX,viewY,time-formationStart));
         }
         const x=Math.round(viewX),y=Math.round(viewY);
         const rgb=s.tint>.7?'183,174,224':'165,212,220';
@@ -282,8 +317,12 @@ export function iniciarEntrada(root: HTMLElement, aoConcluir: () => Promise<void
       if(!reduced&&!entering)rotation=(rotation+dt*.22)%(Math.PI*2);
       scale+=((active&&!reduced?1.085:1)-scale)*easing;
       moon.style.transform=`scale(${scale})`;
-      const key=rotation.toFixed(4);
-      if(key!==previousMoon){drawMoon(-.08,rotation);previousMoon=key;}
+      if(!reduced&&!entering&&pointer.x>-9000){
+        olhar.giro+=((pointer.x/width-.5)*.9-olhar.giro)*.035;
+        olhar.inclinacao+=((pointer.y/height-.5)*.5-olhar.inclinacao)*.035;
+      }
+      const key=`${rotation.toFixed(4)}|${olhar.giro.toFixed(3)}|${olhar.inclinacao.toFixed(3)}`;
+      if(key!==previousMoon){drawMoon(-.08+olhar.inclinacao,rotation+olhar.giro);previousMoon=key;}
       if(stage==='gathering'||stage==='holding')drawGathering(time-formationStart);
       if(!reduced)raf=requestAnimationFrame(frame);
     }
@@ -296,12 +335,79 @@ export function iniciarEntrada(root: HTMLElement, aoConcluir: () => Promise<void
     const observador=new IntersectionObserver(entradas=>{visivel=entradas.some(e=>e.isIntersecting);retomar();});
     observador.observe(root);
     function later(action: () => void | Promise<void>,delay: number){timers.push(setTimeout(action,delay));}
+    /**
+     * A lua é feita de estrelas: no clique, cada caractere dela se solta no mesmo instante e voa para um lado.
+     * Uns somem logo (no meio do movimento ninguém percebe), uns saem da tela e uns perdem velocidade e ficam pelo céu.
+     * Desenha numa camada própria por cima da cena; a lua original some no mesmo quadro (classe lua-desmanchada).
+     */
+    let camadaLua: HTMLCanvasElement | null = null, quadroLua = 0;
+    function desmancharLua(){
+      const caixa=lunar.getBoundingClientRect();
+      if(!caixa.width)return;
+      const dpr=Math.min(devicePixelRatio||1,2);
+      const camada=document.createElement('canvas');
+      camada.className='lua-solta';camada.setAttribute('aria-hidden','true');
+      camada.width=Math.round(width*dpr);camada.height=Math.round(height*dpr);
+      const c=contexto(camada);c.setTransform(dpr,0,0,dpr,0,0);
+      // Cópia parada da lua: cada partícula é um recorte dela.
+      const copia=document.createElement('canvas');copia.width=lunar.width;copia.height=lunar.height;
+      const cc=contexto(copia);cc.drawImage(lunar,0,0);
+      const dados=cc.getImageData(0,0,copia.width,copia.height).data;
+      const celula=lunar.width/64,escala=caixa.width/lunar.width;
+      const cx=caixa.left+caixa.width/2,cy=caixa.top+caixa.height/2,raio=caixa.width/2,longe=Math.hypot(width,height);
+      type Pedaco={sx:number;sy:number;x:number;y:number;w:number;destino:number;vx:number;vy:number;freio:number;apaga:number;fase:number;brilho:number};
+      let pedacos: Pedaco[]=[];
+      for(let gy=0;gy<lunar.height;gy+=celula)for(let gx=0;gx<lunar.width;gx+=celula){
+        const px=Math.min(lunar.width-1,Math.round(gx+celula/2)),py=Math.min(lunar.height-1,Math.round(gy+celula/2));
+        let alfa=0;for(let k=-2;k<=2;k+=2)alfa=Math.max(alfa,dados[((py+k)*lunar.width+px+k)*4+3]||0);
+        if(alfa<12)continue;
+        const x=caixa.left+gx*escala,y=caixa.top+gy*escala,w=celula*escala;
+        const dx=x+w/2-cx,dy=y+w/2-cy,d=Math.hypot(dx,dy)||1;
+        const ang=Math.atan2(dy,dx)+(Math.random()-.5)*1.1,sorte=Math.random();
+        // 0 = some logo, 1 = sai da tela, 2 = fica pelo céu
+        const destino=sorte<.45?0:sorte<.82?1:2;
+        const velocidade=destino===1?longe*(.55+Math.random()*.7):destino===2?180+Math.random()*900:(60+Math.random()*420)*(.6+d/raio*.6);
+        pedacos.push({sx:gx,sy:gy,x,y,w,destino,vx:Math.cos(ang)*velocidade,vy:Math.sin(ang)*velocidade,
+          freio:destino===1?.35+Math.random()*.4:destino===2?1+Math.random()*.9:1.6+Math.random()*1.6,
+          apaga:destino===0?.12+Math.random()*.7:0,fase:Math.random()*6.28,brilho:.2+Math.random()*.4});
+      }
+      root.append(camada);camadaLua=camada;root.classList.add('lua-desmanchada');
+      const inicio=performance.now();
+      const desenhar=(agora: number)=>{
+        quadroLua=0;
+        if(disposed||camadaLua!==camada)return;
+        const t=(agora-inicio)/1000;
+        c.clearRect(0,0,width,height);
+        const vivos: Pedaco[]=[];
+        for(const p of pedacos){
+          // Sai rápido e vai perdendo velocidade (freio exponencial).
+          const andou=(1-Math.exp(-p.freio*t))/p.freio;
+          let X=p.x+p.vx*andou,Y=p.y+p.vy*andou,a=1;
+          if(p.destino===0){a=1-clamp((t-p.apaga)/.45);if(a<=0)continue;}
+          else if(p.destino===1){if(X< -40||Y< -40||X>width+40||Y>height+40)continue;}
+          else {
+            // Os que ficam flutuam devagar e cintilam.
+            X+=Math.sin(p.fase+t*.6)*4*Math.min(1,t/2);Y+=Math.cos(p.fase+t*.5)*3*Math.min(1,t/2);
+            a=1-Math.min(1,t/1.6)*(1-p.brilho*(.75+.25*Math.sin(p.fase+t*2.2)));
+          }
+          vivos.push(p);c.globalAlpha=a;c.drawImage(copia,p.sx,p.sy,celula,celula,X,Y,p.w,p.w);
+        }
+        pedacos=vivos;c.globalAlpha=1;
+        if(!document.hidden)quadroLua=requestAnimationFrame(desenhar);
+      };
+      desenhar(inicio);
+    }
+    function desfazerDesmanche(){
+      cancelAnimationFrame(quadroLua);quadroLua=0;
+      camadaLua?.remove();camadaLua=null;root.classList.remove('lua-desmanchada');
+    }
     listen(moon,'click',()=>{
       if(entering||disposed)return;
       reduced=motionQuery.matches;
       const duration=reduced?0:prepareFormation();
       if(reduced)prepareFormation();
       formationStart=performance.now();entering=true;stage='gathering';moon.disabled=true;
+      if(!reduced)desmancharLua();
       root.classList.add('entering','gathering');if(reduced)frame(performance.now(),true);
       later(()=>{
         stage='holding';root.classList.remove('gathering');root.classList.add('holding');
@@ -314,6 +420,7 @@ export function iniciarEntrada(root: HTMLElement, aoConcluir: () => Promise<void
     });
     function reset(){
       timers.forEach(clearTimeout);timers=[];selectedStars.clear();particles=[];
+      desfazerDesmanche();
       root.classList.remove('entering','gathering','holding');
       moon.disabled=false;entering=false;stage='moon';hovered=false;
       measureMoon();moon.focus({preventScroll:true});if(reduced)retomar();
@@ -323,7 +430,7 @@ export function iniciarEntrada(root: HTMLElement, aoConcluir: () => Promise<void
     });
     retomar();
     return () => {
-      disposed=true;observador.disconnect();
+      disposed=true;observador.disconnect();desfazerDesmanche();
       cancelAnimationFrame(raf);
       timers.forEach(clearTimeout);
       controller.abort();

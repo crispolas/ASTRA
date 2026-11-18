@@ -11,7 +11,8 @@
 			destino = { x: box.left, y: box.top, largura: box.width };
 		}
 		const reduzido = matchMedia('(prefers-reduced-motion: reduce)').matches;
-		const timer = setTimeout(() => transicaoEntrada.set('oculta'), reduzido ? 0 : 1100);
+		// Some só depois que o preto dissolveu e a marca chegou ao canto.
+		const timer = setTimeout(() => transicaoEntrada.set('oculta'), reduzido ? 0 : 2100);
 		return () => clearTimeout(timer);
 	});
 </script>
@@ -31,8 +32,12 @@
 
 <style>
 	.transicao { position: fixed; inset: 0; z-index: 1000; pointer-events: auto; }
-	.fundo { position: absolute; inset: 0; background: #000; transition: opacity 700ms ease; }
-	.revelando .fundo { opacity: 0; }
-	.marca { position: fixed; transition: left 950ms cubic-bezier(.65,0,.2,1), top 950ms cubic-bezier(.65,0,.2,1), width 950ms cubic-bezier(.65,0,.2,1), transform 950ms cubic-bezier(.65,0,.2,1); }
-	@media (prefers-reduced-motion: reduce) { .fundo, .marca { transition: none; } }
+	/* Entrada: o preto e a marca nascem transparentes e escurecem por cima do ASTRA desenhado no céu, sem corte. */
+	.fundo { position: absolute; inset: 0; background: #000; transition: opacity 480ms ease-out; }
+	.marca { position: fixed; transition: opacity 480ms ease-out; }
+	@starting-style { .fundo, .marca { opacity: 0; } }
+	/* Saída: a marca desliza para o canto com mola enquanto o preto dissolve devagar, começando um pouco depois. */
+	.revelando .fundo { opacity: 0; transition: opacity 1600ms cubic-bezier(.55,0,.35,1) 150ms; }
+	.revelando .marca { transition: opacity 480ms ease-out, left 1350ms cubic-bezier(.22,1,.36,1), top 1350ms cubic-bezier(.22,1,.36,1), width 1350ms cubic-bezier(.22,1,.36,1), transform 1350ms cubic-bezier(.22,1,.36,1); }
+	@media (prefers-reduced-motion: reduce) { .fundo, .marca, .revelando .fundo, .revelando .marca { transition: none; } }
 </style>
