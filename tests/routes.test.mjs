@@ -15,11 +15,12 @@ for (const [path, heading, subheading] of [
 	});
 }
 
-test('/tarefas/1 exibe os dados da tarefa e o link Voltar', async () => {
+test('/tarefas/1 exibe os dados da tarefa e o botão de fechar', async () => {
 	const resposta = await app.abrir('/tarefas/1');
 	await app.page.getByRole('heading', { level: 1, name: 'Criar o repositório', exact: true }).waitFor();
 	assert.equal(resposta.status(), 200);
-	assert.equal(await app.page.getByRole('link', { name: /Voltar/ }).count(), 1);
+	assert.equal(await app.page.getByRole('link', { name: 'Fechar', exact: true }).count(), 1);
+	assert.equal(await app.page.getByRole('link', { name: 'Editar tarefa', exact: true }).count(), 1);
 });
 
 test('uma URL desconhecida mostra a página de erro personalizada', async () => {
