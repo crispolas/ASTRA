@@ -1,0 +1,227 @@
+/* Observatório: última camada visual, carregada depois de planetario.css.
+   Preto neutro, luz do planeta nos cartões, fichas de canto reto e movimento fluido.
+   Regra de forma: o que guarda conteúdo ou recebe digitação é reto (cartões, colunas, campos);
+   o que se aperta é redondo (botões). Os destaques vêm das estrelas do fundo.
+   Como planetario.css, sobrepõe regras das camadas anteriores; por isso usa a mesma cadeia
+   .ov-shell.orbita-viva.planetario e, onde as camadas de baixo já usam !important, também usa. */
+/* Fontes Funnel Display e Funnel Sans: carregadas em app.html (um @import aqui seria ignorado no CSS juntado do build). */
+
+:root {
+	--obs-fundo: #07080a; --obs-painel: #0d0e12; --obs-painel-2: #14161b;
+	--obs-tinta: #eef1f5; --obs-tinta-2: #a9b0bb; --obs-tinta-3: #737a86;
+	--obs-fio: rgba(220, 230, 255, .13); --obs-fio-forte: rgba(220, 230, 255, .3);
+	--obs-gelo: #cfe0ff;
+	--obs-estrela-quente: #ff9466; --obs-estrela-azul: #8fc6ff; --obs-estrela-agua: #6fe0cc; --obs-lilas: #c9b8ff;
+	--obs-perigo: #ff6b6b;
+	--obs-titulo: 'Funnel Display', Arial, sans-serif;
+	--obs-ui: 'Funnel Sans', Arial, sans-serif;
+	--obs-mola: cubic-bezier(.22, 1.2, .36, 1);
+	--obs-suave: cubic-bezier(.4, 0, .2, 1);
+	--astra-font: var(--obs-ui);
+	color-scheme: dark;
+}
+html, body { background: var(--obs-fundo); color: var(--obs-tinta); }
+::selection { background: var(--obs-gelo); color: var(--obs-fundo); }
+
+/* granulado leve e parado por cima de tudo (o elemento .grao fica no layout) */
+.grao { position: fixed; inset: 0; z-index: 200; pointer-events: none; opacity: .08; animation: acender-grao 1.4s ease both;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1.6 -.35'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E"); }
+@keyframes acender-grao { from { opacity: 0; } }
+
+/* ---------- base ---------- */
+.ov-shell.orbita-viva.planetario { background: transparent !important; font-family: var(--obs-ui); }
+.ov-shell.orbita-viva.planetario .cabecalho.astra-page { height: auto !important; min-height: 0 !important; padding-top: 30px !important; padding-bottom: 0 !important; }
+.ov-shell.orbita-viva.planetario main.astra-page { padding-top: clamp(28px, 5vh, 56px) !important; padding-bottom: 96px; gap: 28px !important; }
+
+/* menu: só texto e uma estrela que desliza até a aba ativa (--ponto-x vem do layout) */
+.planetario .astra-nav::after, .planetario .astra-nav ul::after { display: none !important; }
+.ov-shell.orbita-viva.planetario .astra-nav { background: none !important; border: 0 !important; box-shadow: none !important; padding: 0 !important; width: min(460px, 100% - 48px) !important; top: 40px !important; }
+.ov-shell.orbita-viva.planetario .astra-nav a { font: 500 15px/1.3 var(--obs-ui) !important; letter-spacing: 0; color: var(--obs-tinta-3) !important; min-height: 40px !important; background: none !important; box-shadow: none !important; border: 0 !important; transition: color .3s; }
+.ov-shell.orbita-viva.planetario .astra-nav a:hover { color: var(--obs-tinta-2) !important; }
+.ov-shell.orbita-viva.planetario .astra-nav a[aria-current=page] { color: var(--obs-tinta) !important; }
+.ov-shell.orbita-viva.planetario .astra-nav ul::before { width: 5px !important; height: 5px !important; border-radius: 50% !important; top: auto !important; bottom: -4px; background: var(--obs-tinta) !important;
+	box-shadow: 0 0 6px 1px rgba(207, 224, 255, .9), 0 0 18px 4px rgba(143, 198, 255, .35);
+	left: calc(var(--ponto-x, 14.2857%) - 2.5px) !important; transition: left .7s var(--obs-mola) !important; }
+
+/* ---------- título ---------- */
+.ov-shell.orbita-viva.planetario .campo-perspectiva:not(:has(.plano-rota[aria-busy=true])) { perspective: none !important; z-index: auto !important; }
+.ov-shell.orbita-viva.planetario .astra-page > .astra-head { min-height: 0 !important; flex-direction: row !important; align-items: flex-end !important; justify-content: space-between !important; gap: 20px !important; }
+.ov-shell.orbita-viva.planetario .astra-page > .astra-head > div { background: none !important; }
+/* título quieto: o planeta é o protagonista da faixa de cima */
+.ov-shell.orbita-viva.planetario h1 { font: 300 clamp(34px, 3.6vw, 50px)/1.05 var(--obs-titulo) !important; letter-spacing: -.025em !important; text-transform: none; color: var(--obs-tinta) !important; text-wrap: balance; margin: 0; }
+/* o layout foca o título ao trocar de página; o retângulo de foco aparecia sem o usuário ter usado o teclado */
+.ov-shell.orbita-viva.planetario h1:is(:focus, :focus-visible) { outline: none !important; }
+/* o rótulo acima do título e o contador repetiam o que o menu e a própria lista já dizem */
+.ov-shell.orbita-viva.planetario .astra-eyebrow,
+.ov-shell.orbita-viva.planetario .ov-count { display: none !important; }
+
+/* ---------- botões e campos ---------- */
+.ov-shell.orbita-viva.planetario :is(.astra-btn, .astra-pill) { border-radius: 999px !important; font: 600 14px/1 var(--obs-ui) !important; letter-spacing: .01em;
+	min-height: 46px; padding: 0 24px !important; display: inline-flex; align-items: center; justify-content: center; gap: 10px; text-decoration: none;
+	transition: transform .35s var(--obs-mola), background-color .25s, color .25s, border-color .25s, box-shadow .35s; }
+.ov-shell.orbita-viva.planetario .astra-btn { background: var(--obs-tinta) !important; color: var(--obs-fundo) !important; border: 1px solid var(--obs-tinta) !important; }
+.ov-shell.orbita-viva.planetario .astra-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(207, 224, 255, .18) !important; }
+.ov-shell.orbita-viva.planetario a.astra-btn[href^="/tarefas/nova"]::before { content: '+'; font-size: 19px; font-weight: 400; line-height: 0; transition: transform .45s var(--obs-mola); }
+.ov-shell.orbita-viva.planetario a.astra-btn[href^="/tarefas/nova"]:hover::before { transform: rotate(90deg); }
+.ov-shell.orbita-viva.planetario .astra-pill { background: rgba(13, 14, 18, .7) !important; color: var(--obs-tinta) !important; border: 1px solid var(--obs-fio-forte) !important; }
+.ov-shell.orbita-viva.planetario .astra-pill:hover { border-color: var(--obs-tinta-2) !important; }
+
+.ov-shell.orbita-viva.planetario :is(.astra-input, .astra-select, .astra-textarea, .gatilho) { border-radius: 0 !important; background: rgba(13, 14, 18, .82) !important;
+	border: 1px solid var(--obs-fio-forte) !important; font: 400 15px/1.4 var(--obs-ui) !important; color: var(--obs-tinta) !important; box-shadow: none !important; transition: border-color .25s, box-shadow .35s; }
+.ov-shell.orbita-viva.planetario :is(.astra-input, .astra-select, .astra-textarea, .gatilho):hover { border-color: var(--obs-tinta-3) !important; }
+.ov-shell.orbita-viva.planetario :is(.astra-input, .astra-select, .astra-textarea):focus,
+.ov-shell.orbita-viva.planetario .gatilho[aria-expanded=true] { border-color: var(--obs-gelo) !important; box-shadow: 0 0 0 4px rgba(207, 224, 255, .08) !important; }
+/* a borda clara já mostra o foco do campo; sem o retângulo extra por fora */
+.ov-shell.orbita-viva.planetario :is(.astra-input, .astra-textarea):focus-visible { outline: none !important; }
+.ov-shell.orbita-viva.planetario .gatilho span { white-space: nowrap; }
+/* seta desenhada em CSS: o caractere ⌄ ficava torto e fora do centro */
+.ov-shell.orbita-viva.planetario .gatilho .seta { font-size: 0 !important; width: 7px; height: 7px; flex: none; border-right: 1.5px solid var(--obs-tinta-2); border-bottom: 1.5px solid var(--obs-tinta-2);
+	transform: translateY(-2px) rotate(45deg); transition: transform .35s var(--obs-mola); }
+.ov-shell.orbita-viva.planetario .gatilho[aria-expanded=true] .seta { transform: translateY(2px) rotate(225deg); }
+/* filtros: mesma altura em tudo e lupa na busca (os rótulos ficam só para leitores de tela, no Filtros.svelte) */
+.ov-shell.orbita-viva.planetario .astra-filters { align-items: end !important; border: 0 !important; padding: 0 !important; }
+.ov-shell.orbita-viva.planetario .astra-filters :is(.astra-input, .gatilho) { height: 44px !important; min-height: 44px !important; padding-block: 0 !important; }
+.ov-shell.orbita-viva.planetario .astra-filters .astra-input { padding-left: 42px !important;
+	background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23a9b0bb' stroke-width='1.5'%3E%3Ccircle cx='7' cy='7' r='5.25'/%3E%3Cpath d='m11 11 3.5 3.5'/%3E%3C/svg%3E") 15px 50%/16px no-repeat, rgba(13, 14, 18, .82) !important; }
+.ov-shell.orbita-viva.planetario :is(label, dt) { font: 600 11px/1.4 var(--obs-ui) !important; letter-spacing: .12em !important; text-transform: uppercase; color: var(--obs-tinta-3) !important; }
+.ov-shell.orbita-viva.planetario .opcoes { border-radius: 0 !important; background: var(--obs-painel-2) !important; border: 1px solid var(--obs-fio-forte) !important; padding: 6px !important; transform-origin: top; animation: abrir-opcoes .28s var(--obs-mola); }
+@keyframes abrir-opcoes { from { opacity: 0; transform: translateY(-6px) scaleY(.92); } }
+.ov-shell.orbita-viva.planetario [role=option] { border-radius: 0 !important; font: 400 14px/1.4 var(--obs-ui) !important; color: var(--obs-tinta-2) !important; }
+.ov-shell.orbita-viva.planetario [role=option].ativa { background: rgba(207, 224, 255, .08) !important; color: var(--obs-tinta) !important; }
+.ov-shell.orbita-viva.planetario [role=option][aria-selected=true] { color: var(--obs-tinta) !important; font-weight: 600 !important; }
+
+/* ---------- cartões: fichas de canto reto ---------- */
+.ov-shell.orbita-viva.planetario .astra-card { border-radius: 0 !important; border: 1px solid var(--obs-fio) !important; box-shadow: none !important;
+	background:
+		linear-gradient(var(--obs-tinta-2), var(--obs-tinta-2)) top left/10px 1px no-repeat,
+		linear-gradient(var(--obs-tinta-2), var(--obs-tinta-2)) top left/1px 10px no-repeat,
+		linear-gradient(var(--obs-tinta-2), var(--obs-tinta-2)) bottom right/10px 1px no-repeat,
+		linear-gradient(var(--obs-tinta-2), var(--obs-tinta-2)) bottom right/1px 10px no-repeat,
+		rgba(12, 13, 17, .8) !important;
+	transition: border-color .35s; }
+/* borda e brilho do mouse seguem o mesmo valor suavizado (--brilho, de 0 a 1, em interacao.ts): sem saltos ao entrar ou sair */
+.ov-shell.orbita-viva.planetario .astra-card[data-orbital],
+.ov-shell.orbita-viva.planetario .astra-card[data-orbital]:is(:hover, :focus-within) { border-color: rgba(220, 230, 255, calc(.13 + .2 * var(--brilho, 0))) !important; }
+.ov-shell.orbita-viva.planetario .astra-card[data-orbital]::after { display: block !important; opacity: var(--brilho, 0) !important; transition: none !important;
+	background: radial-gradient(ellipse 500px 250px at var(--brilho-x, 50%) var(--brilho-y, 50%), rgba(255, 255, 255, .1), transparent 72%) !important; }
+/* luz do planeta: as variáveis --luz-* já chegam suavizadas (iluminacao.ts) */
+.ov-shell.orbita-viva.planetario .astra-card[data-orbital]::before { opacity: var(--luz-intensidade, 0) !important; transition: none !important; }
+.ov-shell.orbita-viva.planetario .astra-card :is(h2, h3) { font: 500 25px/1.12 var(--obs-titulo) !important; letter-spacing: -.01em !important; text-wrap: balance; color: var(--obs-tinta) !important; }
+.ov-shell.orbita-viva.planetario .astra-card :is(h2, h3) a { color: inherit !important; text-decoration: none; transition: color .25s; }
+.ov-shell.orbita-viva.planetario .astra-card :is(h2, h3) a:hover { color: var(--obs-gelo) !important; }
+.ov-shell.orbita-viva.planetario .astra-card .astra-muted { font: 400 14.5px/1.55 var(--obs-ui) !important; color: var(--obs-tinta-2) !important; }
+.ov-shell.orbita-viva.planetario .astra-card dd { font: 500 14px/1.4 var(--obs-ui) !important; color: var(--obs-tinta) !important; font-variant-numeric: tabular-nums; }
+.ov-shell.orbita-viva.planetario .astra-card time { font: inherit !important; }
+.ov-shell.orbita-viva.planetario .selo-prioridade { border-radius: 999px !important; background: none !important; border: 1px solid currentColor !important; font: 600 12px/1 var(--obs-ui) !important; padding: 6px 11px 6px 9px !important; display: inline-flex !important; align-items: center; gap: 7px; box-shadow: none !important; }
+.ov-shell.orbita-viva.planetario .selo-prioridade::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: currentColor; box-shadow: 0 0 10px currentColor; }
+.ov-shell.orbita-viva.planetario .selo-prioridade.prioridade--alta { color: var(--obs-estrela-quente) !important; }
+.ov-shell.orbita-viva.planetario .selo-prioridade.prioridade--media { color: var(--obs-estrela-azul) !important; }
+.ov-shell.orbita-viva.planetario .selo-prioridade.prioridade--baixa { color: var(--obs-estrela-agua) !important; }
+.ov-shell.orbita-viva.planetario .astra-tag { border-radius: 999px !important; font: 600 12px/1 var(--obs-ui) !important; padding: 6px 11px !important; }
+
+/* ações do cartão: lápis e lixeira no canto de cima; no quadro e sem lixeira, o lápis vai para outro canto */
+.ov-shell.orbita-viva.planetario .tarefa-card { position: relative; }
+.ov-shell.orbita-viva.planetario .tarefa-card .acoes-tarefa { position: absolute; top: 10px; right: 10px; z-index: 2; display: flex; gap: 6px; padding: 0 !important; margin: 0 !important; }
+.ov-shell.orbita-viva.planetario .tarefa-card .acoes-tarefa .astra-pill { width: 36px !important; height: 36px; min-height: 36px !important; min-width: 0 !important; padding: 0 !important; color: var(--obs-tinta-2) !important; }
+.ov-shell.orbita-viva.planetario .tarefa-card .acoes-tarefa .astra-pill:hover { color: var(--obs-tinta) !important; transform: rotate(-8deg); }
+.ov-shell.orbita-viva.planetario .tarefa-card .acoes-tarefa .excluir-tarefa:hover { color: var(--obs-perigo) !important; border-color: var(--obs-perigo) !important; }
+.ov-shell.orbita-viva.planetario .tarefa-card :is(h2, h3) { padding-right: 84px !important; }
+.ov-shell.orbita-viva.planetario .tarefa-card.sem-lixeira :is(h2, h3) { padding-right: 46px !important; }
+.ov-shell.orbita-viva.planetario .coluna .tarefa-card .acoes-tarefa { top: auto; bottom: 12px; right: 12px; }
+.ov-shell.orbita-viva.planetario .coluna .tarefa-card .acoes-tarefa .astra-pill { width: 32px !important; height: 32px; min-height: 32px !important; }
+.ov-shell.orbita-viva.planetario .coluna .tarefa-card :is(h2, h3) { padding-right: 36px !important; font-size: 21px !important; }
+
+/* concluída: o risco atravessa o título da esquerda para a direita e o cartão esmaece;
+   ao voltar para outro status, o risco recolhe (transição nos dois sentidos) */
+.ov-shell.orbita-viva.planetario .tarefa-card :is(h2, h3) { position: relative; }
+.ov-shell.orbita-viva.planetario .tarefa-card :is(h2, h3) a { text-decoration: none !important;
+	background: linear-gradient(var(--obs-tinta-3), var(--obs-tinta-3)) no-repeat 0 58%/0% 1.5px;
+	transition: background-size .75s cubic-bezier(.65, 0, .35, 1), color .6s ease !important; }
+.ov-shell.orbita-viva.planetario .tarefa-card[data-status=concluida] :is(h2, h3) a { color: var(--obs-tinta-2) !important; background-size: 100% 1.5px; }
+.ov-shell.orbita-viva.planetario .tarefa-card :is(.astra-muted, dd) { transition: opacity .6s ease; }
+.ov-shell.orbita-viva.planetario .tarefa-card[data-status=concluida] :is(.astra-muted, dd) { opacity: .6; }
+/* ao concluir, uma estrela pisca no começo do título e o risco atravessa (também no cartão recriado na coluna nova do quadro) */
+.ov-shell.orbita-viva.planetario .tarefa-card.concluiu :is(h2, h3)::before { content: ''; position: absolute; left: -6px; top: 50%; width: 12px; height: 12px; margin-top: -6px; pointer-events: none;
+	background: radial-gradient(circle, #fff 0 1.5px, transparent 2.5px), linear-gradient(transparent 45%, rgba(230, 247, 255, .9) 45% 55%, transparent 55%), linear-gradient(90deg, transparent 45%, rgba(230, 247, 255, .9) 45% 55%, transparent 55%);
+	filter: drop-shadow(0 0 6px #a9dfff); animation: estrela-pisca 1.1s cubic-bezier(.22, 1, .36, 1) both; }
+.ov-shell.orbita-viva.planetario .tarefa-card.concluiu :is(h2, h3) a { animation: riscar .75s cubic-bezier(.65, 0, .35, 1) .35s both; }
+@keyframes riscar { from { background-size: 0% 1.5px; } to { background-size: 100% 1.5px; } }
+@keyframes estrela-pisca { 0% { opacity: 0; transform: scale(.2) rotate(0); } 30% { opacity: 1; transform: scale(1.6) rotate(45deg); } 100% { opacity: 0; transform: scale(.6) rotate(90deg); } }
+/* salvando o status: a etiqueta pulsa até a API responder; depois de mudar, um brilho rápido */
+.ov-shell.orbita-viva.planetario .tarefa-card.salvando-status .gatilho { animation: pulso-salvando 1.1s ease-in-out infinite; }
+@keyframes pulso-salvando { 50% { border-color: var(--obs-gelo); box-shadow: 0 0 14px rgba(207, 224, 255, .18); } }
+.ov-shell.orbita-viva.planetario .tarefa-card.mudou .gatilho { animation: brilho-etiqueta 1.2s ease-out; }
+@keyframes brilho-etiqueta { 0% { border-color: var(--obs-gelo); box-shadow: 0 0 0 4px rgba(207, 224, 255, .18), 0 0 18px rgba(207, 224, 255, .25); } 100% { box-shadow: 0 0 0 0 rgba(207, 224, 255, 0); } }
+
+/* ---------- quadro ---------- */
+.ov-shell.orbita-viva.planetario .coluna { border-radius: 0 !important; border: 1px solid var(--obs-fio) !important; background: rgba(10, 11, 14, .5) !important; box-shadow: none !important; -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
+.ov-shell.orbita-viva.planetario .coluna-cabecalho h2 { font: 600 12px/1 var(--obs-ui) !important; letter-spacing: .14em !important; color: var(--obs-tinta-2) !important; }
+.ov-shell.orbita-viva.planetario .coluna .contador { border-radius: 999px !important; background: var(--obs-painel-2) !important; color: var(--obs-tinta) !important; border: 1px solid var(--obs-fio-forte); font: 600 12px/1 var(--obs-ui) !important; padding: 4px 9px !important; min-width: 0 !important; }
+/* "Em andamento" quebrava em três linhas no seletor do cartão do quadro */
+.ov-shell.orbita-viva.planetario .coluna .astra-meta > div:first-child { grid-column: 1/-1; }
+/* coluna vazia: uma vaga tracejada para soltar cartões */
+.ov-shell.orbita-viva.planetario .coluna .lista-cards > p.vazio { border: 1px dashed var(--obs-fio-forte) !important; border-radius: 0 !important; background: none !important; min-height: 96px; display: grid; place-items: center; text-align: center;
+	padding: 16px !important; margin: 0 !important; font: 400 13.5px/1.4 var(--obs-ui) !important; color: var(--obs-tinta-3) !important; }
+
+/* ---------- janela: detalhe, nova tarefa e edição abrem por cima da tela de origem ---------- */
+.ov-shell.orbita-viva.planetario.rota-janela main.astra-page { position: fixed !important; inset: 0; z-index: 90; max-width: none !important; margin: 0 !important;
+	padding: 20px max(16px, env(safe-area-inset-right)) 20px max(16px, env(safe-area-inset-left)) !important;
+	display: flex !important; flex-direction: column; align-items: center; gap: 0 !important; overflow-y: auto; overscroll-behavior: contain;
+	background: rgba(5, 6, 9, .6); animation: escurecer-veu .4s var(--obs-suave) both; }
+@keyframes escurecer-veu { from { background: rgba(5, 6, 9, 0); } }
+/* sem a rotação 3D de troca de página por trás da janela */
+.ov-shell.orbita-viva.planetario.rota-janela :is(.plano-rota, .campo-perspectiva) { transform: none !important; perspective: none !important; opacity: 1 !important; animation: none !important; }
+.ov-shell.orbita-viva.planetario.rota-janela main.astra-page > :is(.astra-head, form, article) { flex-shrink: 0; width: min(520px, 100%) !important; max-width: none !important; position: relative; z-index: 1; animation: abrir-janela .5s var(--obs-mola) both; }
+@keyframes abrir-janela { from { opacity: 0; transform: translateY(28px) scale(.97); } }
+/* detalhe → editar e editar → detalhe: troca o conteúdo dentro da mesma janela, sem reabrir */
+.ov-shell.orbita-viva.planetario.rota-janela.janela-troca main.astra-page { animation: none !important; }
+.ov-shell.orbita-viva.planetario.rota-janela.janela-troca main.astra-page > :is(.astra-head, form, article) { animation: trocar-janela .35s var(--obs-suave) both !important; }
+@keyframes trocar-janela { from { opacity: 0; translate: 0 6px; } }
+.ov-shell.orbita-viva.planetario.rota-janela main.astra-page > .astra-head { margin-top: auto; flex-direction: row !important; flex-wrap: nowrap !important; justify-content: space-between !important; align-items: flex-start !important;
+	background: var(--obs-painel) !important; border: 1px solid var(--obs-fio-forte); border-bottom: 0; padding: 18px 20px 4px 24px !important; gap: 12px !important; }
+.ov-shell.orbita-viva.planetario.rota-janela main.astra-page > .astra-head > div:first-child { min-width: 0; padding-top: 4px; }
+.ov-shell.orbita-viva.planetario.rota-janela main.astra-page > .astra-head h1 { font: 500 21px/1.2 var(--obs-titulo) !important; letter-spacing: -.01em !important; }
+.ov-shell.orbita-viva.planetario.rota-janela main.astra-page > :is(form, article) { margin: 0 0 auto !important; border-top: 0 !important; background: var(--obs-painel) !important; border-color: var(--obs-fio-forte) !important; }
+/* formulário compacto: Status/Prioridade e Responsável/Prazo lado a lado */
+.ov-shell.orbita-viva.planetario.rota-janela main.astra-page > form { padding: 14px 24px 22px !important; display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px !important; }
+.ov-shell.orbita-viva.planetario.rota-janela main.astra-page > form > * { grid-column: 1/-1; margin: 0 !important; }
+.ov-shell.orbita-viva.planetario.rota-janela main.astra-page > form > .astra-field:is(:nth-of-type(4), :nth-of-type(5), :nth-of-type(6), :nth-of-type(7)) { grid-column: auto; }
+.ov-shell.orbita-viva.planetario.rota-janela main.astra-page form :is(.astra-input, .gatilho) { height: 40px !important; min-height: 40px !important; padding-block: 0 !important; font-size: 14px !important; }
+.ov-shell.orbita-viva.planetario.rota-janela main.astra-page form .astra-textarea { min-height: 64px !important; height: 64px; font-size: 14px !important; padding-block: 9px !important; }
+.ov-shell.orbita-viva.planetario.rota-janela main.astra-page form label { font: 500 12.5px/1.3 var(--obs-ui) !important; letter-spacing: 0 !important; text-transform: none; color: var(--obs-tinta-2) !important; margin-bottom: 6px; }
+.ov-shell.orbita-viva.planetario.rota-janela main.astra-page form :is(.astra-btn, button[type=submit]) { min-height: 42px; margin-top: 6px !important; }
+/* cópia parada da tela de origem atrás da janela (sem desfoque: desfocar a tela inteira por cima do céu animado derrubava a fluidez) */
+.janela-fundo { position: fixed; z-index: 89; pointer-events: none; opacity: .3; contain: strict; height: 100vh; animation: mostrar-fundo .45s var(--obs-suave) both; }
+.janela-fundo * { animation: none !important; transition: none !important; }
+.janela-fundo > main { position: static !important; }
+@keyframes mostrar-fundo { from { opacity: 1; } }
+
+/* ---------- chegada vinda da entrada: céu, menu, título, filtros, cartões ---------- */
+.ov-shell.planetario.chegando > canvas { animation: surgir-ceu 2.4s var(--obs-suave) both; }
+.ov-shell.planetario.chegando .cabecalho .astra-nav { animation: surgir .9s .55s var(--obs-suave) both; }
+.ov-shell.planetario.chegando main.astra-page > .astra-head { animation: surgir 1s .75s var(--obs-suave) both; }
+.ov-shell.planetario.chegando main.astra-page > .astra-filters { animation: surgir 1s .9s var(--obs-suave) both; }
+.ov-shell.planetario.chegando main.astra-page > :is(section, div):not(.astra-head):not(.astra-filters) { animation: surgir 1.1s 1.05s var(--obs-suave) both; }
+/* translate em vez de transform: o menu já usa transform para ficar centralizado */
+@keyframes surgir { from { opacity: 0; translate: 0 14px; filter: blur(6px); } }
+@keyframes surgir-ceu { from { opacity: 0; } }
+
+/* ---------- celular ---------- */
+@media (max-width: 760px) {
+	.ov-shell.orbita-viva.planetario .astra-nav { position: static !important; transform: none !important; width: 100% !important; margin-top: 14px; }
+	.ov-shell.orbita-viva.planetario .cabecalho.astra-page { flex-direction: column !important; }
+	.ov-shell.orbita-viva.planetario .astra-nav a { font-size: 13px !important; padding: 10px 6px !important; }
+	.ov-shell.orbita-viva.planetario main.astra-page { padding-top: 28px !important; }
+	.ov-shell.orbita-viva.planetario .astra-card :is(h2, h3) { font-size: 22px !important; }
+	.ov-shell.orbita-viva.planetario.rota-janela main.astra-page { padding-top: 12px !important; }
+	.ov-shell.orbita-viva.planetario.rota-janela main.astra-page > :is(.astra-head, form) { padding-left: 18px !important; padding-right: 18px !important; }
+	.ov-shell.orbita-viva.planetario.rota-janela main.astra-page > form > .astra-field:is(:nth-of-type(4), :nth-of-type(5), :nth-of-type(6), :nth-of-type(7)) { grid-column: 1/-1; }
+}
+@media (prefers-reduced-motion: reduce) {
+	.grao { animation: none; }
+	.ov-shell.orbita-viva.planetario .tarefa-card :is(h2, h3) a, .ov-shell.orbita-viva.planetario .tarefa-card :is(.astra-muted, dd) { transition: none !important; }
+	.ov-shell.orbita-viva.planetario .tarefa-card :is(.gatilho, h2::before, h3::before, h2 a, h3 a) { animation: none !important; }
+	.ov-shell.orbita-viva.planetario.rota-janela main.astra-page, .ov-shell.orbita-viva.planetario.rota-janela main.astra-page > *, .janela-fundo { animation: none !important; }
+	.ov-shell.planetario.chegando * { animation: none !important; }
+	.ov-shell.orbita-viva.planetario .astra-nav ul::before { transition: none !important; }
+}
