@@ -208,3 +208,52 @@ O redesign não muda a URL nem a configuração do serviço Render. Como a publi
 do frontend foi realizada pelo CLI, atualizar o GitHub não publica automaticamente
 o site: após integrar as alterações, executar novamente o deploy no projeto
 Netlify existente, mantendo a variável `PUBLIC_API_URL` já cadastrada.
+
+
+## Issue 44 — Criar o slide de apresentação do Marco 6
+
+**Responsável:** Gabriel Crispim Galvão
+
+### Objetivo
+
+Explicar a publicação do ASTRA e demonstrar a aplicação em até cinco minutos,
+conforme o documento de issues da professora.
+
+### O que foi feito e por quê
+
+A apresentação em `slides/index.html` reúne 11 telas em um único HTML, que abre
+sem servidor ou dependências externas. O foco é o caminho do código à publicação:
+variável pública estática do SvelteKit (#39), API com Docker e Render (#40),
+build e preview (#41), adapter-static e Netlify (#42), e fallback das rotas (#43).
+
+Os exemplos permitem alternar ambiente local/produção, simular a incorporação
+da variável no build, explorar o Dockerfile e comparar a abertura direta de uma
+rota com e sem fallback. São demonstrações locais: não executam comandos nem
+alteram serviços hospedados. O mapa de infraestrutura permite selecionar e
+arrastar os nós. A abertura final reutiliza marcação, estilos e animação da Lua
+do projeto para a transição à demonstração real.
+
+O roteiro individual fica no painel oculto à esquerda. Não há cabeçalho,
+rodapé nem botões de avançar/voltar projetados; a navegação usa o teclado.
+Textos grandes e painéis com bordas completas priorizam a leitura no projetor.
+O cenário respeita movimento reduzido e pausa quando a aba fica oculta.
+
+A configuração de publicação mostrada acompanha os registros das issues #42
+e #43 (`index.html` como fallback). As notas distinguem essa publicação da
+revisão visual local ainda não publicada, que pré-renderiza a raiz e `/inicio`
+e usa `200.html` como fallback. Os slides não afirmam que essa revisão já
+está na Netlify.
+
+### Como apresentar e conferir
+
+1. Abra `slides/index.html` no navegador, com zoom de 100%.
+2. Use as setas, Page Up/Page Down, Home e End para navegar.
+3. Use `N` ou a faixa invisível da lateral esquerda para abrir o roteiro;
+   `Escape` fecha o painel. `F` alterna tela cheia.
+4. No mapa, clique para ver uma responsabilidade e arraste para reorganizar.
+   Pelo teclado, use Tab/Enter; Alt + setas move o nó selecionado.
+5. Deixe a aplicação aberta em `/inicio` para a troca com Alt+Tab no último slide.
+   A API deve estar acordada antes da demonstração.
+
+O roteiro reserva aproximadamente 4min25s à explicação e 35s à demonstração.
+Nenhum pacote adicional foi instalado no projeto para a apresentação.
