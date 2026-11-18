@@ -34,7 +34,7 @@ export function prepararNavegador() {
 		await context.route(`${API_URL}/**`, async (route) => {
 			requisicoes.push(route.request().url());
 			let resposta;
-			try { resposta = await responderApi(route.request().url()); }
+			try { resposta = await responderApi(route.request().url(), route.request()); }
 			catch { await route.abort('failed'); return; }
 			await route.fulfill({ status: resposta.status, contentType: resposta.headers.get('content-type') ?? 'application/json', body: Buffer.from(await resposta.arrayBuffer()) });
 		});
@@ -49,6 +49,6 @@ export function prepararNavegador() {
 		get page() { return page; },
 		get requisicoes() { return requisicoes; },
 		simularApi(responder) { responderApi = responder; },
-		async abrir(path) { return page.goto(`${baseUrl}${path}`, { waitUntil: 'networkidle' }); }
+		async abrir(path,waitUntil='networkidle') { return page.goto(`${baseUrl}${path}`, { waitUntil }); }
 	};
 }

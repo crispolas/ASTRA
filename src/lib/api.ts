@@ -1,5 +1,6 @@
 import type { NovaTarefa, NovoProjeto, Projeto, ProjetoComTarefas, Tarefa } from '../tipos';
 
+import { lerComTentativas } from './leitura';
 import { API_URL } from './configuracao';
 
 // Guarda o status HTTP para as telas separarem "não encontrado" (404) de "API fora do ar".
@@ -13,7 +14,9 @@ export class ErroApi extends Error {
 }
 
 async function buscarNaApi<T>(caminho: string, opcoes?: RequestInit): Promise<T> {
-	const resposta = await fetch(`${API_URL}${caminho}`, opcoes);
+	const resposta = opcoes?.method && opcoes.method !== 'GET'
+        ? await fetch(`${API_URL}${caminho}`, opcoes)
+        : await lerComTentativas(`${API_URL}${caminho}`);
 
 	if (!resposta.ok) {
 		throw new ErroApi(resposta);

@@ -25,6 +25,8 @@
   };
 </script>
 
+<svelte:head><title>{tarefa?.titulo ?? 'Tarefa não encontrada'} · ASTRA</title></svelte:head>
+
 <main class="astra-page">
   <div class="astra-head">
     <div style="display:flex; flex-direction:column; gap:8px;">
@@ -76,7 +78,7 @@
   {:else if data.naoEncontrada}
     <p class="astra-error" role="alert">Tarefa não encontrada. Ela pode ter sido excluída ou o endereço está errado.</p>
   {:else}
-    <p class="astra-error" role="alert">Erro: não foi possível carregar a tarefa. Confira se a API está ligada.</p>
+    <p class="astra-error" role="alert">Erro: não foi possível carregar a tarefa. Tente novamente em instantes.</p>
   {/if}
 </main>
 

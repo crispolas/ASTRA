@@ -1,4 +1,5 @@
 <script lang="ts">
+ import {opcoesStatus,opcoesPrioridade} from "../opcoes";
     import SeletorArredondado from "./SeletorArredondado.svelte";
     import {
         buscaTexto,
@@ -20,20 +21,8 @@
     </div>
 
     <SeletorArredondado id="filtro-status" rotulo="Filtrar por status" bind:valor={$filtroStatus}
-        opcoes={[
-            { valor: '', nome: 'Todos os status' },
-            { valor: 'a-fazer', nome: 'A fazer' },
-            { valor: 'em-andamento', nome: 'Em andamento' },
-            { valor: 'concluida', nome: 'Concluída' }
-        ]} />
-    <SeletorArredondado id="filtro-prioridade" rotulo="Filtrar por prioridade" bind:valor={$filtroPrioridade}
-        opcoes={[
-            { valor: '', nome: 'Todas as prioridades' },
-            { valor: 'baixa', nome: 'Baixa' },
-            { valor: 'media', nome: 'Média' },
-            { valor: 'alta', nome: 'Alta' }
-        ]} />
-</div>
+        opcoes={[{valor:'',nome:'Todos os status'},...opcoesStatus]} />    <SeletorArredondado id="filtro-prioridade" rotulo="Filtrar por prioridade" bind:valor={$filtroPrioridade}
+        opcoes={[{valor:'',nome:'Todas as prioridades'},...opcoesPrioridade]} /></div>
 
 <style>
     .astra-filters { display:grid; grid-template-columns:minmax(0,1.6fr) repeat(2,minmax(0,1fr)); gap:20px; padding:22px 0; border-block:1px solid #34363d; }

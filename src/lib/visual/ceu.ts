@@ -1,3 +1,4 @@
+import { desenharFotosfera } from './sol';
 import { iluminarSuperficies, type FonteLuz } from './iluminacao';
 import { orientacaoAgora, projetarX } from './observatorio';
 import { EPOCA_ORBITA, posicaoLua } from './orbita';
@@ -13,11 +14,13 @@ export function iniciarCeu(fundo: HTMLCanvasElement, efeitos: HTMLCanvasElement)
  const ctx=contexto(fundo),fc=contexto(efeitos),reduzir=matchMedia('(prefers-reduced-motion: reduce)');
  const eventos=new AbortController(),mouse={x:-9999,y:-9999};
  let W=innerWidth,H=innerHeight,frame=0,ultimo=-9999,ultimoDesenhoLua=-9999;
+ let visivel=true;
  let tempoPausaLua: number | null=null;
+ let mascaraLua: {x:number;y:number;r:number}|null=null;
  const lunar=document.createElement('canvas');lunar.width=lunar.height=768;const moonCtx=contexto(lunar);
  let sementeLua=4817;const randomLua=()=>{sementeLua=(sementeLua*1664525+1013904223)>>>0;return sementeLua/4294967296};
  const crateras=Array.from({length:26},()=>{const lon=(randomLua()-.5)*Math.PI*1.8,lat=(randomLua()-.5)*Math.PI*.9;return{x:Math.sin(lon)*Math.cos(lat),y:Math.sin(lat),z:Math.cos(lon)*Math.cos(lat),radius:.05+randomLua()*.15}});
-const estrelas: Estrela[]=Array.from({length:90},(_,i)=>{const ang=i*2.39996,vel=3+(i%9)*.42;return{x:(i*173+47)%997/997*W,y:(i*337+91)%991/991*H,vx:Math.cos(ang)*vel,vy:Math.sin(ang)*vel,angulo:ang,vel,fase:i*.77,brilho:.22+(i%7)*.035}});
+const estrelas: Estrela[]=Array.from({length:innerWidth<768?45:90},(_,i)=>{const ang=i*2.39996,vel=3+(i%9)*.42;return{x:(i*173+47)%997/997*W,y:(i*337+91)%991/991*H,vx:Math.cos(ang)*vel,vy:Math.sin(ang)*vel,angulo:ang,vel,fase:i*.77,brilho:.22+(i%7)*.035}});
 function aparente(e: Estrela, i: number) {
  const giro=(orientacaoAgora()+28)*Math.PI/180*(.45+(i%5)*.12);
  const a=((Math.atan((e.x-W/2)/(W*.85))-giro+.6)%1.2+1.2)%1.2-.6;
@@ -39,9 +42,9 @@ function atualizarEstrelas(dt: number,t: number){
 // A mesma técnica de relevo, crateras, células e glifos da abertura do ASTRA.
 function desenharTexturaLua(epoch: number){
  const ax=.08,ay=((epoch-EPOCA_ORBITA)/1000*.014)%(Math.PI*2),cy=Math.cos(ay),sy=Math.sin(ay),cx=Math.cos(ax),sx=Math.sin(ax),glyphs='.:;+=xoXO%8#@';
- moonCtx.setTransform(2,0,0,2,0,0);moonCtx.clearRect(0,0,384,384);moonCtx.font='bold 7.2px "Courier New",monospace';moonCtx.textAlign='center';moonCtx.textBaseline='middle';
+ moonCtx.setTransform(2,0,0,2,0,0);moonCtx.clearRect(0,0,384,384);moonCtx.font=(W<768?'bold 10px':'bold 7.2px')+' "Courier New",monospace';moonCtx.textAlign='center';moonCtx.textBaseline='middle';
  const clamp=(n: number)=>Math.max(0,Math.min(1,n));
- for(let gy=3;gy<61;gy++)for(let gx=3;gx<61;gx++){
+ for(let gy=3;gy<61;gy+=W<768?2:1)for(let gx=3;gx<61;gx+=W<768?2:1){
   const nx=(gx*6+3-192)/170,ny=(gy*6+3-192)/170,rr=nx*nx+ny*ny;if(rr>=1)continue;const nz=Math.sqrt(1-rr),rx=nx*cy+nz*sy,rz=-nx*sy+nz*cy,ry=ny*cx-rz*sx,tz=ny*sx+rz*cx;
   const noise=.5+Math.sin(rx*53+ry*17+tz*11)*Math.cos(ry*47-tz*29+rx*7)*.3+Math.sin(rx*21-ry*31+tz*37)*.13;
   let terreno=0;for(const c of crateras){const dist=Math.sqrt(Math.max(0,2*(1-(rx*c.x+ry*c.y+tz*c.z))));const q=dist/c.radius;if(q<1.5){terreno-=.22*Math.exp(-q*q*3);terreno+=.085*Math.exp(-Math.pow((q-1.05)/.17,2));}}
@@ -50,18 +53,16 @@ function desenharTexturaLua(epoch: number){
   moonCtx.fillStyle=`rgba(244,245,247,${.035+tone*.055})`;moonCtx.fillRect(gx*6,gy*6,5.3,5.3);const strength=.35+tone*.65;moonCtx.fillStyle=`rgba(${Math.round(244*strength)},${Math.round(245*strength)},${Math.round(247*strength)},${.57+tone*.43})`;moonCtx.fillText(char,gx*6+3,gy*6+3);
  }
 }
-function pintarLua(t: number,forcar: boolean){const epoch=(reduzir.matches)?(tempoPausaLua??Date.now()):Date.now(),p=posicaoLua(epoch,W,H);if(p.diametro<=0)return;
+function pintarLua(t: number,forcar: boolean){const epoch=(reduzir.matches)?(tempoPausaLua??Date.now()):Date.now(),p=posicaoLua(epoch,W,H,orientacaoAgora()+28);if(p.diametro<=0)return;
  // Escala visual da revisão; fase, centro, profundidade e período continuam em orbita.ts.
  const larguraUtil=Math.max(1,Math.min(W,1600)-W*.09);
  const diametroReferencia=W<=900?Math.min(168,W*.4):larguraUtil*.22;
  const escala=diametroReferencia*2.2/(2*Math.min(W*.34,H*.46));
- const size=p.diametro*escala/(340/384),giro=orientacaoAgora()+28;
- // Visibilidade depende do corpo inteiro no campo projetado, nunca da rota
- // ou de um corte angular que apagaria uma Lua ainda dentro da tela.
- const angulo=Math.atan((p.x-W/2)/(W*.85))-giro*Math.PI/180*.95;
- if(Math.abs(angulo)>=Math.PI/2)return; // atrás do observador
- const x=projetarX(p.x,W,giro,.95),raio=size/2+8;
+ const size=p.diametro*escala/(340/384),x=p.x,raio=size/2+8;
  if(x+raio<0||x-raio>W||p.y+raio<0||p.y-raio>H)return;
+ // A esfera opaca cobre as estrelas antes de desenhar os caracteres luminosos.
+ mascaraLua={x,y:p.y,r:size*(170/384)};
+ ctx.save();ctx.fillStyle='#101114';ctx.beginPath();ctx.arc(x,p.y,size*(170/384),0,Math.PI*2);ctx.fill();ctx.restore();
  if(forcar||t-ultimoDesenhoLua>80){ultimoDesenhoLua=t;desenharTexturaLua(epoch)}
  ctx.save();ctx.shadowColor='#e1eaff';ctx.shadowBlur=4;ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.drawImage(lunar,x-size/2,p.y-size/2,size,size);ctx.restore();
 }
@@ -82,19 +83,11 @@ function pintarSol(t:number,parar:boolean,fontes:FonteLuz[]){
  const y=H*((W<700?.27:.20)+Math.cos(tempo*.003)*.012)-(parar?0:Math.min(scrollY,1600)*.018);
  const r=Math.min(W*.13,110);
  if(x+r*2<0||x-r*2>W)return;
- if(ultimoSol===-Infinity||(!parar&&t-ultimoSol>120)){ultimoSol=t;solCtx.clearRect(0,0,512,512);solCtx.font='bold 7px "Courier New",monospace';solCtx.textAlign='center';
-  const a=tempo*.012,co=Math.cos(a),si=Math.sin(a),glifos='.:;+=oxO%8#@';
-  for(let gy=2;gy<62;gy++)for(let gx=2;gx<62;gx++){
-   const nx=(gx-32)/29,ny=(gy-32)/29,rr=nx*nx+ny*ny;if(rr>=1)continue;
-   const z=Math.sqrt(1-rr),rx=nx*co+z*si,rz=z*co-nx*si;
-   const granulo=.5+Math.sin(rx*61+ny*19+rz*7)*Math.cos(ny*47-rz*31)*.28+Math.sin(rx*29-ny*43)*.12;
-   const valor=Math.max(0,Math.min(1,.25+z*.5+granulo*.3));
-   solCtx.fillStyle=`rgba(255,${Math.round(130+valor*112)},${Math.round(45+valor*150)},${.45+valor*.5})`;
-   solCtx.fillText(glifos[Math.min(glifos.length-1,Math.floor(valor*glifos.length))],gx*8,gy*8);
-  }
+ if(ultimoSol===-Infinity||(!parar&&t-ultimoSol>120)){
+  ultimoSol=t;desenharFotosfera(solCtx,tempo,W<768?2:1);
  }
  const halo=ctx.createRadialGradient(x,y,r*.6,x,y,r*1.8);
- halo.addColorStop(0,'rgba(255,175,80,.13)');halo.addColorStop(.6,'rgba(255,137,55,.045)');halo.addColorStop(1,'rgba(255,137,55,0)');
+ halo.addColorStop(0,'rgba(255,175,80,.07)');halo.addColorStop(.6,'rgba(255,137,55,.022)');halo.addColorStop(1,'rgba(255,137,55,0)');
  ctx.fillStyle=halo;ctx.fillRect(x-r*1.8,y-r*1.8,r*3.6,r*3.6);ctx.drawImage(solar,x-r,y-r,r*2,r*2);
  fontes.push({x,y,cor:'255 181 102',alcance:400,intensidade:.42});
 }
@@ -130,7 +123,8 @@ function pintarLuminosas(t:number,parar:boolean,dt:number,fontes:FonteLuz[]){
  }
 }
 function pintar(t: number,forcar=false){if(!ctx||!fc)return;const parar=reduzir.matches,tempo=parar?0:t*.0001;
- if(forcar||t-ultimo>32){const dt=Math.min(.06,Math.max(0,(t-ultimo)/1000));ultimo=t;ctx.clearRect(0,0,W,H);if(!parar)atualizarEstrelas(dt,t);
+ if(!forcar&&t-ultimo<1000/30)return;
+ if(forcar||t-ultimo>=1000/30){const dt=Math.min(.06,Math.max(0,(t-ultimo)/1000));ultimo=t;mascaraLua=null;ctx.clearRect(0,0,W,H);if(!parar)atualizarEstrelas(dt,t);
  for(let i=0;i<estrelas.length;i++){const e=estrelas[i],v=aparente(e,i),d=Math.hypot(v.x-mouse.x,v.y-mouse.y),perto=Math.max(0,1-d/110);ctx.font=(e.brilho>.36?11:9)+'px Consolas,monospace';ctx.fillStyle=`rgba(215,228,248,${e.brilho+perto*.25+Math.sin((parar?0:t)*.0005+e.fase)*.035})`;ctx.fillText(e.brilho>.36?'+':'.',v.x,v.y)}
  const fontes:FonteLuz[]=[];
  pintarSol(t,parar,fontes);
@@ -140,6 +134,7 @@ function pintar(t: number,forcar=false){if(!ctx||!fc)return;const parar=reduzir.
   pintarLua(t,forcar);
  }
  fc.clearRect(0,0,W,H);if(!parar)desenharCadente(t);
+ if(mascaraLua){fc.save();fc.globalCompositeOperation='destination-out';fc.beginPath();fc.arc(mascaraLua.x,mascaraLua.y,mascaraLua.r,0,Math.PI*2);fc.fill();fc.restore();}
 }
 
  function ajustar() {
@@ -149,11 +144,11 @@ function pintar(t: number,forcar=false){if(!ctx||!fc)return;const parar=reduzir.
   for(const canvas of [fundo,efeitos]){canvas.width=W*dpr;canvas.height=H*dpr;contexto(canvas).setTransform(dpr,0,0,dpr,0,0);}
   ultimoDesenhoLua=-9999;pintar(performance.now(),true);
  }
- function loop(t:number){pintar(t);frame=requestAnimationFrame(loop);}
+ function loop(t:number){if(document.hidden||!visivel)return;if(reduzir.matches){pintar(t,true);return;}pintar(t);frame=requestAnimationFrame(loop);}
  function reiniciar(){
   cancelAnimationFrame(frame);ultimo=performance.now();
   tempoPausaLua=reduzir.matches?Date.now():null;
-  if(document.hidden)return;
+  if(document.hidden||!visivel)return;
   if(reduzir.matches){cadente=null;pintar(performance.now(),true);}else frame=requestAnimationFrame(loop);
  }
  const options={signal:eventos.signal,passive:true};
@@ -164,6 +159,8 @@ function pintar(t: number,forcar=false){if(!ctx||!fc)return;const parar=reduzir.
  document.addEventListener('pointerleave',()=>{mouse.x=mouse.y=-9999;},options);
  document.addEventListener('visibilitychange',()=>{document.body.classList.toggle('planetario-pausado',document.hidden);if(!document.hidden){cadente=null;proximaCadente=performance.now()+55000+Math.random()*65000;}reiniciar();},options);
  reduzir.addEventListener('change',reiniciar,options);
+ const observador=new IntersectionObserver(entradas=>{visivel=entradas.some(e=>e.isIntersecting);reiniciar();});
+ observador.observe(fundo);
  ajustar();reiniciar();
- return ()=>{cancelAnimationFrame(frame);eventos.abort();iluminarSuperficies([],performance.now(),true);document.body.classList.remove('planetario-pausado');};
+ return ()=>{cancelAnimationFrame(frame);observador.disconnect();eventos.abort();iluminarSuperficies([],performance.now(),true);document.body.classList.remove('planetario-pausado');};
 }

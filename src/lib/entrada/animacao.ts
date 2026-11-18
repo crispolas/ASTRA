@@ -129,8 +129,8 @@ export function iniciarEntrada(root: HTMLElement, aoConcluir: () => Promise<void
     }
     const motionQuery = matchMedia('(prefers-reduced-motion: reduce)');
     let reduced = motionQuery.matches;
-    listen(motionQuery,'change', (e: MediaQueryListEvent) => { reduced = e.matches; });
-    let width = 0, height = 0;
+    listen(motionQuery,'change', (e: MediaQueryListEvent) => { reduced = e.matches; retomar(); });
+    let width = 0, height = 0, visivel = true;
     let stars: Estrela[] = [];
     const pointer = { x:-9999, y:-9999 };
     let hovered = false, focus = false, rotation = 0, scale = 1;
@@ -144,11 +144,11 @@ export function iniciarEntrada(root: HTMLElement, aoConcluir: () => Promise<void
     let seed = 4817;
     const random = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
     function resize() {
-      width = innerWidth; height = innerHeight;
+      width = innerWidth; height = innerHeight; previousMoon = '';
       const dpr = Math.min(devicePixelRatio || 1, 2);
       sky.width = Math.round(width*dpr); sky.height = Math.round(height*dpr);
       ctx.setTransform(dpr,0,0,dpr,0,0);
-      const count = Math.min(230, Math.max(140, Math.floor(width*height/6000)));
+      const count = width<768?80:Math.min(230, Math.max(140, Math.floor(width*height/6000)));
       stars = Array.from({length:count}, (_,id) => ({
         id, offsetX:0,offsetY:0,velocityX:0,velocityY:0,
         x:random()*width, y:random()*height, vx:(random()-.5)*9, vy:(random()-.5)*5,
@@ -164,10 +164,10 @@ export function iniciarEntrada(root: HTMLElement, aoConcluir: () => Promise<void
       orbitCenter={x:r.left+r.width/2,y:r.top+r.height/2};
       moonRadius=Math.min(r.width,r.height)*.44;
     }
-    listen(window,'resize',()=>{resize();measureMoon();});
+    listen(window,'resize',()=>{resize();measureMoon();if(reduced)retomar();});
     listen(window,'scroll',measureMoon,{passive:true});
     resize();measureMoon();
-    listen(window,'pointermove', (e: PointerEvent) => { pointer.x=e.clientX; pointer.y=e.clientY; });
+    listen(window,'pointermove', (e: PointerEvent) => { pointer.x=e.clientX; pointer.y=e.clientY;if(reduced)retomar(); });
     listen(document,'pointerleave', () => { pointer.x=-9999;pointer.y=-9999; });
     listen(moon,'pointerenter', () => { hovered=true; });
     listen(moon,'pointerleave', () => { hovered=false; });
@@ -182,11 +182,11 @@ export function iniciarEntrada(root: HTMLElement, aoConcluir: () => Promise<void
       const resolution=lunar.width/384;
       lc.setTransform(resolution,0,0,resolution,0,0);
       lc.clearRect(0,0,384,384);
-      const cell=6, center=192, radius=170;
+      const cell=6, center=192, radius=170,passo=width<768?2:1;
       lc.font="bold 7.2px \"Courier New\", monospace";
       lc.textAlign="center";lc.textBaseline="middle";
       const cy=Math.cos(ay),sy=Math.sin(ay),cx=Math.cos(ax),sx=Math.sin(ax);
-      for(let gy=3;gy<61;gy++)for(let gx=3;gx<61;gx++) {
+      for(let gy=3;gy<61;gy+=passo)for(let gx=3;gx<61;gx+=passo) {
         const nx=(gx*cell+3-center)/radius,ny=(gy*cell+3-center)/radius;
         const rr=nx*nx+ny*ny;if(rr>=1)continue;
         const nz=Math.sqrt(1-rr);
@@ -218,9 +218,9 @@ export function iniciarEntrada(root: HTMLElement, aoConcluir: () => Promise<void
 
       }
     }
-    function frame(time: number) {
-      if(disposed)return;
-      if(time-lastPaint<1000/30){raf=requestAnimationFrame(frame);return;}
+    function frame(time: number,forcar=false) {
+      if(disposed||document.hidden||!visivel)return;
+      if(!forcar&&time-lastPaint<1000/30){if(!reduced)raf=requestAnimationFrame(frame);return;}
       const dt=Math.min((time-lastTime)/1000||0,.05);lastTime=time;lastPaint=time;
       ctx.clearRect(0,0,width,height);
       for(const s of stars){
@@ -280,14 +280,21 @@ export function iniciarEntrada(root: HTMLElement, aoConcluir: () => Promise<void
       const active=hovered||focus;
       const easing=reduced?1:Math.min(1,dt*7);
       if(!reduced&&!entering)rotation=(rotation+dt*.22)%(Math.PI*2);
-      scale+=((active?1.085:1)-scale)*easing;
+      scale+=((active&&!reduced?1.085:1)-scale)*easing;
       moon.style.transform=`scale(${scale})`;
       const key=rotation.toFixed(4);
       if(key!==previousMoon){drawMoon(-.08,rotation);previousMoon=key;}
       if(stage==='gathering'||stage==='holding')drawGathering(time-formationStart);
-      raf=requestAnimationFrame(frame);
+      if(!reduced)raf=requestAnimationFrame(frame);
     }
-    raf=requestAnimationFrame(frame);
+    function retomar(){
+      cancelAnimationFrame(raf);lastTime=performance.now();
+      if(disposed||document.hidden||!visivel)return;
+      if(reduced)frame(performance.now(),true);else raf=requestAnimationFrame(frame);
+    }
+    listen(document,'visibilitychange',()=>{retomar();});
+    const observador=new IntersectionObserver(entradas=>{visivel=entradas.some(e=>e.isIntersecting);retomar();});
+    observador.observe(root);
     function later(action: () => void | Promise<void>,delay: number){timers.push(setTimeout(action,delay));}
     listen(moon,'click',()=>{
       if(entering||disposed)return;
@@ -295,7 +302,7 @@ export function iniciarEntrada(root: HTMLElement, aoConcluir: () => Promise<void
       const duration=reduced?0:prepareFormation();
       if(reduced)prepareFormation();
       formationStart=performance.now();entering=true;stage='gathering';moon.disabled=true;
-      root.classList.add('entering','gathering');
+      root.classList.add('entering','gathering');if(reduced)frame(performance.now(),true);
       later(()=>{
         stage='holding';root.classList.remove('gathering');root.classList.add('holding');
       },duration);
@@ -309,13 +316,14 @@ export function iniciarEntrada(root: HTMLElement, aoConcluir: () => Promise<void
       timers.forEach(clearTimeout);timers=[];selectedStars.clear();particles=[];
       root.classList.remove('entering','gathering','holding');
       moon.disabled=false;entering=false;stage='moon';hovered=false;
-      measureMoon();moon.focus({preventScroll:true});
+      measureMoon();moon.focus({preventScroll:true});if(reduced)retomar();
     }
     listen(window,'keydown',(e: KeyboardEvent)=>{
       if(e.key==='Escape'&&(stage==='gathering'||stage==='holding'))reset();
     });
+    retomar();
     return () => {
-      disposed=true;
+      disposed=true;observador.disconnect();
       cancelAnimationFrame(raf);
       timers.forEach(clearTimeout);
       controller.abort();

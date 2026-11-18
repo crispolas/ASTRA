@@ -1,8 +1,14 @@
 <script lang="ts">
-	import { onDestroy, onMount, tick } from 'svelte';
+	import { onDestroy, onMount, tick, untrack } from 'svelte';
+	import {opcoesStatus} from '../../lib/opcoes';
 	import { flip } from 'svelte/animate';
-	import { invalidateAll } from '$app/navigation';
-	import { atualizarTarefa } from '../../lib/api';
+ import {crossfade} from 'svelte/transition';
+ import {entradaCartao,duracaoMovimento} from '../../lib/visual/movimento';
+ const [enviar,receber]=crossfade({duration:()=>duracaoMovimento(240),fallback:(node)=>entradaCartao(node)});
+	import {criarColecao} from '../../lib/colecao.svelte';
+ import Carregamento from '../../lib/components/Carregamento.svelte';
+ import ErroCarregamento from '../../lib/components/ErroCarregamento.svelte';
+	import { atualizarTarefa, listarTarefas } from '../../lib/api';
 	import TarefaCard from '../../lib/components/TarefaCard.svelte';
 	import Filtros from '../../lib/components/Filtros.svelte';
 	import AlternarVisao from '../../lib/components/AlternarVisao.svelte';
@@ -15,16 +21,12 @@
 	}
 
 	let { data }: Props = $props();
+	const colecao=criarColecao<Tarefa>(untrack(()=>data.tarefas),listarTarefas,'as tarefas');
 	let tarefasFiltradas = $derived(
-		aplicarFiltros(data.tarefas, $buscaTexto, $filtroStatus, $filtroPrioridade)
+		aplicarFiltros(colecao.itens, $buscaTexto, $filtroStatus, $filtroPrioridade)
 	);
 
-	const colunas: { id: Tarefa['status']; titulo: string }[] = [
-		{ id: 'a-fazer', titulo: 'A fazer' },
-		{ id: 'em-andamento', titulo: 'Em andamento' },
-		{ id: 'em-revisao', titulo: 'Em revisão' },
-		{ id: 'concluida', titulo: 'Concluída' }
-	];
+	const colunas=opcoesStatus.map(o=>({id:o.valor,titulo:o.nome}));
 
 	let idTarefaArrastada = $state<string | null>(null);
 	let destino = $state<Tarefa['status'] | null>(null);
@@ -80,13 +82,13 @@
 		const id = idTarefaArrastada;
 		encerrarArraste();
 		if (!id || salvandoArraste) return;
-		if (data.tarefas.find(t => String(t.id) === id)?.status === novoStatus) return;
+		if (colecao.itens.find(t => String(t.id) === id)?.status === novoStatus) return;
 		salvandoArraste = id; erroArraste = '';
 		let salvo = false;
 		try {
 			await atualizarTarefa(id, { status: novoStatus });
 			salvo = true; chegou = id;
-			await invalidateAll();
+			await colecao.carregar(false);
 			await tick();
 			clearTimeout(limparChegada);
 			limparChegada = setTimeout(() => { chegou = null; }, 450);
@@ -103,12 +105,14 @@
 	}
 </script>
 
+<svelte:head><title>Quadro · ASTRA</title></svelte:head>
+
 <main class="astra-page quadro-pagina">
 	<div class="astra-head">
 		<div style="display:flex; flex-direction:column; gap:8px;">
 			<span class="astra-eyebrow">Tarefas · Quadro kanban</span>
 			<h1>Quadro de Tarefas</h1>
-			<p class="ov-count">{tarefasFiltradas.length} {tarefasFiltradas.length === 1 ? 'tarefa' : 'tarefas'} no observatório</p>
+			{#if !colecao.carregando && !colecao.erro}<p class="ov-count">{tarefasFiltradas.length} {tarefasFiltradas.length === 1 ? 'tarefa' : 'tarefas'}</p>{/if}
 		</div>
 		<a class="astra-btn" href="/tarefas/nova" style="text-decoration:none;">Nova tarefa</a>
 	</div>
@@ -116,7 +120,10 @@
 	<Filtros />
 	<AlternarVisao atual="quadro" />
 
-	{#if data.tarefas.length === 0}
+	{#if colecao.carregando}<Carregamento modo="quadro" />
+    {:else if colecao.erro}<ErroCarregamento mensagem={colecao.erro} tentar={()=>colecao.carregar()} />
+    {:else}
+    {#if colecao.itens.length === 0}
 		<p class="astra-muted" role="status">Nenhuma tarefa cadastrada ainda.</p>
 	{:else if tarefasFiltradas.length === 0}
 		<p class="astra-muted" role="status">Nenhuma tarefa encontrada com a busca e os filtros atuais.</p>
@@ -153,18 +160,18 @@
                             inert={salvandoArraste === String(tarefa.id)}
                             aria-busy={salvandoArraste === String(tarefa.id)}
                             animate:flip={{ duration: reduzido ? 0 : 200 }}
+                            in:receber={{key:tarefa.id}} out:enviar={{key:tarefa.id}}
 							role="group"
 							aria-label={tarefa.titulo}
 
 						>
-							<div class="drag-handle" role="img" aria-label="Arrastar tarefa. Para usar o teclado, altere o seletor de status do cartão."
-                                title="Arraste para outra coluna; pelo teclado, use o seletor de status."
-                                draggable={salvandoArraste === null}
-                                ondragstart={(e) => handleDragStart(e, String(tarefa.id))}
-                                ondragend={encerrarArraste}>
-								⠿ Arrastar cartão
-							</div>
-							<TarefaCard {tarefa} onstatus={() => invalidateAll()} />
+							<TarefaCard {tarefa} onstatus={() => colecao.carregar(false)}>
+                                {#snippet alca()}
+                                <div class="drag-handle" role="img" aria-label="Arrastar tarefa. Pelo teclado, use o status."
+                                    title="Arraste para outra coluna; pelo teclado, use o status." draggable={salvandoArraste === null}
+                                    ondragstart={e=>handleDragStart(e,String(tarefa.id))} ondragend={encerrarArraste}>⠿</div>
+                                {/snippet}
+                            </TarefaCard>
 						</div>
 					{:else}
 						<p class="vazio">Nenhuma tarefa nesta coluna.</p>
@@ -173,6 +180,7 @@
 			</section>
 		{/each}
 	</div>
+    {/if}
 </main>
 
 <style>
@@ -252,39 +260,20 @@
 		cursor: grabbing;
 	}
 
-	.drag-handle {
-		background: #1c2029;
-		color: var(--astra-muted, #a1a1aa);
-		border: 1px dashed var(--astra-glass-border, #27272a);
-		font-size: 0.75rem;
-		text-align: center;
-		padding: 6px;
-		border-radius: 3px;
-		user-select: none;
-		-webkit-user-select: none;
-		font-weight: 600;
-		letter-spacing: 0.5px;
-		transition: background 0.15s ease, color 0.15s ease;
-	}
-
-	.drag-handle:hover {
-		background: #252a36;
-		color: #ffffff;
-	}
-
-	.drag-handle { cursor:grab; touch-action:pan-y; }
-	.drag-handle:active { cursor:grabbing; }
-	.cartao-wrapper { cursor:default; }
+	.drag-handle { display:grid;place-items:center;width:44px;height:44px;font-size:22px;color:#bdc5d3;cursor:grab;touch-action:pan-y;user-select:none;border-radius:50%; }
+    .drag-handle:hover {background:#ffffff0c;color:#fff}
+    .drag-handle:active {cursor:grabbing}
+    .cartao-wrapper {cursor:default}
 	.cartao-wrapper.arrastando { opacity:.35; outline:1px dashed #ccd8ed; outline-offset:4px; border-radius:10px; }
 	.cartao-wrapper.salvando-arraste { opacity:.6; cursor:progress; }
-	.cartao-wrapper.chegada-arraste { animation:acomodar 280ms ease-out; }
+	.cartao-wrapper.chegada-arraste { opacity:1; }
 	.cartao-wrapper:global(.imagem-arraste) { background:#151515; border:1px solid #e7edf7; border-radius:10px; box-shadow:0 8px 28px #dceaff40; }
 	.cartao-wrapper:global(.imagem-arraste) :global(.astra-orbita),
 	.arraste-ativo :global(.astra-orbita) { animation-play-state:paused; }
 	.arraste-ativo :global(.astra-card[data-orbital]) { transform:none; }
 	.coluna.destino-arraste { outline:1px solid #dceaff; outline-offset:2px; box-shadow:0 0 30px #dceaff20,inset 0 0 25px #ffffff06; }
 	.aviso-arraste { margin:0; color:var(--astra-muted); font-size:14px; }
-	@keyframes acomodar { from { opacity:.65; transform:translateY(-8px) scale(.985); } to { opacity:1; transform:none; } }
+
 	@media(prefers-reduced-motion:reduce) { .cartao-wrapper.chegada-arraste { animation:none; } }
 	/* ------------------------------------- */
 

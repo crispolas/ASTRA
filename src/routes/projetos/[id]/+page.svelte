@@ -5,6 +5,8 @@
 	let { data }: { data: PageData } = $props();
 </script>
 
+<svelte:head><title>{data.projeto?.nome ?? 'Projeto não encontrado'} · ASTRA</title></svelte:head>
+
 <main class="astra-page">
 	<div class="astra-head">
 		<div style="display:flex; flex-direction:column; gap:8px;">
@@ -53,7 +55,7 @@
 	{:else if data.naoEncontrado}
 		<p class="astra-error" role="alert">Projeto não encontrado. Ele pode ter sido removido ou o endereço está errado.</p>
 	{:else}
-		<p class="astra-error" role="alert">Erro: não foi possível carregar o projeto. Confira se a API está ligada.</p>
+		<p class="astra-error" role="alert">Erro: não foi possível carregar o projeto. Tente novamente em instantes.</p>
 	{/if}
 </main>
 

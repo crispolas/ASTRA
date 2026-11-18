@@ -23,10 +23,8 @@ test('API, projetos e quadro usam a URL configurada, inclusive com barra final',
 				await api.criarTarefa({ titulo: 'Teste' });
 				await api.atualizarTarefa('a/b', { status: 'concluida' });
 				await api.excluirTarefa('a/b');
-				const projetos = await server.ssrLoadModule('/src/routes/projetos/+page.ts');
-				const quadro = await server.ssrLoadModule('/src/routes/quadro/+page.ts');
-				await projetos.load({ fetch: fetchSimulado });
-				await quadro.load({ fetch: fetchSimulado });
+				await api.listarProjetos();
+				await api.listarTarefas();
 				assert.deepEqual(chamadas, [
 					[`${base}/tarefas`, 'GET'],
 					[`${base}/projetos/7?_embed=tarefas`, 'GET'],
