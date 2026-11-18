@@ -32,7 +32,7 @@ test('falha ao mudar status mantém o valor anterior e libera o controle', async
 	assert.match(await controle.innerText(),/Em revisão/);assert.equal(await controle.isEnabled(),true);
 });
 
-test('ícone de exclusão mantém confirmação e só exclui ao confirmar', async () => {
+test('ícone de exclusão pede confirmação na própria tela e só exclui ao confirmar', async () => {
 	let removida=false,exclusoes=0;
 	app.simularApi((url,req)=>{
 		if(req.method()==='DELETE'){exclusoes++;removida=true;return new Response(null,{status:204});}
@@ -41,6 +41,13 @@ test('ícone de exclusão mantém confirmação e só exclui ao confirmar', asyn
 	await app.abrir('/');
 	const excluir=app.page.getByRole('button',{name:'Excluir tarefa Documentar o componente',exact:true});
 	assert.equal(await excluir.locator('svg').count(),1);
-	app.page.once('dialog',d=>d.dismiss());await excluir.click();assert.equal(exclusoes,0);
-	app.page.once('dialog',d=>d.accept());await excluir.click();await app.page.getByRole('status').filter({hasText:'Nenhuma tarefa cadastrada'}).waitFor();assert.equal(exclusoes,1);
+	// A confirmação é uma janela da própria página, não o diálogo do navegador.
+	let dialogosNativos=0;app.page.on('dialog',d=>{dialogosNativos++;d.dismiss();});
+	const confirmar=app.page.getByRole('alertdialog',{name:'Excluir “Documentar o componente”?'});
+	await excluir.click();await confirmar.waitFor();
+	assert.equal(await app.page.evaluate(()=>document.activeElement?.textContent),'Cancelar','O foco começa em Cancelar');
+	await confirmar.getByRole('button',{name:'Cancelar',exact:true}).click();await confirmar.waitFor({state:'detached'});assert.equal(exclusoes,0);
+	await excluir.click();await confirmar.waitFor();await app.page.keyboard.press('Escape');await confirmar.waitFor({state:'detached'});assert.equal(exclusoes,0);
+	await excluir.click();await confirmar.getByRole('button',{name:'Excluir tarefa',exact:true}).click();
+	await app.page.getByRole('status').filter({hasText:'Nenhuma tarefa cadastrada'}).waitFor();assert.equal(exclusoes,1);assert.equal(dialogosNativos,0);
 });
