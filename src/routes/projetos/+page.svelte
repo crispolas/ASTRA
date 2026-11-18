@@ -4,15 +4,18 @@
  import {entradaCartao,duracaoMovimento} from '../../lib/visual/movimento';
  import {untrack} from 'svelte';
  import {criarColecao} from '../../lib/colecao.svelte';
- import {listarProjetos} from '../../lib/api';
- import type {Projeto} from '../../tipos';
+ import {listarProjetosComTarefas} from '../../lib/api';
+ import type {ProjetoComTarefas} from '../../tipos';
+ import ProgressoStatus from '../../lib/components/ProgressoStatus.svelte';
+ import EstadoVazio from '../../lib/components/EstadoVazio.svelte';
  import Carregamento from '../../lib/components/Carregamento.svelte';
  import ErroCarregamento from '../../lib/components/ErroCarregamento.svelte';
 	import { interacaoOrbital } from '../../lib/visual/interacao';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
- const colecao=criarColecao<Projeto>(untrack(()=>data.projetos),listarProjetos,'os projetos');
+ // As tarefas vêm na mesma leitura (?_embed=tarefas) para mostrar o progresso de cada projeto.
+ const colecao=criarColecao<ProjetoComTarefas>(untrack(()=>data.projetos.map(p=>({...p,tarefas:[]}))),listarProjetosComTarefas,'os projetos');
 </script>
 
 <svelte:head><title>Projetos · ASTRA</title></svelte:head>
@@ -38,9 +41,11 @@
 					<article class="astra-card card-projeto ov-organic" use:interacaoOrbital>
 
 					<h3>{projeto.nome}</h3>
+					{#if projeto.disciplina}<p class="disciplina">{projeto.disciplina}</p>{/if}
 					{#if projeto.descricao}
 						<p class="astra-muted">{projeto.descricao}</p>
 					{/if}
+					<ProgressoStatus tarefas={projeto.tarefas} />
 					<a class="astra-pill" href="/projetos/{projeto.id}">Ver detalhes do projeto</a>
 					</article>
                   </div>
@@ -48,7 +53,7 @@
 			{/each}
 		</ul>
 	{:else}
-		<p class="astra-muted">Nenhum projeto encontrado.</p>
+		<EstadoVazio mensagem="Nenhum projeto encontrado." />
 	{/if}
 </main>
 
@@ -65,4 +70,7 @@
 		align-items: flex-start;
 		gap: 12px;
 	}
+	.card-projeto :global(:is(h3, p)) { margin: 0 !important; }
+	.disciplina { margin: -6px 0 0 !important; font: 500 12.5px/1.3 var(--obs-ui); color: var(--obs-tinta-3); }
+	.card-projeto a { margin-top: 6px; }
 </style>

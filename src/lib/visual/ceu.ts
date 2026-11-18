@@ -2,6 +2,7 @@ import { desenharFotosfera } from './sol';
 import { iluminarSuperficies, type FonteLuz } from './iluminacao';
 import { orientacaoAgora, projetarX } from './observatorio';
 import { EPOCA_ORBITA, posicaoLua } from './orbita';
+import { passoGravidade, posicaoSol } from './gravidade';
 type Estrela = { x:number; y:number; vx:number; vy:number; angulo:number; vel:number; fase:number; brilho:number };
 type Cadente = { inicio:number; duracao:number; x:number; y:number; ang:number; dist:number };
 function contexto(canvas: HTMLCanvasElement) {
@@ -82,6 +83,8 @@ function pintarSol(t:number,parar:boolean,fontes:FonteLuz[]){
  const x=projetarX(W*(.55+Math.sin(tempo*.002)*.018),W,orientacaoAgora(),.65);
  const y=H*((W<700?.27:.20)+Math.cos(tempo*.003)*.012)-(parar?0:Math.min(scrollY,1600)*.018);
  const r=Math.min(W*.13,110);
+ // A gravidade dos cartões e a exclusão "engolida" usam a posição do Sol na tela.
+ posicaoSol.x=x;posicaoSol.y=y;posicaoSol.r=r;posicaoSol.t=performance.now();
  if(x+r*2<0||x-r*2>W)return;
  if(ultimoSol===-Infinity||(!parar&&t-ultimoSol>120)){
   ultimoSol=t;desenharFotosfera(solCtx,tempo,W<768?2:1);
@@ -130,6 +133,7 @@ function pintar(t: number,forcar=false){if(!ctx||!fc)return;const parar=reduzir.
  pintarSol(t,parar,fontes);
  pintarLuminosas(t,parar,dt,fontes);
  iluminarSuperficies(fontes,t,forcar);
+ passoGravidade(t,parar);
 
   pintarLua(t,forcar);
  }

@@ -15,3 +15,10 @@ export function aplicarFiltros(
 		(!prioridade || tarefa.prioridade === prioridade)
 	);
 }
+
+/** Volta busca, status e prioridade para "todos" (botão da lista vazia). */
+export function limparFiltros() {
+	buscaTexto.set('');
+	filtroStatus.set('');
+	filtroPrioridade.set('');
+}

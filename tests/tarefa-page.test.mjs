@@ -7,7 +7,8 @@ test('/tarefas/:id mostra "não encontrada" quando a API responde 404', async ()
 	app.simularApi(() => new Response(null, { status: 404, statusText: 'Not Found' }));
 	await app.abrir('/tarefas/999');
 	await app.page.getByRole('alert').filter({ hasText: 'Tarefa não encontrada' }).waitFor();
-	assert.equal(await app.page.getByRole('link', { name: /Voltar/ }).count(), 1);
+	// O detalhe abre como janela; o ✕ (rótulo "Fechar") leva de volta à lista.
+	assert.equal(await app.page.getByRole('link', { name: 'Fechar', exact: true }).count(), 1);
 	assert.doesNotMatch(await app.page.locator('body').innerText(), /não foi possível carregar a tarefa/i);
 });
 

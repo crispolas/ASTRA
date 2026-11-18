@@ -7,11 +7,12 @@
     import ErroCarregamento from '../lib/components/ErroCarregamento.svelte';
     import TarefaCard from "#lib/components/TarefaCard.svelte";
     import Filtros from "#lib/components/Filtros.svelte";
-    import AlternarVisao from "#lib/components/AlternarVisao.svelte";
+    import EstadoVazio from "#lib/components/EstadoVazio.svelte";
     import {
         buscaTexto,
         filtroStatus,
         filtroPrioridade,
+        limparFiltros,
     } from "../lib/stores/filtros";
     import { listarTarefas } from "../lib/api";
     import type { Tarefa } from "../tipos";
@@ -45,7 +46,6 @@
         <a class="astra-btn" href="/tarefas/nova">Nova tarefa</a>
     </div>
     <Filtros />
-    <AlternarVisao atual="lista" />
     {#if !colecao.carregando && !colecao.erro}<p class="ov-count ov-count-mobile">{tarefasFiltradas.length} {tarefasFiltradas.length === 1 ? 'tarefa' : 'tarefas'}</p>{/if}
     <section aria-label="Lista de tarefas">
         {#if colecao.carregando}
@@ -53,9 +53,9 @@
         {:else if colecao.erro}
             <ErroCarregamento mensagem={colecao.erro} tentar={() => colecao.carregar()} />
         {:else if colecao.itens.length === 0}
-            <p class="astra-muted estado-mensagem" role="status">Nenhuma tarefa cadastrada ainda.</p>
+            <EstadoVazio mensagem="Nenhuma tarefa cadastrada ainda." acao={{ texto: 'Criar a primeira tarefa', href: '/tarefas/nova' }} />
         {:else if tarefasFiltradas.length === 0}
-            <p class="astra-muted estado-mensagem" role="status">Nenhuma tarefa encontrada com a busca e os filtros atuais.</p>
+            <EstadoVazio mensagem="Nenhuma tarefa encontrada com a busca e os filtros atuais." acao={{ texto: 'Limpar busca e filtros', aoClicar: limparFiltros }} />
         {:else}
             <div class="astra-list lista-tarefas ov-grid">
                 {#each tarefasFiltradas as tarefa,i (tarefa.id)}

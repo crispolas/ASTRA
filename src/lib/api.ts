@@ -37,6 +37,12 @@ export async function listarProjetos(): Promise<Projeto[]> {
 	return buscarNaApi<Projeto[]>('/projetos');
 }
 
+/** Projetos com as tarefas de cada um numa leitura só (para mostrar o progresso na lista). */
+export async function listarProjetosComTarefas(): Promise<ProjetoComTarefas[]> {
+	const projetos = await buscarNaApi<(Projeto & { tarefas?: ProjetoComTarefas['tarefas'] })[]>('/projetos?_embed=tarefas');
+	return projetos.map((projeto) => ({ ...projeto, tarefas: projeto.tarefas ?? [] }));
+}
+
 export async function buscarProjeto(id: string): Promise<ProjetoComTarefas> {
 	return buscarNaApi<ProjetoComTarefas>(`/projetos/${id}?_embed=tarefas`);
 }

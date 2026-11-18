@@ -50,7 +50,8 @@ test('telas e menus cabem em 390px e 1440px, com tipografia e contraste dos cont
    assert.equal(await app.page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,`${path} em ${width}px`);
    if(path==='/quadro') {
     const cor=await app.page.locator('.contador').first().evaluate(el=>({color:getComputedStyle(el).color,bg:getComputedStyle(el).backgroundColor}));
-    assert.equal(cor.color,'rgb(17, 17, 17)');assert.equal(cor.bg,'rgb(226, 232, 240)');
+    // Contador claro sobre fundo escuro (contraste bem acima de 4,5:1).
+    assert.equal(cor.color,'rgb(238, 241, 245)');assert.equal(cor.bg,'rgb(20, 22, 27)');
    }
    if(path==='/tarefas/nova') {
     const status=app.page.getByRole('combobox',{name:/^Status /});

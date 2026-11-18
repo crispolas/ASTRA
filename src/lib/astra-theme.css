@@ -1,5 +1,5 @@
 /* Tema compartilhado do ASTRA: preto, branco e cinza. */
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+/* A fonte (Funnel Sans/Display) é carregada em app.html. */
 :root {
   color-scheme: dark;
   --astra-bg-0:#08090b; --astra-bg-1:#111318;
@@ -9,7 +9,7 @@
   --astra-glass-border:#363b45; --astra-field-border:#515866; --astra-field-bg:#111318;
   --astra-radius-sm:3px; --astra-radius-lg:3px; --astra-radius-pill:3px;
   --astra-space-1:8px; --astra-space-2:16px; --astra-space-3:24px; --astra-space-4:28px; --astra-space-5:48px;
-  --astra-font:'Space Grotesk',Arial,sans-serif;
+  --astra-font:'Funnel Sans',Arial,sans-serif;
   --astra-sparkle-mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 1L14 10L23 12L14 14L12 23L10 14L1 12L10 10Z'/></svg>");
 }
 *,*::before,*::after { box-sizing:border-box; }

@@ -18,6 +18,6 @@
 <style>
 	svg { display: block; width: 100%; height: auto; overflow: visible; }
 	polyline { stroke: #adD3ee; stroke-width: 1.2; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
-	circle { fill: #e6f7ff; filter: drop-shadow(0 0 5px #a9dfff); transition: r 950ms; }
+	circle { fill: #e6f7ff; filter: drop-shadow(0 0 5px #a9dfff); transition: r 1350ms cubic-bezier(.22,1,.36,1); }
 	@media (prefers-reduced-motion: reduce) { circle { transition: none; } }
 </style>

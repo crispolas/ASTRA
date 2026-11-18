@@ -1,36 +1,78 @@
+<script module lang="ts">
+	// Último status visto de cada tarefa. No quadro o cartão é recriado na coluna nova;
+	// com isto o cartão novo sabe que acabou de mudar e anima a chegada.
+	const ultimoStatus = new Map<string, string>();
+</script>
+
 <script lang="ts">
 	import type {Snippet} from 'svelte';
- import {nomesStatus,nomesPrioridade,opcoesStatus} from '../opcoes';
+ import {nomesPrioridade,opcoesStatus} from '../opcoes';
 	import SeletorArredondado from './SeletorArredondado.svelte';
+	import ConfirmarExclusao from './ConfirmarExclusao.svelte';
 	import { atualizarTarefa, excluirTarefa } from '../api';
 	import { interacaoOrbital } from '../visual/interacao';
+	import { posicaoSol, solPresente } from '../visual/gravidade';
+	import { janela } from '../janela.svelte';
 	import type { Status, Tarefa } from '../../tipos';
 
 	interface Props {
 		tarefa: Readonly<Tarefa>;
 		variante?: 'padrao' | 'catalogo';
         alca?:Snippet;
-		onstatus?: (tarefa: Tarefa) => void;
+		/** Recebe a tarefa salva. Pode devolver uma Promise (o quadro recarrega a lista); a etiqueta pulsa até ela terminar. */
+		onstatus?: (tarefa: Tarefa) => unknown;
 		onexcluir?: (id: string) => void;
 	}
 
 	let { tarefa, variante = 'catalogo', onstatus, onexcluir, alca }: Props = $props();
 
 	const idControle = $props.id();
+	let cartao = $state<HTMLElement>();
 	let salvando = $state(false);
 	let erroStatus = $state('');
 	let excluindo = $state(false);
 	let erroExclusao = $state('');
+	let confirmando = $state(false);
+	let mudou = $state(false);
+	let concluiu = $state(false);
 
-	async function confirmarExclusao() {
+	// Status trocado (aqui ou na coluna anterior do quadro): brilho na etiqueta e, se concluiu, estrela e risco no título.
+	$effect(() => {
+		const status = tarefa.status, antes = ultimoStatus.get(tarefa.id);
+		ultimoStatus.set(tarefa.id, status);
+		if (!antes || antes === status) return;
+		mudou = true; concluiu = status === 'concluida';
+		const fim = setTimeout(() => { mudou = false; concluiu = false; }, 1400);
+		return () => clearTimeout(fim);
+	});
+
+	function pedirExclusao() {
 		if (excluindo || salvando || !onexcluir) return;
-		if (!window.confirm(`Excluir a tarefa “${tarefa.titulo}”? Essa ação não pode ser desfeita.`)) return;
+		confirmando = true;
+	}
+	async function excluir() {
+		confirmando = false;
+		if (excluindo || !onexcluir) return;
 		excluindo = true;
 		erroExclusao = '';
+		// O cartão é engolido pelo Sol enquanto a API apaga a tarefa.
+		const reduzido = matchMedia('(prefers-reduced-motion: reduce)').matches;
+		let animacao: Animation | undefined;
+		if (cartao && !reduzido) {
+			const caixa = cartao.getBoundingClientRect();
+			const alvo = solPresente() ? { x: posicaoSol.x, y: posicaoSol.y } : { x: caixa.left + caixa.width / 2, y: -200 };
+			const dx = alvo.x - (caixa.left + caixa.width / 2), dy = alvo.y - (caixa.top + caixa.height / 2);
+			animacao = cartao.animate([
+				{ transform: 'none', opacity: 1, filter: 'blur(0)' },
+				{ transform: `translate(${dx * .25}px, ${dy * .25}px) scale(.8) rotate(-4deg)`, opacity: .9, offset: .35 },
+				{ transform: `translate(${dx}px, ${dy}px) scale(.04) rotate(-24deg)`, opacity: 0, filter: 'blur(4px)' }
+			], { duration: 750, easing: 'cubic-bezier(.55,0,.75,.2)', fill: 'forwards' });
+		}
 		try {
-			await excluirTarefa(tarefa.id);
+			await Promise.all([excluirTarefa(tarefa.id), animacao?.finished]);
 			onexcluir(tarefa.id);
 		} catch {
+			animacao?.cancel();
 			erroExclusao = 'Não foi possível excluir a tarefa. Tente novamente em instantes.';
 		} finally {
 			excluindo = false;
@@ -41,7 +83,7 @@
 		salvando = true;
 		erroStatus = '';
 		try {
-			onstatus?.(await atualizarTarefa(tarefa.id, { status: valor as Status }));
+			await onstatus?.(await atualizarTarefa(tarefa.id, { status: valor as Status }));
 		} catch {
 			erroStatus = 'Não foi possível salvar o status. Tente novamente em instantes.';
 		} finally {
@@ -52,12 +94,13 @@
 </script>
 
 <div class="suporte" class:astra-orbita={variante === 'catalogo'}>
-<article data-prioridade={tarefa.prioridade} class="astra-card tarefa-card" class:catalogo={variante === 'catalogo'} class:ov-organic={variante === 'catalogo'}
-	use:interacaoOrbital={variante === 'catalogo'}>
+<article data-prioridade={tarefa.prioridade} data-status={tarefa.status} class="astra-card tarefa-card" class:catalogo={variante === 'catalogo'} class:ov-organic={variante === 'catalogo'}
+	class:sem-lixeira={!onexcluir} class:salvando-status={salvando} class:mudou class:concluiu
+	bind:this={cartao} use:interacaoOrbital={variante === 'catalogo'}>
 
     {#if alca}<div class="alca-interna">{@render alca()}</div>{/if}
 	<h3>
-		<a href={`/tarefas/${encodeURIComponent(tarefa.id)}`} draggable="false">{tarefa.titulo}</a>
+		<a href={`/tarefas/${encodeURIComponent(tarefa.id)}`} draggable="false" onclick={() => { janela.titulo = tarefa.titulo; }}>{tarefa.titulo}</a>
 	</h3>
 	<p class="astra-muted">{tarefa.descricao}</p>
 	<dl class="astra-meta">
@@ -83,19 +126,24 @@
 		</div>
 	</dl>
 	{#if erroStatus}<p class="astra-error" role="alert">{erroStatus}</p>{/if}
-	{#if onexcluir}
-		<div class="acoes-tarefa">
-			<button type="button" class="astra-pill excluir-tarefa" onclick={confirmarExclusao}
+	<div class="acoes-tarefa">
+		<a class="astra-pill editar-tarefa" href={`/tarefas/${encodeURIComponent(tarefa.id)}/editar`} draggable="false"
+			aria-label={`Editar tarefa ${tarefa.titulo}`} title="Editar">
+			<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M10.5 2.5l3 3L5 14H2v-3z" /><path d="M9 4l3 3" /></svg>
+		</a>
+		{#if onexcluir}
+			<button type="button" class="astra-pill excluir-tarefa" onclick={pedirExclusao}
 				aria-label={`Excluir tarefa ${tarefa.titulo}`} title={excluindo ? 'Excluindo...' : 'Excluir tarefa'} disabled={excluindo || salvando}>
 				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
                     <path d="M3 6h18M9 6V4h6v2M5 6l1 14h12l1-14M10 10v6M14 10v6" />
                 </svg>
 			</button>
-		</div>
-	{/if}
+		{/if}
+	</div>
 	{#if erroExclusao}<p class="astra-error" role="alert">{erroExclusao}</p>{/if}
 </article>
 </div>
+{#if confirmando}<ConfirmarExclusao titulo={tarefa.titulo} aoConfirmar={excluir} aoCancelar={() => { confirmando = false; }} />{/if}
 
 <style>
 	.tarefa-card {

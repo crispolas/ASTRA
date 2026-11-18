@@ -1,15 +1,17 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import { atualizarTarefa } from '../../../../lib/api';
 	import TarefaFormulario from '#lib/components/TarefaFormulario.svelte';
+	import FecharJanela from '#lib/components/FecharJanela.svelte';
+	import { voltarDaJanela } from '../../../../lib/janela.svelte';
 	import type { NovaTarefa } from '../../../../tipos';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
 
+	// Depois de salvar, volta uma janela: para o detalhe, se veio dele, ou para a lista/quadro do lápis.
 	async function salvar(dados: NovaTarefa) {
 		await atualizarTarefa(data.tarefa.id, dados);
-		await goto(`/tarefas/${data.tarefa.id}`);
+		await voltarDaJanela(`/tarefas/${data.tarefa.id}`);
 	}
 </script>
 
@@ -17,10 +19,10 @@
 
 <main class="astra-page">
 	<div class="astra-head">
-		<div style="display:flex; flex-direction:column; gap:8px;">
+		<div>
 			<h1>Editar tarefa</h1>
 		</div>
-		<a class="astra-pill" href="/tarefas/{data.tarefa.id}">Voltar</a>
+		<FecharJanela href="/tarefas/{data.tarefa.id}" />
 	</div>
 
 	<TarefaFormulario valoresIniciais={data.tarefa} aoEnviar={salvar} textoBotao="Salvar alterações" />

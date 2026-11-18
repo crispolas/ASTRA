@@ -2,17 +2,18 @@
 	import { onDestroy, onMount, tick, untrack } from 'svelte';
 	import {opcoesStatus} from '../../lib/opcoes';
 	import { flip } from 'svelte/animate';
- import {crossfade} from 'svelte/transition';
- import {entradaCartao,duracaoMovimento} from '../../lib/visual/movimento';
- const [enviar,receber]=crossfade({duration:()=>duracaoMovimento(240),fallback:(node)=>entradaCartao(node)});
+ import {entradaCartao} from '../../lib/visual/movimento';
+ import {criarViagem} from '../../lib/visual/viagem';
+ // O cartão que troca de coluna viaja em arco até a coluna nova.
+ const [enviar,receber]=criarViagem((node)=>entradaCartao(node));
 	import {criarColecao} from '../../lib/colecao.svelte';
  import Carregamento from '../../lib/components/Carregamento.svelte';
  import ErroCarregamento from '../../lib/components/ErroCarregamento.svelte';
 	import { atualizarTarefa, listarTarefas } from '../../lib/api';
 	import TarefaCard from '../../lib/components/TarefaCard.svelte';
 	import Filtros from '../../lib/components/Filtros.svelte';
-	import AlternarVisao from '../../lib/components/AlternarVisao.svelte';
-	import { buscaTexto, filtroStatus, filtroPrioridade, aplicarFiltros } from '../../lib/stores/filtros';
+	import EstadoVazio from '../../lib/components/EstadoVazio.svelte';
+	import { buscaTexto, filtroStatus, filtroPrioridade, aplicarFiltros, limparFiltros } from '../../lib/stores/filtros';
 	import type { PageData } from './$types';
 	import type { Tarefa } from '../../tipos';
 
@@ -118,15 +119,14 @@
 	</div>
 
 	<Filtros />
-	<AlternarVisao atual="quadro" />
 
 	{#if colecao.carregando}<Carregamento modo="quadro" />
     {:else if colecao.erro}<ErroCarregamento mensagem={colecao.erro} tentar={()=>colecao.carregar()} />
     {:else}
     {#if colecao.itens.length === 0}
-		<p class="astra-muted" role="status">Nenhuma tarefa cadastrada ainda.</p>
+		<EstadoVazio mensagem="Nenhuma tarefa cadastrada ainda." acao={{ texto: 'Criar a primeira tarefa', href: '/tarefas/nova' }} />
 	{:else if tarefasFiltradas.length === 0}
-		<p class="astra-muted" role="status">Nenhuma tarefa encontrada com a busca e os filtros atuais.</p>
+		<EstadoVazio mensagem="Nenhuma tarefa encontrada com a busca e os filtros atuais." acao={{ texto: 'Limpar busca e filtros', aoClicar: limparFiltros }} />
 	{/if}
 
 	{#if erroArraste}<p class="astra-error" role="alert">{erroArraste}</p>{/if}
@@ -159,7 +159,7 @@
                             class:chegada-arraste={chegou === String(tarefa.id)}
                             inert={salvandoArraste === String(tarefa.id)}
                             aria-busy={salvandoArraste === String(tarefa.id)}
-                            animate:flip={{ duration: reduzido ? 0 : 200 }}
+                            animate:flip={{ duration: reduzido ? 0 : 520, easing: (t) => 1 - Math.pow(1 - t, 3) }}
                             in:receber={{key:tarefa.id}} out:enviar={{key:tarefa.id}}
 							role="group"
 							aria-label={tarefa.titulo}
